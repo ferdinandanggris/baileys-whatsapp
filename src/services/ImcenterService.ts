@@ -1,6 +1,5 @@
-import makeWASocket, { DisconnectReason, useMultiFileAuthState } from 'baileys';
 import { AppDataSource } from '../configs/Db';
-import { Imcenter } from '../entities/Imcenter';
+import { Imcenter } from '../entities/imcenter';
 
 export class ImCenterService {
     private repository = AppDataSource.getRepository(Imcenter);
@@ -38,6 +37,10 @@ export class ImCenterService {
         }
 
         return session;
+    }
+
+    public async getAutoActiveSession(): Promise<Imcenter[]> {
+        return this.repository.findBy({ aktif: true });
     }
     
 }

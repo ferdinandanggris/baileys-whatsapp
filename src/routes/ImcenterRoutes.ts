@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { ImcenterController } from '../controllers/Imcenter';
+import { ImcenterController } from '../controllers/imcenterController';
 
 const ImcenterRouter = Router();
 

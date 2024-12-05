@@ -30,7 +30,11 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'bool' }),
     __metadata("design:type", Boolean)
 ], Imcenter.prototype, "standby", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
+    __metadata("design:type", String)
+], Imcenter.prototype, "qrcode", void 0);
 exports.Imcenter = Imcenter = __decorate([
     (0, typeorm_1.Entity)('imcenter')
 ], Imcenter);
-//# sourceMappingURL=Imcenter.js.map
+//# sourceMappingURL=imcenter.js.map

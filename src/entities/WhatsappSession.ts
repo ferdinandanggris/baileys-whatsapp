@@ -6,8 +6,11 @@ export class WhatsappSession{
     id!: number;
 
     @Column({unique : true})
-    sessionKey!: string;
+    nomorhp!: string;
 
     @Column({type : 'jsonb', nullable : true})
-    sessionData!: Record<string, any> | null;
+    sessionCred!: Record<string, any> | null;
+
+    @Column({type : 'jsonb', nullable : true})
+    sessionKey!: Record<string, any> | null;
 }

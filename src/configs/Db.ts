@@ -1,6 +1,7 @@
 import { DataSource } from "typeorm";
-import { WhatsappSession } from "../entities/WhatsappSession";
-import { Imcenter } from "../entities/Imcenter";
+import { WhatsappSession } from "../entities/whatsappSession";
+import { Imcenter } from "../entities/imcenter";
+import { ImcenterLogs } from "../entities/imcenterLogs";
 
 export const AppDataSource = new DataSource({
     type: 'postgres',
@@ -9,6 +10,6 @@ export const AppDataSource = new DataSource({
     username: 'postgres',
     password: 'admin',
     database: 'whatsapp_gw',
-    entities: [WhatsappSession, Imcenter],
+    entities: [WhatsappSession, Imcenter, ImcenterLogs],
     synchronize: true, // Auto-create tables (use migrations in production)
 });

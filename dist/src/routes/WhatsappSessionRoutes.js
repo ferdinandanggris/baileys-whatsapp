@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const WhatsappSessionController_1 = require("../controllers/WhatsappSessionController");
+const whatsappSessionController_1 = require("../controllers/whatsappSessionController");
 const WhatsappSessionRoute = (0, express_1.Router)();
-WhatsappSessionRoute.post('/', WhatsappSessionController_1.WhatsappSessionController.createSession); // Membuat sesi baru
-WhatsappSessionRoute.get('/:nomorhp', WhatsappSessionController_1.WhatsappSessionController.GetQrCode); // Mendapatkan QR Code
+WhatsappSessionRoute.post('/', whatsappSessionController_1.WhatsappSessionController.createSession); // Membuat sesi baru
+WhatsappSessionRoute.get('/:nomorhp', whatsappSessionController_1.WhatsappSessionController.GetQrCode); // Mendapatkan QR Code
 exports.default = WhatsappSessionRoute;
-//# sourceMappingURL=WhatsappSessionRoutes.js.map
+//# sourceMappingURL=whatsappSessionRoutes.js.map

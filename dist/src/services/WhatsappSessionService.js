@@ -8,150 +8,69 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WhatsappSessionService = void 0;
-const baileys_1 = require("baileys");
 const Db_1 = require("../configs/Db");
-const WhatsappSession_1 = require("../entities/WhatsappSession");
-const qrcode_1 = __importDefault(require("qrcode"));
-const pino_1 = __importDefault(require("pino"));
-const fs_1 = __importDefault(require("fs"));
+const whatsappSession_1 = require("../entities/whatsappSession");
+const imcenterService_1 = require("./imcenterService");
+const typeorm_1 = require("typeorm");
+const instanceManagerService_1 = require("./instanceManagerService");
+const imcenter_1 = require("../entities/imcenter");
 class WhatsappSessionService {
     constructor() {
-        this.repository = Db_1.AppDataSource.getRepository(WhatsappSession_1.WhatsappSession);
-        this.qrCodes = new Map();
+        this.repository = Db_1.AppDataSource.getRepository(whatsappSession_1.WhatsappSession);
+        this.imcenterRepository = Db_1.AppDataSource.getRepository(imcenter_1.Imcenter);
+        this.instanceManager = new instanceManagerService_1.InstanceManager();
     }
     // Membuat sesi baru
     createSession(nomorhp) {
         return __awaiter(this, void 0, void 0, function* () {
-            const logger = (0, pino_1.default)({ timestamp: () => `,"time":"${new Date().toJSON()}"` }, pino_1.default.destination('./wa-logs.txt'));
-            // Check pada folder auth_info_baileys
-            const { state, saveCreds } = yield (0, baileys_1.useMultiFileAuthState)('auth_info_baileys' + nomorhp); // Cek apakah ada sesi yang tersimpan
-            // jika sesi ada maka akan mengembalikan pesan
-            if (state.creds) {
-                var sock = (0, baileys_1.makeWASocket)({
-                    auth: {
-                        creds: state.creds,
-                        keys: state.keys,
-                    },
-                    printQRInTerminal: true
-                });
-                sock.ev.on('connection.update', (update) => {
-                    var _a, _b;
-                    const { connection, qr, lastDisconnect } = update;
-                    if (connection === 'close') {
-                        const error = (_b = (_a = lastDisconnect === null || lastDisconnect === void 0 ? void 0 : lastDisconnect.error) === null || _a === void 0 ? void 0 : _a.output) === null || _b === void 0 ? void 0 : _b.statusCode;
-                        if (error === baileys_1.DisconnectReason.loggedOut) {
-                            console.log(`Session "${nomorhp}" logged out. Clearing data.`);
-                            this.clearSessionData(nomorhp); // Hapus data sesi dari database
-                            //remove directory auth_info_baileys + nomorhp
-                            fs_1.default.rmdirSync('auth_info_baileys' + nomorhp, { recursive: true });
-                            //reconnect
-                            this.createSession(nomorhp);
-                            // clear from file 'auth_info_baileys'
-                        }
-                        else if (baileys_1.DisconnectReason.connectionLost) {
-                            console.log(`Session "${nomorhp}" connection lost. Reconnecting...`);
-                            this.createSession(nomorhp);
-                        }
-                        else {
-                            console.log(`Session "${nomorhp}" connection closed due to error ${error}. Reconnecting...`);
-                            this.createSession(nomorhp);
-                        }
-                    }
-                    if (qr) {
-                        console.log(`Generated QR for session "${nomorhp}":`, qr);
-                        this.qrCodes.set(nomorhp, qr); // Simpan QR baru
-                    }
-                    if (connection === 'open') {
-                        console.log(`Session "${nomorhp}" connected.`);
-                        this.qrCodes.delete(nomorhp); // QR berhasil digunakan
-                    }
-                    sock.ev.on('messages.upsert', (m) => __awaiter(this, void 0, void 0, function* () {
-                        console.log(JSON.stringify(m, undefined, 2));
-                        console.log(m);
-                        console.log('replying to', m.messages[0].key.remoteJid);
-                        yield sock.sendMessage(m.messages[0].key.remoteJid, { text: 'Hello there!' });
-                    }));
-                });
-            }
-            else {
-                var sock = (0, baileys_1.makeWASocket)({
-                    auth: {
-                        creds: state.creds,
-                        keys: state.keys,
-                    },
-                    printQRInTerminal: true
-                });
-                sock.ev.on('connection.update', (update) => {
-                    var _a, _b;
-                    const { connection, qr, lastDisconnect } = update;
-                    if (connection === 'close') {
-                        const error = (_b = (_a = lastDisconnect === null || lastDisconnect === void 0 ? void 0 : lastDisconnect.error) === null || _a === void 0 ? void 0 : _a.output) === null || _b === void 0 ? void 0 : _b.statusCode;
-                        if (error === baileys_1.DisconnectReason.loggedOut) {
-                            console.log(`Session "${nomorhp}" logged out. Clearing data.`);
-                            this.clearSessionData(nomorhp); // Hapus data sesi dari database
-                            // clear from file 'auth_info_baileys'
-                        }
-                        else if (baileys_1.DisconnectReason.connectionLost) {
-                            console.log(`Session "${nomorhp}" connection lost. Reconnecting...`);
-                            this.createSession(nomorhp);
-                        }
-                        else {
-                            console.log(`Session "${nomorhp}" connection closed due to error ${error}. Reconnecting...`);
-                            this.createSession(nomorhp);
-                        }
-                    }
-                    if (qr) {
-                        console.log(`Generated QR for session "${nomorhp}":`, qr);
-                        this.qrCodes.set(nomorhp, qr); // Simpan QR baru
-                    }
-                    if (connection === 'open') {
-                        console.log(`Session "${nomorhp}" connected.`);
-                        this.qrCodes.delete(nomorhp); // QR berhasil digunakan
-                    }
-                });
-                sock.ev.on('creds.update', () => __awaiter(this, void 0, void 0, function* () {
-                    yield this.saveSessionData(nomorhp, state.creds);
-                    saveCreds();
-                }));
+            const socket = this.instanceManager.getInstance(nomorhp);
+            socket.connect();
+        });
+    }
+    // remove data sesi jika pengguna logout
+    removeSession(nomorhp) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const socket = this.instanceManager.getInstance(nomorhp);
+            socket.disconnect();
+            const session = yield this.repository.findOneBy({ nomorhp });
+            if (session) {
+                yield this.repository.delete({ nomorhp });
             }
         });
     }
-    // Hapus data sesi jika pengguna logout
-    clearSessionData(sessionKey) {
+    updateModeStandby(standby, sessionId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const session = yield this.repository.findOneBy({ sessionKey });
-            if (session) {
-                session.sessionData = null;
-                yield this.repository.save(session);
-            }
-        });
-    }
-    // Menyimpan data sesi
-    saveSessionData(sessionKey, sessionData) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const session = yield this.repository.findOneBy({ sessionKey });
-            if (session) {
-                session.sessionData = sessionData;
-                yield this.repository.save(session);
-            }
-            else {
-                yield this.repository.save({ sessionKey, sessionData });
+            const imcenter = yield this.imcenterRepository.findOneBy({ nomorhp: sessionId });
+            if (imcenter) {
+                imcenter.standby = standby;
+                yield this.imcenterRepository.save(imcenter);
             }
         });
     }
     // Mendapatkan QR Code terbaru
     getQRCode(sessionKey) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.qrCodes.has(sessionKey)) {
-                return yield qrcode_1.default.toDataURL(this.qrCodes.get(sessionKey));
+            const imcenter = yield this.imcenterRepository.findOneBy({ nomorhp: sessionKey });
+            if (!imcenter) {
+                throw new Error(`Imcenter with key "${sessionKey}" not found.`);
+            }
+            return imcenter.qrcode;
+        });
+    }
+    // Ambil sesi auto aktif dan cek apakah sesi masih aktif, jika tidak ubah status standby jadi false dan sebaliknya
+    checkAutoActiveSessions() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const imcentersService = new imcenterService_1.ImCenterService();
+            const imcenters = yield imcentersService.getAutoActiveSession();
+            const sessions = yield this.repository.find({ where: { nomorhp: (0, typeorm_1.In)(imcenters.map(imcenter => imcenter.nomorhp)) } });
+            for (const session of sessions) {
+                const socket = this.instanceManager.getInstance(session.nomorhp);
+                socket.connect();
             }
         });
     }
 }
 exports.WhatsappSessionService = WhatsappSessionService;
-//# sourceMappingURL=WhatsappSessionService.js.map
+//# sourceMappingURL=whatsappSessionService.js.map

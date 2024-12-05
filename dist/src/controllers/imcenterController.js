@@ -9,15 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WhatsappSessionController = void 0;
-const whatsappSessionService_1 = require("../services/whatsappSessionService");
-const imcenterService = new whatsappSessionService_1.WhatsappSessionService();
-class WhatsappSessionController {
-    static createSession(req, res) {
+exports.ImcenterController = void 0;
+const imcenterService_1 = require("../services/imcenterService");
+const imcenterService = new imcenterService_1.ImCenterService();
+class ImcenterController {
+    static createImcenter(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { nomorhp } = req.body;
-                const message = yield imcenterService.createSession(nomorhp);
+                const message = yield imcenterService.createImcenter(nomorhp);
                 res.status(201).json({ message });
             }
             catch (error) {
@@ -25,23 +25,22 @@ class WhatsappSessionController {
             }
         });
     }
-    static GetQrCode(req, res) {
+    static getAllImcenters(_, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { nomorhp } = req.params;
-                const qrCode = yield imcenterService.getQRCode(nomorhp);
-                res.status(200).json({ qrCode });
+                const sessions = yield imcenterService.getAllSessions();
+                res.status(200).json(sessions);
             }
             catch (error) {
                 res.status(400).json({ error: error.message });
             }
         });
     }
-    static removeSession(req, res) {
+    static deleteImcenter(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { nomorhp } = req.params;
-                const message = yield imcenterService.removeSession(nomorhp);
+                const { id } = req.params;
+                const message = yield imcenterService.deleteSession(parseInt(id));
                 res.status(200).json({ message });
             }
             catch (error) {
@@ -49,12 +48,12 @@ class WhatsappSessionController {
             }
         });
     }
-    static updateModeStandby(req, res) {
+    static getImcenterById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { standby, sessionId } = req.body;
-                const message = yield imcenterService.updateModeStandby(standby, sessionId);
-                res.status(200).json({ message });
+                const { id } = req.params;
+                const session = yield imcenterService.getSession(parseInt(id));
+                res.status(200).json(session);
             }
             catch (error) {
                 res.status(400).json({ error: error.message });
@@ -62,5 +61,5 @@ class WhatsappSessionController {
         });
     }
 }
-exports.WhatsappSessionController = WhatsappSessionController;
-//# sourceMappingURL=whatsappSessionController.js.map
+exports.ImcenterController = ImcenterController;
+//# sourceMappingURL=imcenterController.js.map

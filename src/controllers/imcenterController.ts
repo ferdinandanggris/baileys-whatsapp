@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ImCenterService } from '../services/ImcenterService';
+import { ImCenterService } from '../services/imcenterService';
 
 const imcenterService = new ImCenterService();
 

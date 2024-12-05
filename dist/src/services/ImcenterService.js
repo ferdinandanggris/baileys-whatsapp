@@ -11,10 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImCenterService = void 0;
 const Db_1 = require("../configs/Db");
-const Imcenter_1 = require("../entities/Imcenter");
+const imcenter_1 = require("../entities/imcenter");
 class ImCenterService {
     constructor() {
-        this.repository = Db_1.AppDataSource.getRepository(Imcenter_1.Imcenter);
+        this.repository = Db_1.AppDataSource.getRepository(imcenter_1.Imcenter);
     }
     createImcenter(number) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -51,6 +51,11 @@ class ImCenterService {
             return session;
         });
     }
+    getAutoActiveSession() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.repository.findBy({ aktif: true });
+        });
+    }
 }
 exports.ImCenterService = ImCenterService;
-//# sourceMappingURL=ImcenterService.js.map
+//# sourceMappingURL=imcenterService.js.map

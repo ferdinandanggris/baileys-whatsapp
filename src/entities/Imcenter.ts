@@ -13,4 +13,7 @@ export class Imcenter{
 
     @Column({type :  'bool'})
     standby!: boolean;
+
+    @Column({type : 'varchar', nullable : true})
+    qrcode!: string;
 }

@@ -21,12 +21,16 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", String)
-], WhatsappSession.prototype, "sessionKey", void 0);
+], WhatsappSession.prototype, "nomorhp", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'jsonb', nullable: true }),
     __metadata("design:type", Object)
-], WhatsappSession.prototype, "sessionData", void 0);
+], WhatsappSession.prototype, "sessionCred", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'jsonb', nullable: true }),
+    __metadata("design:type", Object)
+], WhatsappSession.prototype, "sessionKey", void 0);
 exports.WhatsappSession = WhatsappSession = __decorate([
     (0, typeorm_1.Entity)('whatsapp_sessions')
 ], WhatsappSession);
-//# sourceMappingURL=WhatsappSession.js.map
+//# sourceMappingURL=whatsappSession.js.map
