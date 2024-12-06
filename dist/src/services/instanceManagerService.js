@@ -9,8 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InstanceManager = void 0;
-const whatsappService_1 = require("./whatsappService");
+const whatsappService_1 = require("../modules/whatsapp/whatsappService");
 class InstanceManager {
     constructor() {
         this.instances = new Map();
@@ -53,5 +52,5 @@ class InstanceManager {
         });
     }
 }
-exports.InstanceManager = InstanceManager;
+module.exports = new InstanceManager();
 //# sourceMappingURL=instanceManagerService.js.map

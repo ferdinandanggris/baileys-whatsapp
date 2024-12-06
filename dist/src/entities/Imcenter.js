@@ -31,6 +31,10 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Imcenter.prototype, "standby", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'bool', default: false }),
+    __metadata("design:type", Boolean)
+], Imcenter.prototype, "auto_aktif", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
     __metadata("design:type", String)
 ], Imcenter.prototype, "qrcode", void 0);

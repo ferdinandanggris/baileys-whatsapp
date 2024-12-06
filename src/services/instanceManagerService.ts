@@ -1,7 +1,7 @@
-import { WhatsappService } from "./whatsappService";
+import { WhatsappService } from "../modules/whatsapp/whatsappService";
 
 
-export class InstanceManager {
+class InstanceManager {
     private instances: Map<string, WhatsappService>;
 
     constructor() {
@@ -47,3 +47,5 @@ export class InstanceManager {
         console.log("All instances logged out.");
     }
 }
+
+module.exports = new InstanceManager();

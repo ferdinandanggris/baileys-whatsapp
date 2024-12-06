@@ -16,21 +16,21 @@ exports.WhatsappService = void 0;
 const baileys_1 = require("baileys");
 const path_1 = require("path");
 const fs_1 = __importDefault(require("fs"));
-const Db_1 = require("../configs/Db");
+const db_1 = require("../configs/db");
 const imcenter_1 = require("../entities/imcenter");
 const qrcode_1 = __importDefault(require("qrcode"));
 const imcenterLogs_1 = require("../entities/imcenterLogs");
+const date_1 = require("../utils/date");
+const whatsappSession_1 = require("../entities/whatsappSession");
 class WhatsappService {
     constructor(sessionId, basePath = "sessions") {
-        this.imcenterRepository = Db_1.AppDataSource.getRepository(imcenter_1.Imcenter);
-        this.imcenterLogRepository = Db_1.AppDataSource.getRepository(imcenterLogs_1.ImcenterLogs);
+        this.imcenterRepository = db_1.AppDataSource.getRepository(imcenter_1.Imcenter);
+        this.imcenterLogRepository = db_1.AppDataSource.getRepository(imcenterLogs_1.ImcenterLogs);
+        this.whatsappSessionRepository = db_1.AppDataSource.getRepository(whatsappSession_1.WhatsappSession);
         this.sessionId = sessionId;
         this.basePath = basePath;
         this.path = (0, path_1.join)(this.basePath, this.sessionId);
     }
-    /**
-     * Connect ke WhatsApp menggunakan MultiFileAuthState
-     */
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
             // Tentukan folder untuk setiap instance
@@ -63,9 +63,6 @@ class WhatsappService {
     }
     handleReceiveMessage() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.socket.ev.on('messages.update', (messageInfo) => {
-                console.log(messageInfo);
-            });
             this.socket.ev.on('messages.upsert', (messageInfoUpsert) => {
                 console.log(messageInfoUpsert);
                 this.SaveMessages(messageInfoUpsert);
@@ -81,22 +78,35 @@ class WhatsappService {
                 if (error === baileys_1.DisconnectReason.loggedOut) {
                     console.log(`Session  logged out. Clearing data.`);
                     fs_1.default.rmSync(path, { recursive: true });
+                    this.imcenterRepository.update({ nomorhp: this.sessionId }, { qrcode: null, standby: false, aktif: false });
+                    this.whatsappSessionRepository.delete({ nomorhp: this.sessionId });
                 }
                 else if (baileys_1.DisconnectReason.connectionLost) {
                     console.log(`Session  connection lost. Reconnecting...`);
+                    this.imcenterRepository.update({ nomorhp: this.sessionId }, { standby: false, aktif: false });
+                    this.whatsappSessionRepository.delete({ nomorhp: this.sessionId });
                     this.connect();
                 }
                 else if (error === baileys_1.DisconnectReason.restartRequired) {
                     console.log(`Session  restart required. Reconnecting...`);
+                    this.imcenterRepository.update({ nomorhp: this.sessionId }, { standby: false, aktif: false });
+                    this.whatsappSessionRepository.delete({ nomorhp: this.sessionId });
                     this.connect();
                 }
                 else {
                     console.log(`Session  connection closed due to error ${error}. Reconnecting...`);
+                    this.imcenterRepository.update({ nomorhp: this.sessionId }, { standby: false, aktif: false });
+                    this.whatsappSessionRepository.delete({ nomorhp: this.sessionId });
                     this.connect();
                 }
             }
             if (connection === 'open') {
                 this.saveQRCode(null);
+                this.imcenterRepository.update({ nomorhp: this.sessionId }, { standby: true, aktif: true });
+                const getSession = yield this.whatsappSessionRepository.findOneBy({ nomorhp: this.sessionId });
+                if (!getSession) {
+                    this.whatsappSessionRepository.save({ nomorhp: this.sessionId, sessionCred: this.socket.authState.creds, sessionKey: this.socket.authState.keys });
+                }
                 console.log(`Session  connected.`);
             }
             if (qr) {
@@ -115,24 +125,57 @@ class WhatsappService {
             }
         });
     }
+    getQRCode() {
+        return __awaiter(this, void 0, void 0, function* () {
+            var imcenter = yield this.imcenterRepository.findOneBy({ nomorhp: this.sessionId });
+            return imcenter.qrcode;
+        });
+    }
     SaveMessages(m) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d;
             console.log(JSON.stringify(m.messages));
-            console.log('from ', m.messages[0].key.remoteJid);
             // get message latest than data on imcenter_log
-            // save to imcenter_log
             const imcenter = yield this.imcenterRepository.findOneBy({ nomorhp: this.sessionId });
             const latestImcenterLog = yield this.imcenterLogRepository.query(`SELECT * FROM imcenter_logs WHERE imcenter_id = ${imcenter.id} ORDER BY id DESC LIMIT 1`);
             if (latestImcenterLog.length > 0) {
                 const lastMessageId = latestImcenterLog[0].tgl_entry;
-                const messages = m.messages.filter((message) => Number(message.messageTimestamp) > Date.parse(lastMessageId.toUTCString()));
-                for (const message of m.messages) {
-                    yield this.imcenterLogRepository.save({ imcenter_id: imcenter.id, message_id: message.key.id, log: "log", keterangan: message.message.conversation, pengirim: message.key.remoteJid, raw_message: JSON.stringify(message) });
+                const messages = m.messages.filter((message) => {
+                    const date = (0, date_1.timeToDate)(Number(message.messageTimestamp));
+                    if (date > lastMessageId)
+                        return message;
+                });
+                for (const message of messages) {
+                    if (message.key.fromMe || !((_a = message.key.remoteJid) === null || _a === void 0 ? void 0 : _a.endsWith("@s.whatsapp.net")))
+                        continue;
+                    // this.sendMessage(message.key.remoteJid, "Pesan telah diterima");
+                    const imcenterLog = new imcenterLogs_1.ImcenterLogs();
+                    imcenterLog.imcenter_id = imcenter.id;
+                    imcenterLog.message_id = message.key.id;
+                    imcenterLog.type = "inbox";
+                    imcenterLog.keterangan = (_b = message.message) === null || _b === void 0 ? void 0 : _b.conversation;
+                    imcenterLog.pengirim = message.key.remoteJid;
+                    imcenterLog.tgl_entry = (0, date_1.timeToDate)(Number(message.messageTimestamp));
+                    imcenterLog.status = "Diterima";
+                    imcenterLog.raw_message = JSON.stringify({ key: message.key, message: message.message });
+                    yield this.imcenterLogRepository.save(imcenterLog);
                 }
             }
             else {
                 for (const message of m.messages) {
-                    yield this.imcenterLogRepository.save({ imcenter_id: imcenter.id, message_id: message.key.id, log: "log", keterangan: message.message.conversation, pengirim: message.key.remoteJid, message: JSON.stringify(message) });
+                    if (message.key.fromMe || ((_c = message.key.remoteJid) === null || _c === void 0 ? void 0 : _c.endsWith("@s.whatsapp.net")))
+                        continue;
+                    // this.sendMessage(message.key.remoteJid, "Pesan telah diterima");
+                    const imcenterLog = new imcenterLogs_1.ImcenterLogs();
+                    imcenterLog.imcenter_id = imcenter.id;
+                    imcenterLog.message_id = message.key.id;
+                    imcenterLog.type = "inbox";
+                    imcenterLog.keterangan = (_d = message.message) === null || _d === void 0 ? void 0 : _d.conversation;
+                    imcenterLog.pengirim = message.key.remoteJid;
+                    imcenterLog.tgl_entry = (0, date_1.timeToDate)(Number(message.messageTimestamp));
+                    imcenterLog.status = "Diterima";
+                    imcenterLog.raw_message = JSON.stringify({ key: message.key, message: message.message });
+                    yield this.imcenterLogRepository.save(imcenterLog);
                 }
             }
         });
@@ -144,13 +187,28 @@ class WhatsappService {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.socket)
                 throw new Error("Socket belum terhubung!");
-            const message = {
-                text
-            };
-            yield this.socket.sendMessage(jid, message);
+            jid = jid.includes('@') ? jid : `${jid}@s.whatsapp.net`;
+            var response = yield this.socket.sendMessage(jid, { text: text });
             console.log(`[${this.sessionId}] Pesan terkirim ke ${jid}`);
         });
     }
+    broadcastMessage(jids, messageContent) {
+        return __awaiter(this, void 0, void 0, function* () {
+            for (const jid of jids) {
+                try {
+                    var jid_ = jid.includes('@') ? jid : `${jid}@s.whatsapp.net`;
+                    yield this.socket.sendMessage(jid_, messageContent);
+                    console.log(`Pesan terkirim ke ${jid}`);
+                }
+                catch (error) {
+                    console.error(`Gagal mengirim pesan ke ${jid}:`, error);
+                }
+                // Tambahkan jeda untuk menghindari pemblokiran akun
+                yield new Promise((resolve) => setTimeout(resolve, 1000)); // Jeda 1 detik
+            }
+        });
+    }
+    ;
     /**
     * Logout dan hapus sesi
     */
@@ -158,7 +216,17 @@ class WhatsappService {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.socket) {
                 yield this.socket.logout();
+                this.imcenterRepository.update({ nomorhp: this.sessionId }, { qrcode: null, standby: false, aktif: false });
                 console.log(`[${this.sessionId}] Logout berhasil.`);
+            }
+        });
+    }
+    updateModeStandby(standby) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const imcenter = yield this.imcenterRepository.findOneBy({ nomorhp: this.sessionId });
+            if (imcenter) {
+                imcenter.standby = standby;
+                yield this.imcenterRepository.save(imcenter);
             }
         });
     }

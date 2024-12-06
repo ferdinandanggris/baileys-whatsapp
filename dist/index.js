@@ -47,12 +47,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = __importStar(require("dotenv"));
 require("reflect-metadata");
-const Db_1 = require("./src/configs/Db");
+const db_1 = require("./src/configs/db");
 const express_1 = __importDefault(require("express"));
 const imcenterRoutes_1 = __importDefault(require("./src/routes/imcenterRoutes"));
 const whatsappSessionRoutes_1 = __importDefault(require("./src/routes/whatsappSessionRoutes"));
 require("reflect-metadata");
-const whatsappSessionService_1 = require("./src/services/whatsappSessionService");
 dotenv.config();
 const app = (0, express_1.default)();
 // app.use(errorHandler)
@@ -60,14 +59,14 @@ app.use(express_1.default.json());
 const PORT = process.env.PORT || 3000;
 app.use("/imcenter", imcenterRoutes_1.default);
 app.use("/wa-service", whatsappSessionRoutes_1.default);
-Db_1.AppDataSource.initialize()
+db_1.AppDataSource.initialize()
     .then(() => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Database connected!');
     app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
     });
-    const whatsappSessionService = new whatsappSessionService_1.WhatsappSessionService();
-    yield whatsappSessionService.checkAutoActiveSessions();
+    // const whatsappSessionService = new WhatsappSessionService();
+    // await whatsappSessionService.checkAutoActiveSessions();
 }))
     .catch((error) => console.error('Error connecting to database:', error));
 //# sourceMappingURL=index.js.map

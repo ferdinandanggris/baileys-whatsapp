@@ -1,12 +1,11 @@
 import * as dotenv from "dotenv";
 import "reflect-metadata";
-import { AppDataSource } from './src/configs/Db';
+import { AppDataSource } from './src/configs/db';
 import { errorHandler } from './src/middlewares/error.middleware';
 import express from "express";
 import ImcenterRouter from './src/routes/imcenterRoutes';
 import WhatsappSessionRoute from './src/routes/whatsappSessionRoutes';
 import "reflect-metadata";
-import { WhatsappSessionService } from "./src/services/whatsappSessionService";
 dotenv.config();
 
 const app = express()

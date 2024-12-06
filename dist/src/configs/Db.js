@@ -15,4 +15,4 @@ exports.AppDataSource = new typeorm_1.DataSource({
     entities: [whatsappSession_1.WhatsappSession, imcenter_1.Imcenter, imcenterLogs_1.ImcenterLogs],
     synchronize: true, // Auto-create tables (use migrations in production)
 });
-//# sourceMappingURL=Db.js.map
+//# sourceMappingURL=db.js.map

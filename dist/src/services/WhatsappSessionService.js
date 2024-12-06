@@ -10,29 +10,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WhatsappSessionService = void 0;
-const Db_1 = require("../configs/Db");
+const db_1 = require("../configs/db");
 const whatsappSession_1 = require("../entities/whatsappSession");
 const imcenterService_1 = require("./imcenterService");
 const typeorm_1 = require("typeorm");
-const instanceManagerService_1 = require("./instanceManagerService");
 const imcenter_1 = require("../entities/imcenter");
+const instanceManager = require("./instanceManagerService");
 class WhatsappSessionService {
     constructor() {
-        this.repository = Db_1.AppDataSource.getRepository(whatsappSession_1.WhatsappSession);
-        this.imcenterRepository = Db_1.AppDataSource.getRepository(imcenter_1.Imcenter);
-        this.instanceManager = new instanceManagerService_1.InstanceManager();
+        this.repository = db_1.AppDataSource.getRepository(whatsappSession_1.WhatsappSession);
+        this.imcenterRepository = db_1.AppDataSource.getRepository(imcenter_1.Imcenter);
     }
     // Membuat sesi baru
     createSession(nomorhp) {
         return __awaiter(this, void 0, void 0, function* () {
-            const socket = this.instanceManager.getInstance(nomorhp);
-            socket.connect();
+            // const socket : WhatsappService = instanceManager.getInstance(nomorhp);
+            // socket.connect();
         });
     }
     // remove data sesi jika pengguna logout
     removeSession(nomorhp) {
         return __awaiter(this, void 0, void 0, function* () {
-            const socket = this.instanceManager.getInstance(nomorhp);
+            const socket = instanceManager.getInstance(nomorhp);
             socket.disconnect();
             const session = yield this.repository.findOneBy({ nomorhp });
             if (session) {
@@ -66,9 +65,15 @@ class WhatsappSessionService {
             const imcenters = yield imcentersService.getAutoActiveSession();
             const sessions = yield this.repository.find({ where: { nomorhp: (0, typeorm_1.In)(imcenters.map(imcenter => imcenter.nomorhp)) } });
             for (const session of sessions) {
-                const socket = this.instanceManager.getInstance(session.nomorhp);
+                const socket = instanceManager.getInstance(session.nomorhp);
                 socket.connect();
             }
+        });
+    }
+    sendMessage(sessionId, message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const socket = instanceManager.getInstance(sessionId);
+            return socket.sendMessage(sessionId, message);
         });
     }
 }

@@ -9,58 +9,65 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WhatsappSessionController = void 0;
-const whatsappSessionService_1 = require("../services/whatsappSessionService");
-const imcenterService = new whatsappSessionService_1.WhatsappSessionService();
-class WhatsappSessionController {
-    static createSession(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { nomorhp } = req.body;
-                const message = yield imcenterService.createSession(nomorhp);
-                res.status(201).json({ message });
-            }
-            catch (error) {
-                res.status(400).json({ error: error.message });
-            }
-        });
+exports.sendMessage = exports.removeSession = exports.getQrCode = exports.createSession = void 0;
+const imcenterService_1 = require("../services/imcenterService");
+const instanceManager = require('../modules/whatsapp/instanceManagerService');
+const createSession = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { nomorhp } = req.body;
+        const socket = instanceManager.getInstance(nomorhp);
+        socket.init();
+        res.status(201).json({ message: "Session created." });
     }
-    static GetQrCode(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { nomorhp } = req.params;
-                const qrCode = yield imcenterService.getQRCode(nomorhp);
-                res.status(200).json({ qrCode });
-            }
-            catch (error) {
-                res.status(400).json({ error: error.message });
-            }
-        });
+    catch (error) {
+        res.status(400).json({ error: error.message });
     }
-    static removeSession(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { nomorhp } = req.params;
-                const message = yield imcenterService.removeSession(nomorhp);
-                res.status(200).json({ message });
-            }
-            catch (error) {
-                res.status(400).json({ error: error.message });
-            }
-        });
+});
+exports.createSession = createSession;
+const getQrCode = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { nomorhp } = req.params;
+        const imcenterService = new imcenterService_1.ImCenterService();
+        const qrcode = yield imcenterService.getQRCode(nomorhp);
+        res.status(200).json({ qrcode });
     }
-    static updateModeStandby(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { standby, sessionId } = req.body;
-                const message = yield imcenterService.updateModeStandby(standby, sessionId);
-                res.status(200).json({ message });
-            }
-            catch (error) {
-                res.status(400).json({ error: error.message });
-            }
-        });
+    catch (error) {
+        res.status(400).json({ error: error.message });
     }
-}
-exports.WhatsappSessionController = WhatsappSessionController;
+});
+exports.getQrCode = getQrCode;
+const removeSession = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { nomorhp } = req.params;
+        const socket = instanceManager.getInstance(nomorhp);
+        socket.logout();
+        res.status(200).json({ message: "Session removed." });
+    }
+    catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+exports.removeSession = removeSession;
+// const updateModeStandby = async (req: Request, res: Response): Promise<void> => {
+//     try {
+//         const { standby, sessionId } = req.body;
+//         const socket : WhatsappService = instanceManager.getInstance(sessionId);
+//         await socket.updateModeStandby(standby);
+//         res.status(200).json({ message: "Mode updated." });
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// }
+const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { sessionId, message, nomor_penerima } = req.body;
+        const socket = instanceManager.getInstance(sessionId);
+        const response = yield socket.sendMessage(nomor_penerima, message);
+        res.status(200).json({ message: "Send message" });
+    }
+    catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+exports.sendMessage = sendMessage;
 //# sourceMappingURL=whatsappSessionController.js.map

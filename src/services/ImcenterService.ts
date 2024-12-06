@@ -1,4 +1,4 @@
-import { AppDataSource } from '../configs/Db';
+import { AppDataSource } from '../configs/db';
 import { Imcenter } from '../entities/imcenter';
 
 export class ImCenterService {
@@ -38,9 +38,40 @@ export class ImCenterService {
 
         return session;
     }
+    
+    async updateQRCode(nomorhp : string, qrcode: string): Promise<string> {
+        const session = await this.repository.findOneBy({ nomorhp });
+        if (!session) {
+            throw new Error(`Session with key "${nomorhp}" not found.`);
+        }
+
+        session.qrcode = qrcode;
+        await this.repository.save(session);
+        return `Session "${nomorhp}" QR Code updated.`;
+    }
+
+    async getQRCode(nomorhp: string): Promise<string> {
+        const session = await this.repository.findOneBy({ nomorhp });
+        if (!session) {
+            throw new Error(`Session with key "${nomorhp}" not found.`);
+        }
+
+        return session.qrcode;
+    }
+
+    async updateModeStandby(standby: boolean, nomorhp: string): Promise<string> {
+        const session = await this.repository.findOneBy({ nomorhp });
+        if (!session) {
+            throw new Error(`Session with key "${nomorhp}" not found.`);
+        }
+
+        session.standby = standby;
+        await this.repository.save(session);
+        return `Session "${nomorhp}" standby mode updated.`;
+    }
 
     public async getAutoActiveSession(): Promise<Imcenter[]> {
-        return this.repository.findBy({ aktif: true });
+        return this.repository.findBy({ auto_aktif: true });
     }
     
 }

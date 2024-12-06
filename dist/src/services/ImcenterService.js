@@ -10,11 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImCenterService = void 0;
-const Db_1 = require("../configs/Db");
+const db_1 = require("../configs/db");
 const imcenter_1 = require("../entities/imcenter");
 class ImCenterService {
     constructor() {
-        this.repository = Db_1.AppDataSource.getRepository(imcenter_1.Imcenter);
+        this.repository = db_1.AppDataSource.getRepository(imcenter_1.Imcenter);
     }
     createImcenter(number) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -51,9 +51,29 @@ class ImCenterService {
             return session;
         });
     }
+    updateQRCode(nomorhp, qrcode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const session = yield this.repository.findOneBy({ nomorhp });
+            if (!session) {
+                throw new Error(`Session with key "${nomorhp}" not found.`);
+            }
+            session.qrcode = qrcode;
+            yield this.repository.save(session);
+            return `Session "${nomorhp}" QR Code updated.`;
+        });
+    }
+    getQRCode(nomorhp) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const session = yield this.repository.findOneBy({ nomorhp });
+            if (!session) {
+                throw new Error(`Session with key "${nomorhp}" not found.`);
+            }
+            return session.qrcode;
+        });
+    }
     getAutoActiveSession() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.repository.findBy({ aktif: true });
+            return this.repository.findBy({ auto_aktif: true });
         });
     }
 }
