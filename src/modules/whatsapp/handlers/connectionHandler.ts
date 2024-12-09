@@ -39,15 +39,15 @@ export class ConnectionHandler extends EventEmitter{
     private async  handleConnectionOpen() {
 
         // check scanner
-        const flagScannerValid = await this.imcenterService.checkScannerIsValid(this.imcenter_id,`6282131955087`);
+        const flagScannerValid = await this.imcenterService.checkScannerIsValid(this.imcenter_id,getSocketNumber(this.socket));
         if (!flagScannerValid) {
             console.log("Scanner tidak valid, silakan logout");
             this.socket.logout();
         }
 
         console.log("Koneksi berhasil dibuka!");
-        this.changeEventStatus("open");
-        this.sessionService.saveSession(`6282131955087`, this.socket);
+        this.changeEventStatus("connected");
+        this.sessionService.saveSession(getSocketNumber(this.socket), this.socket);
     }
 
     private handleConnectionClose(lastDisconnect: { error: Error | undefined; date: Date; }) {
@@ -69,11 +69,11 @@ export class ConnectionHandler extends EventEmitter{
     }
 
     private removeSessionDirectory(imcenter_id) {
-        this.sessionService.removeSession(`6282131955087`);
-        // fs.rmdirSync(directoryPathSession(imcenter_id), { recursive: true });
+        this.sessionService.removeSession(getSocketNumber(this.socket));
+        fs.rmdirSync(directoryPathSession(imcenter_id), { recursive: true });
     }
 
-    private changeEventStatus(status : "start" | "qr" | "open" | "closed", value?: string) {
+    private changeEventStatus(status : "start" | "qr" | "connected" | "closed", value?: string) {
         this.socket.ws.emit(status, value);
     }
 
@@ -81,7 +81,7 @@ export class ConnectionHandler extends EventEmitter{
         if (this.socket) {
             await this.socket.logout();
             this.socket = null;
-            this.sessionService.removeSession(`6282131955087`);
+            this.sessionService.removeSession(getSocketNumber(this.socket));
         }
     }
 

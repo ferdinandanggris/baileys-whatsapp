@@ -8,4 +8,4 @@ ImcenterRouter.get('/', imcenterController_1.ImcenterController.getAllImcenters)
 ImcenterRouter.delete('/:id', imcenterController_1.ImcenterController.deleteImcenter); // Menghapus sesi
 ImcenterRouter.get('/:id', imcenterController_1.ImcenterController.getImcenterById); // Mendapatkan sesi berdasarkan ID
 exports.default = ImcenterRouter;
-//# sourceMappingURL=ImcenterRoutes.js.map
+//# sourceMappingURL=imcenterRoutes.js.map

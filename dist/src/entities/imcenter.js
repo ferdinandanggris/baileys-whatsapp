@@ -9,28 +9,36 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WhatsappSession = void 0;
+exports.Imcenter = void 0;
 const typeorm_1 = require("typeorm");
-let WhatsappSession = class WhatsappSession {
+let Imcenter = class Imcenter {
 };
-exports.WhatsappSession = WhatsappSession;
+exports.Imcenter = Imcenter;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], WhatsappSession.prototype, "id", void 0);
+], Imcenter.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", String)
-], WhatsappSession.prototype, "nomorhp", void 0);
+], Imcenter.prototype, "nomorhp", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'jsonb', nullable: true }),
-    __metadata("design:type", Object)
-], WhatsappSession.prototype, "sessionCred", void 0);
+    (0, typeorm_1.Column)({ type: 'bool' }),
+    __metadata("design:type", Boolean)
+], Imcenter.prototype, "aktif", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'jsonb', nullable: true }),
-    __metadata("design:type", Object)
-], WhatsappSession.prototype, "sessionKey", void 0);
-exports.WhatsappSession = WhatsappSession = __decorate([
-    (0, typeorm_1.Entity)('whatsapp_sessions')
-], WhatsappSession);
-//# sourceMappingURL=WhatsappSession.js.map
+    (0, typeorm_1.Column)({ type: 'bool' }),
+    __metadata("design:type", Boolean)
+], Imcenter.prototype, "standby", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'bool', default: false }),
+    __metadata("design:type", Boolean)
+], Imcenter.prototype, "auto_aktif", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
+    __metadata("design:type", String)
+], Imcenter.prototype, "qrcode", void 0);
+exports.Imcenter = Imcenter = __decorate([
+    (0, typeorm_1.Entity)('imcenter')
+], Imcenter);
+//# sourceMappingURL=imcenter.js.map

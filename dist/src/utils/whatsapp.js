@@ -30,6 +30,6 @@ const qrCodeToBase64 = (text) => __awaiter(void 0, void 0, void 0, function* () 
 exports.qrCodeToBase64 = qrCodeToBase64;
 const getSocketNumber = (socket) => socket.authState.creds.me.id.split(':')[0] || '';
 exports.getSocketNumber = getSocketNumber;
-const directoryPathSession = (imcenter_id) => `./sessions/imcenter_id`;
+const directoryPathSession = (imcenter_id) => `./sessions/${imcenter_id}_imcenter_id`;
 exports.directoryPathSession = directoryPathSession;
 //# sourceMappingURL=whatsapp.js.map

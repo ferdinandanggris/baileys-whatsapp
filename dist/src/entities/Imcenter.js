@@ -41,4 +41,4 @@ __decorate([
 exports.Imcenter = Imcenter = __decorate([
     (0, typeorm_1.Entity)('imcenter')
 ], Imcenter);
-//# sourceMappingURL=imcenter.js.map
+//# sourceMappingURL=Imcenter.js.map

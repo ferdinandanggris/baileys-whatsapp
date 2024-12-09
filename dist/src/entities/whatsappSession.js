@@ -33,4 +33,4 @@ __decorate([
 exports.WhatsappSession = WhatsappSession = __decorate([
     (0, typeorm_1.Entity)('whatsapp_sessions')
 ], WhatsappSession);
-//# sourceMappingURL=WhatsappSession.js.map
+//# sourceMappingURL=whatsappSession.js.map

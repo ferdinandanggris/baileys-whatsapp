@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15 # Gunakan versi PostgreSQL yang Anda inginkan
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres       # Ganti dengan username Anda
+      POSTGRES_PASSWORD: admin # Ganti dengan password Anda
+      POSTGRES_DB: whatsapp_gw     # Nama database default
+    ports:
+      - "5432:5432" # Map port lokal ke port container
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Volume untuk menyimpan data
+
+volumes:
+  postgres_data:
+    driver: local

@@ -34,7 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const whatsappController = __importStar(require("../controllers/WhatsappSessionController"));
+const whatsappController = __importStar(require("../controllers/whatsappSessionController"));
 const WhatsappSessionRoute = (0, express_1.Router)();
 WhatsappSessionRoute.post('/', whatsappController.createSession); // Membuat sesi baru
 WhatsappSessionRoute.get('/:nomorhp', whatsappController.getQrCode); // Mendapatkan QR Code
@@ -43,4 +43,4 @@ WhatsappSessionRoute.post('/update-mode-standby', whatsappController.updateModeS
 WhatsappSessionRoute.post('/remove-session/:nomorhp', whatsappController.removeSession); // Menghapus sesi
 WhatsappSessionRoute.post('/broadcast-message', whatsappController.broadcastMessage); // Mengirim broadcast
 exports.default = WhatsappSessionRoute;
-//# sourceMappingURL=WhatsappSessionRoutes.js.map
+//# sourceMappingURL=whatsappSessionRoutes.js.map

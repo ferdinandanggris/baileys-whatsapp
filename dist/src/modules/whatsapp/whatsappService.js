@@ -51,29 +51,25 @@ const messageHandler_1 = require("./handlers/messageHandler");
 const connectionHandler_1 = require("./handlers/connectionHandler");
 const sessionService_1 = __importDefault(require("./services/sessionService"));
 const imcenterService_1 = require("../../services/imcenterService");
-const path_1 = require("path");
 const imcenterLogService_1 = require("../../services/imcenterLogService");
 const stream_1 = require("stream");
+const whatsapp_1 = require("../../utils/whatsapp");
 class WhatsappService extends stream_1.EventEmitter {
+    // private sessionPath : string = "+6282131955087";
     constructor(imcenter_id, basePath = "sessions") {
         super();
         this.imcenter_id = imcenter_id;
         this.basePath = basePath;
         this.status = "start";
         this.qrcode = null;
-        this.sessionPath = "+6282131955087";
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {
             // Tentukan folder untuk setiap instance
-            // const sessionPath = directoryPathSession(this.imcenter_id);
-            const sessionPath = (0, path_1.join)(this.basePath, this.sessionPath);
+            const sessionPath = (0, whatsapp_1.directoryPathSession)(this.imcenter_id);
             const { state, saveCreds } = yield (0, baileys_1.useMultiFileAuthState)(sessionPath);
             this.socket = (0, baileys_1.default)({
-                auth: {
-                    creds: state.creds,
-                    keys: state.keys
-                }, printQRInTerminal: true
+                auth: state, printQRInTerminal: true
             });
             // Inisialisasi MessageHandler dan ConnectionHandler
             this.messageHandler = new messageHandler_1.MessageHandler(this.socket, new imcenterLogService_1.ImcenterLogService());
@@ -99,14 +95,14 @@ class WhatsappService extends stream_1.EventEmitter {
                 this.qrcode = qrcode;
                 this.status = "qr";
             }));
-            if (this.status === "start") {
-                return yield this.waitingQRCode();
-            }
-            else if (this.status === "qr") {
-                return this.qrcode;
-            }
             return null;
         });
+    }
+    serviceIsReady() {
+        var _a, _b, _c, _d;
+        if ((_d = (_c = (_b = (_a = this.socket) === null || _a === void 0 ? void 0 : _a.authState) === null || _b === void 0 ? void 0 : _b.creds) === null || _c === void 0 ? void 0 : _c.me) === null || _d === void 0 ? void 0 : _d.id)
+            return true;
+        return false;
     }
     waitingQRCode() {
         return __awaiter(this, void 0, void 0, function* () {

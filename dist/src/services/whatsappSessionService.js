@@ -25,4 +25,4 @@ class WhatsappSessionService {
     }
 }
 exports.WhatsappSessionService = WhatsappSessionService;
-//# sourceMappingURL=WhatsappSessionService.js.map
+//# sourceMappingURL=whatsappSessionService.js.map

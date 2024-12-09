@@ -9,7 +9,7 @@ import { EventEmitter } from "stream";
 import { QRCode } from "qrcode";
 import { directoryPathSession, qrCodeToBase64 } from "../../utils/whatsapp";
 
-type WhatsappServiceStatus = "start" | "qr" | "open" | "closed";
+type WhatsappServiceStatus = "start" | "qr" | "connected" | "closed";
 
 export class WhatsappService extends EventEmitter {
     private socket: ReturnType<typeof makeWASocket>;
@@ -17,7 +17,7 @@ export class WhatsappService extends EventEmitter {
     private connectionHandler: ConnectionHandler;
     private status: WhatsappServiceStatus = "start";
     private qrcode: string = null;
-    private sessionPath : string = "+6282131955087";
+    // private sessionPath : string = "+6282131955087";
 
 
     constructor(private imcenter_id: number, private basePath: string = "sessions") {
@@ -25,9 +25,9 @@ export class WhatsappService extends EventEmitter {
     }
 
     async init(): Promise<string> {
+
         // Tentukan folder untuk setiap instance
-        // const sessionPath = directoryPathSession(this.imcenter_id);
-        const sessionPath = join(this.basePath, this.sessionPath);
+        const sessionPath = directoryPathSession(this.imcenter_id);
 
         const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
         this.socket = makeWASocket({ 
@@ -64,14 +64,14 @@ export class WhatsappService extends EventEmitter {
             this.status = "qr";
         });
 
-        if (this.status === "start") {
-            return await this.waitingQRCode();
-        } else if (this.status === "qr") {
-            return this.qrcode;
-        }
-
         return null;
     }
+
+    private serviceIsReady() : boolean {
+        if (this.socket?.authState?.creds?.me?.id) return true;
+        return false;
+    }
+
 
     private async waitingQRCode(): Promise<string> {
         return await this.connectionHandler.waitingQRCode();

@@ -98,4 +98,4 @@ class ImCenterService {
     }
 }
 exports.ImCenterService = ImCenterService;
-//# sourceMappingURL=ImcenterService.js.map
+//# sourceMappingURL=imcenterService.js.map
