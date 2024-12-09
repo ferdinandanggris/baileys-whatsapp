@@ -14,6 +14,14 @@ export class ImCenterService {
         await this.repository.save({ nomorhp: number, aktif: false, standby: false });
     }
 
+    async checkScannerIsValid(imcenter_id : number,nomorhp: string): Promise<boolean> {
+        const session = await this.repository.findOneBy({ id: imcenter_id, nomorhp });
+        if (!session) {
+            return false;
+        }
+        return true;
+    }
+
     // Mendapatkan semua sesi
     async getAllSessions(): Promise<Imcenter[]> {
         return this.repository.find();
@@ -39,15 +47,15 @@ export class ImCenterService {
         return session;
     }
     
-    async updateQRCode(nomorhp : string, qrcode: string): Promise<string> {
-        const session = await this.repository.findOneBy({ nomorhp });
+    async updateQRCode(id : number, qrcode: string): Promise<string> {
+        const session = await this.repository.findOneBy({ id });
         if (!session) {
-            throw new Error(`Session with key "${nomorhp}" not found.`);
+            throw new Error(`Session with key "${id}" not found.`);
         }
 
         session.qrcode = qrcode;
         await this.repository.save(session);
-        return `Session "${nomorhp}" QR Code updated.`;
+        return `Session "${session.nomorhp}" QR Code updated.`;
     }
 
     async getQRCode(nomorhp: string): Promise<string> {
@@ -59,15 +67,15 @@ export class ImCenterService {
         return session.qrcode;
     }
 
-    async updateModeStandby(standby: boolean, nomorhp: string): Promise<string> {
-        const session = await this.repository.findOneBy({ nomorhp });
-        if (!session) {
-            throw new Error(`Session with key "${nomorhp}" not found.`);
+    async updateModeStandby(standby: boolean, imcenter_id: number): Promise<string> {
+        const imcenter = await this.repository.findOneBy({ id : imcenter_id });
+        if (!imcenter) {
+            throw new Error(`Session with key "${imcenter_id}" not found.`);
         }
 
-        session.standby = standby;
-        await this.repository.save(session);
-        return `Session "${nomorhp}" standby mode updated.`;
+        imcenter.standby = standby;
+        await this.repository.save(imcenter);
+        return `Session "${imcenter_id}" standby mode updated.`;
     }
 
     public async getAutoActiveSession(): Promise<Imcenter[]> {

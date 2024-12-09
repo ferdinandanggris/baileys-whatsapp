@@ -1,13 +1,10 @@
-import { In } from "typeorm";
-import { AppDataSource } from "../../configs/db";
-import { Imcenter } from "../../entities/imcenter";
 import { ImCenterService } from "../../services/imcenterService";
 import { WhatsappService } from "./whatsappService";
 import { WhatsappSessionService } from "../../services/whatsappSessionService";
 
 
 class InstanceManager {
-    private instances: Map<string, WhatsappService>;
+    private instances: Map<number, WhatsappService>;
     private imcenterService = new ImCenterService();    
     private whatsappSession = new WhatsappSessionService();
 
@@ -15,31 +12,41 @@ class InstanceManager {
         this.instances = new Map();
     }   
 
-    /**
-     * Membuat atau mendapatkan instance berdasarkan sessionId
-     */
-    public getInstance(sessionId: string): WhatsappService {
-        if (!this.instances.has(sessionId)) {
-            const instance = new WhatsappService(sessionId);
-            this.instances.set(sessionId, instance);
+    public createInstance(imcenter_id: number): WhatsappService {
+        if (this.instances.has(imcenter_id)) {
+            throw new Error("Instance already exists.");
         }
-        return this.instances.get(sessionId)!;
+
+        const instance = new WhatsappService(imcenter_id);
+        this.instances.set(imcenter_id, instance);
+        return instance;
     }
 
     /**
-     * Hapus instance berdasarkan sessionId
+     * Membuat atau mendapatkan instance berdasarkan imcenter_id
      */
-    public removeInstance(sessionId: string): void {
-        if (this.instances.has(sessionId)) {
-            this.instances.delete(sessionId);
-            console.log(`[${sessionId}] Instance removed.`);
+    public getInstance(imcenter_id: number): WhatsappService {
+        if (!this.instances.has(imcenter_id)) {
+            const instance = new WhatsappService(imcenter_id);
+            this.instances.set(imcenter_id, instance);
+        }
+        return this.instances.get(imcenter_id)!;
+    }
+
+    /**
+     * Hapus instance berdasarkan imcenter_id
+     */
+    public removeInstance(imcenter_id: number): void {
+        if (this.instances.has(imcenter_id)) {
+            this.instances.delete(imcenter_id);
+            console.log(`[${imcenter_id}] Instance removed.`);
         }
     }
 
     /**
-     * Mendapatkan semua sessionId yang sedang aktif
+     * Mendapatkan semua imcenter_id yang sedang aktif
      */
-    public getActiveSessions(): string[] {
+    public getActiveSessions(): number[] {
         return Array.from(this.instances.keys());
     }
 
@@ -47,9 +54,9 @@ class InstanceManager {
      * Logout semua instance
      */
     public async logoutAll(): Promise<void> {
-        for (const [sessionId, instance] of this.instances) {
+        for (const [imcenter_id, instance] of this.instances) {
             await instance.logout();
-            this.removeInstance(sessionId);
+            this.removeInstance(imcenter_id);
         }
         console.log("All instances logged out.");
     }
@@ -58,10 +65,10 @@ class InstanceManager {
         const imcenters = await this.imcenterService.getAutoActiveSession();
         const sessions = await this.whatsappSession.getSessionByListJID(imcenters.map(imcenter => imcenter.nomorhp));
 
-        for (const session of sessions) {
-            const socket = this.getInstance(session.nomorhp);
-            socket.init();
-        }
+        // for (const session of sessions) {
+        //     const socket = this.getInstance(session.);
+        //     socket.init();
+        // }
     }
 }
 

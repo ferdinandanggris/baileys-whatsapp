@@ -6,9 +6,10 @@ export default class SessionService {
 
     private repository = AppDataSource.getRepository(WhatsappSession);
 
-    async saveSession(nomorhp: string, socket: ReturnType<typeof makeWASocket>) {
-        if(!this.repository.findOneBy({ nomorhp })) {
-            this.repository.save({ nomorhp, sessionCred : socket.authState.creds, sessionKey: socket.authState.keys });
+    async saveSession(nomorhp : string, socket: ReturnType<typeof makeWASocket>) {
+        const whatsappSession = await this.repository.findOneBy({ nomorhp });
+        if(!whatsappSession) {
+            this.repository.save({ nomorhp : nomorhp, sessionCred : socket.authState.creds, sessionKey: socket.authState.keys });
         }
     }
 

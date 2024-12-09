@@ -1,20 +1,25 @@
 import { WASocket } from "baileys";
 import { ImcenterLogService } from "../../../services/imcenterLogService";
+import { isInboxMessage, numberToJid } from "../../../utils/whatsapp";
 
 export class MessageHandler {
     private socket: WASocket;
 
-    constructor(socket: WASocket, private imcenterLogService : ImcenterLogService) {
+    constructor(socket: WASocket, private imcenterLogService: ImcenterLogService) {
         this.socket = socket;
     }
 
-    async sendMessage(jid: string, content: string) {
+    async sendMessage(number: string, content: string) {
         try {
-            jid = jid.includes('@') ? jid : `${ jid }@s.whatsapp.net`;
+            const jid = numberToJid(number);
             await this.socket.sendMessage(jid, { text: content });
+
+            // Log pesan yang terkirim
+            await this.imcenterLogService.insertData(jid, { key: { remoteJid: jid }, message: { conversation: content } }, "outbox");
+
             console.log(`Pesan terkirim ke ${jid}: ${content}`);
         } catch (error) {
-            console.error(`Gagal mengirim pesan ke ${jid}:`, error);
+            console.error(`Gagal mengirim pesan ke ${number}:`, error);
         }
     }
 
@@ -26,8 +31,11 @@ export class MessageHandler {
 
                 console.log(`Pesan diterima dari ${jid}: ${content}`);
 
-                // Implementasikan logika tambahan di sini
-                await this.imcenterLogService.createLog(jid, message);
+                if (isInboxMessage(message)) {
+                    // Implementasikan logika tambahan di sini
+                    await this.imcenterLogService.insertData(jid, message);
+                }
+
             }
         });
     }

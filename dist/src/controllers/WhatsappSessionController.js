@@ -9,15 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendMessage = exports.removeSession = exports.getQrCode = exports.createSession = void 0;
+exports.broadcastMessage = exports.updateModeStandby = exports.sendMessage = exports.removeSession = exports.getQrCode = exports.createSession = void 0;
 const imcenterService_1 = require("../services/imcenterService");
 const instanceManager = require('../modules/whatsapp/instanceManagerService');
 const createSession = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { nomorhp } = req.body;
-        const socket = instanceManager.getInstance(nomorhp);
-        socket.init();
-        res.status(201).json({ message: "Session created." });
+        const { imcenter_id } = req.body;
+        const socket = instanceManager.getInstance(imcenter_id);
+        const result = yield socket.init();
+        res.status(201).json({ message: "Session created.", qrCode: result });
     }
     catch (error) {
         res.status(400).json({ error: error.message });
@@ -26,9 +26,9 @@ const createSession = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.createSession = createSession;
 const getQrCode = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { nomorhp } = req.params;
+        const { imcenter_id } = req.params;
         const imcenterService = new imcenterService_1.ImCenterService();
-        const qrcode = yield imcenterService.getQRCode(nomorhp);
+        const qrcode = yield imcenterService.getQRCode(imcenter_id);
         res.status(200).json({ qrcode });
     }
     catch (error) {
@@ -48,16 +48,18 @@ const removeSession = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.removeSession = removeSession;
-// const updateModeStandby = async (req: Request, res: Response): Promise<void> => {
-//     try {
-//         const { standby, sessionId } = req.body;
-//         const socket : WhatsappService = instanceManager.getInstance(sessionId);
-//         await socket.updateModeStandby(standby);
-//         res.status(200).json({ message: "Mode updated." });
-//     } catch (error) {
-//         res.status(400).json({ error: error.message });
-//     }
-// }
+const updateModeStandby = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { standby, sessionId } = req.body;
+        const socket = instanceManager.getInstance(sessionId);
+        yield socket.updateModeStandby(standby);
+        res.status(200).json({ message: "Mode updated." });
+    }
+    catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+exports.updateModeStandby = updateModeStandby;
 const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { sessionId, message, nomor_penerima } = req.body;
@@ -70,4 +72,16 @@ const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.sendMessage = sendMessage;
+const broadcastMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { sessionId, message, nomor_penerima } = req.body;
+        const socket = instanceManager.getInstance(sessionId);
+        const response = yield socket.broadcastMessage(nomor_penerima, message);
+        res.status(200).json({ message: "Send message" });
+    }
+    catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+exports.broadcastMessage = broadcastMessage;
 //# sourceMappingURL=whatsappSessionController.js.map

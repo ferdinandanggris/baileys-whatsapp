@@ -5,11 +5,10 @@ const instanceManager = require('../modules/whatsapp/instanceManagerService');
 
     const createSession = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { nomorhp } = req.body;
-            const socket : WhatsappService = instanceManager.getInstance(nomorhp);
-            socket.init();
-
-            res.status(201).json({ message: "Session created." });
+            const { imcenter_id } = req.body;
+            const socket : WhatsappService = instanceManager.getInstance(imcenter_id);
+            const result = await socket.init();
+            res.status(201).json({ message: "Session created.", qrCode: result });
         } catch (error) {
             res.status(400).json({ error: error.message });
         }
@@ -17,9 +16,9 @@ const instanceManager = require('../modules/whatsapp/instanceManagerService');
 
     const getQrCode = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { nomorhp } = req.params;
+            const { imcenter_id } = req.params;
             const imcenterService = new ImCenterService();
-            const qrcode = await imcenterService.getQRCode(nomorhp);
+            const qrcode = await imcenterService.getQRCode(imcenter_id);
             res.status(200).json({ qrcode });
         } catch (error) {
             res.status(400).json({ error: error.message });
@@ -59,15 +58,15 @@ const instanceManager = require('../modules/whatsapp/instanceManagerService');
         }
     }
 
-    // const broadcastMessage = async (req: Request, res: Response): Promise<void> => {
-    //     try {
-    //         const { sessionId, message, nomor_penerima} = req.body as { sessionId: string, message: string, nomor_penerima: string[] };
-    //         const socket : WhatsappService = instanceManager.getInstance(sessionId);
-    //         const response = await socket.broadcastMessage(nomor_penerima, {text : message});
-    //         res.status(200).json({ message :"Send message" });
-    //     } catch (error) {
-    //         res.status(400).json({ error: error.message });
-    //     }
-    // }
+    const broadcastMessage = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { sessionId, message, nomor_penerima} = req.body as { sessionId: string, message: string, nomor_penerima: string[] };
+            const socket : WhatsappService = instanceManager.getInstance(sessionId);
+            const response = await socket.broadcastMessage(nomor_penerima, message);
+            res.status(200).json({ message :"Send message" });
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    }
 
-    export { createSession, getQrCode, removeSession, sendMessage, updateModeStandby };
+    export { createSession, getQrCode, removeSession, sendMessage, updateModeStandby, broadcastMessage };

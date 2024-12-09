@@ -51,41 +51,81 @@ const messageHandler_1 = require("./handlers/messageHandler");
 const connectionHandler_1 = require("./handlers/connectionHandler");
 const sessionService_1 = __importDefault(require("./services/sessionService"));
 const imcenterService_1 = require("../../services/imcenterService");
-const path_1 = require("path");
-class WhatsappService {
-    constructor(sessionPath, basePath = "sessions") {
-        this.sessionPath = sessionPath;
+const imcenterLogService_1 = require("../../services/imcenterLogService");
+const stream_1 = require("stream");
+const whatsapp_1 = require("../../utils/whatsapp");
+class WhatsappService extends stream_1.EventEmitter {
+    constructor(imcenter_id, basePath = "sessions") {
+        super();
+        this.imcenter_id = imcenter_id;
         this.basePath = basePath;
+        this.status = "start";
+        this.qrcode = null;
+        this.sessionPath = "";
+        this.sessionPath = `${imcenter_id}_imcenter_id`;
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {
             // Tentukan folder untuk setiap instance
-            const sessionPath = (0, path_1.join)(this.basePath, this.sessionPath);
+            const sessionPath = (0, whatsapp_1.directoryPathSession)(this.imcenter_id);
             const { state, saveCreds } = yield (0, baileys_1.useMultiFileAuthState)(sessionPath);
             this.socket = (0, baileys_1.default)({ auth: state, printQRInTerminal: true });
             // Inisialisasi MessageHandler dan ConnectionHandler
-            this.messageHandler = new messageHandler_1.MessageHandler(this.socket);
-            this.connectionHandler = new connectionHandler_1.ConnectionHandler(this.socket, new sessionService_1.default(), new imcenterService_1.ImCenterService());
+            this.messageHandler = new messageHandler_1.MessageHandler(this.socket, new imcenterLogService_1.ImcenterLogService());
+            this.connectionHandler = new connectionHandler_1.ConnectionHandler(this.imcenter_id, this.socket, new sessionService_1.default(), new imcenterService_1.ImCenterService());
             // Tangani event koneksi
             this.connectionHandler.handleConnectionEvents();
             // Tangani pesan
             this.messageHandler.listenForMessages();
             // Simpan kredensial secara otomatis
             this.socket.ev.on("creds.update", saveCreds);
-            return this.socket;
+            // reconnection
+            this.socket.ws.on("reconnect", () => {
+                this.init();
+                this.status = "start";
+                console.log("Reconnecting...");
+            });
+            // change status to closed
+            this.socket.ws.on("close", () => {
+                this.status = "closed";
+            });
+            // change status to qr
+            this.socket.ws.on("qr", (qrcode) => __awaiter(this, void 0, void 0, function* () {
+                this.qrcode = qrcode;
+                this.status = "qr";
+            }));
+            if (this.status === "start") {
+                return yield this.waitingQRCode();
+            }
+            else if (this.status === "qr") {
+                return this.qrcode;
+            }
+            return null;
         });
     }
-    sendMessage(jid, message) {
+    waitingQRCode() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.messageHandler.sendMessage(jid, message);
+            return yield this.connectionHandler.waitingQRCode();
+        });
+    }
+    sendMessage(number, message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.messageHandler.sendMessage(number, message);
         });
     }
     logout() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.socket) {
-                yield this.socket.logout();
-                this.socket = null;
-            }
+            yield this.connectionHandler.Logout();
+        });
+    }
+    updateModeStandby(standby) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.connectionHandler.updateModeStandby(standby);
+        });
+    }
+    broadcastMessage(jids, message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.messageHandler.broadcastMessage(jids, message);
         });
     }
 }

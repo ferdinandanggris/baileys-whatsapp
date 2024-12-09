@@ -17,8 +17,9 @@ class SessionService {
     }
     saveSession(nomorhp, socket) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.repository.findOneBy({ nomorhp })) {
-                this.repository.save({ nomorhp, sessionCred: socket.authState.creds, sessionKey: socket.authState.keys });
+            const whatsappSession = yield this.repository.findOneBy({ nomorhp });
+            if (!whatsappSession) {
+                this.repository.save({ nomorhp: nomorhp, sessionCred: socket.authState.creds, sessionKey: socket.authState.keys });
             }
         });
     }

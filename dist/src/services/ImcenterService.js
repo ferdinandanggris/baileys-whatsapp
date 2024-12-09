@@ -25,6 +25,15 @@ class ImCenterService {
             yield this.repository.save({ nomorhp: number, aktif: false, standby: false });
         });
     }
+    checkScannerIsValid(imcenter_id, nomorhp) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const session = yield this.repository.findOneBy({ id: imcenter_id, nomorhp });
+            if (!session) {
+                return false;
+            }
+            return true;
+        });
+    }
     // Mendapatkan semua sesi
     getAllSessions() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -51,15 +60,15 @@ class ImCenterService {
             return session;
         });
     }
-    updateQRCode(nomorhp, qrcode) {
+    updateQRCode(id, qrcode) {
         return __awaiter(this, void 0, void 0, function* () {
-            const session = yield this.repository.findOneBy({ nomorhp });
+            const session = yield this.repository.findOneBy({ id });
             if (!session) {
-                throw new Error(`Session with key "${nomorhp}" not found.`);
+                throw new Error(`Session with key "${id}" not found.`);
             }
             session.qrcode = qrcode;
             yield this.repository.save(session);
-            return `Session "${nomorhp}" QR Code updated.`;
+            return `Session "${session.nomorhp}" QR Code updated.`;
         });
     }
     getQRCode(nomorhp) {
@@ -69,6 +78,17 @@ class ImCenterService {
                 throw new Error(`Session with key "${nomorhp}" not found.`);
             }
             return session.qrcode;
+        });
+    }
+    updateModeStandby(standby, imcenter_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const imcenter = yield this.repository.findOneBy({ id: imcenter_id });
+            if (!imcenter) {
+                throw new Error(`Session with key "${imcenter_id}" not found.`);
+            }
+            imcenter.standby = standby;
+            yield this.repository.save(imcenter);
+            return `Session "${imcenter_id}" standby mode updated.`;
         });
     }
     getAutoActiveSession() {

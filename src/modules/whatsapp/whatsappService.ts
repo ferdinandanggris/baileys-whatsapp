@@ -5,24 +5,36 @@ import SessionService from "./services/sessionService";
 import { ImCenterService } from "../../services/imcenterService";
 import { join } from "path";
 import { ImcenterLogService } from "../../services/imcenterLogService";
+import { EventEmitter } from "stream";
+import { QRCode } from "qrcode";
+import { directoryPathSession, qrCodeToBase64 } from "../../utils/whatsapp";
 
-export class WhatsappService {
+type WhatsappServiceStatus = "start" | "qr" | "open" | "closed";
+
+export class WhatsappService extends EventEmitter {
     private socket: ReturnType<typeof makeWASocket>;
     private messageHandler: MessageHandler;
     private connectionHandler: ConnectionHandler;
+    private status: WhatsappServiceStatus = "start";
+    private qrcode: string = null;
+    private sessionPath : string = "";
 
-    constructor(private sessionPath: string,private basePath: string = "sessions") {}
 
-    async init() {
+    constructor(private imcenter_id: number, private basePath: string = "sessions") {
+        super();
+        this.sessionPath = `${imcenter_id}_imcenter_id`;
+    }
+
+    async init(): Promise<string> {
         // Tentukan folder untuk setiap instance
-        const sessionPath = join(this.basePath, this.sessionPath);
+        const sessionPath = directoryPathSession(this.imcenter_id);
 
         const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
         this.socket = makeWASocket({ auth: state, printQRInTerminal: true });
 
         // Inisialisasi MessageHandler dan ConnectionHandler
         this.messageHandler = new MessageHandler(this.socket, new ImcenterLogService());
-        this.connectionHandler = new ConnectionHandler(this.socket, new SessionService(), new ImCenterService());
+        this.connectionHandler = new ConnectionHandler(this.imcenter_id,this.socket, new SessionService(), new ImCenterService());
 
         // Tangani event koneksi
         this.connectionHandler.handleConnectionEvents();
@@ -33,11 +45,39 @@ export class WhatsappService {
         // Simpan kredensial secara otomatis
         this.socket.ev.on("creds.update", saveCreds);
 
-        return this.socket;
+        // reconnection
+        this.socket.ws.on("reconnect", () => {
+            this.init();
+            this.status = "start";
+            console.log("Reconnecting...");
+        });
+
+        // change status to closed
+        this.socket.ws.on("close", () => {
+            this.status = "closed";
+        });
+
+        // change status to qr
+        this.socket.ws.on("qr", async (qrcode) => {
+            this.qrcode = qrcode;
+            this.status = "qr";
+        });
+
+        if (this.status === "start") {
+            return await this.waitingQRCode();
+        } else if (this.status === "qr") {
+            return this.qrcode;
+        }
+
+        return null;
     }
 
-    async sendMessage(jid: string, message: string) {
-        await this.messageHandler.sendMessage(jid, message);
+    private async waitingQRCode(): Promise<string> {
+        return await this.connectionHandler.waitingQRCode();
+    }
+
+    async sendMessage(number: string, message: string) {
+        await this.messageHandler.sendMessage(number, message);
     }
 
     async logout() {
