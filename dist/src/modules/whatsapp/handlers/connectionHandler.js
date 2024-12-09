@@ -8,15 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConnectionHandler = void 0;
 const baileys_1 = require("baileys");
 const stream_1 = require("stream");
 const whatsapp_1 = require("../../../utils/whatsapp");
-const fs_1 = __importDefault(require("fs"));
 class ConnectionHandler extends stream_1.EventEmitter {
     constructor(imcenter_id, socket, sessionService, imcenterService) {
         super();
@@ -53,14 +49,14 @@ class ConnectionHandler extends stream_1.EventEmitter {
     handleConnectionOpen() {
         return __awaiter(this, void 0, void 0, function* () {
             // check scanner
-            const flagScannerValid = yield this.imcenterService.checkScannerIsValid(this.imcenter_id, (0, whatsapp_1.getSocketNumber)(this.socket));
+            const flagScannerValid = yield this.imcenterService.checkScannerIsValid(this.imcenter_id, `6282131955087`);
             if (!flagScannerValid) {
                 console.log("Scanner tidak valid, silakan logout");
                 this.socket.logout();
             }
             console.log("Koneksi berhasil dibuka!");
             this.changeEventStatus("open");
-            this.sessionService.saveSession((0, whatsapp_1.getSocketNumber)(this.socket), this.socket);
+            this.sessionService.saveSession(`6282131955087`, this.socket);
         });
     }
     handleConnectionClose(lastDisconnect) {
@@ -74,13 +70,14 @@ class ConnectionHandler extends stream_1.EventEmitter {
                 this.removeSessionDirectory(this.imcenter_id);
                 break;
             default:
-                this.socket.ws.emit("reconnect");
+                if (shouldReconnect)
+                    this.socket.ws.emit("reconnect");
                 break;
         }
     }
     removeSessionDirectory(imcenter_id) {
-        this.sessionService.removeSession((0, whatsapp_1.getSocketNumber)(this.socket));
-        fs_1.default.rmdirSync((0, whatsapp_1.directoryPathSession)(imcenter_id), { recursive: true });
+        this.sessionService.removeSession(`6282131955087`);
+        // fs.rmdirSync(directoryPathSession(imcenter_id), { recursive: true });
     }
     changeEventStatus(status, value) {
         this.socket.ws.emit(status, value);
@@ -90,7 +87,7 @@ class ConnectionHandler extends stream_1.EventEmitter {
             if (this.socket) {
                 yield this.socket.logout();
                 this.socket = null;
-                this.sessionService.removeSession((0, whatsapp_1.getSocketNumber)(this.socket));
+                this.sessionService.removeSession(`6282131955087`);
             }
         });
     }

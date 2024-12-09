@@ -84,4 +84,4 @@ const broadcastMessage = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.broadcastMessage = broadcastMessage;
-//# sourceMappingURL=whatsappSessionController.js.map
+//# sourceMappingURL=WhatsappSessionController.js.map

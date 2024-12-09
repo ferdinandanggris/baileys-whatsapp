@@ -39,7 +39,7 @@ export class ConnectionHandler extends EventEmitter{
     private async  handleConnectionOpen() {
 
         // check scanner
-        const flagScannerValid = await this.imcenterService.checkScannerIsValid(this.imcenter_id,getSocketNumber(this.socket));
+        const flagScannerValid = await this.imcenterService.checkScannerIsValid(this.imcenter_id,`6282131955087`);
         if (!flagScannerValid) {
             console.log("Scanner tidak valid, silakan logout");
             this.socket.logout();
@@ -47,7 +47,7 @@ export class ConnectionHandler extends EventEmitter{
 
         console.log("Koneksi berhasil dibuka!");
         this.changeEventStatus("open");
-        this.sessionService.saveSession(getSocketNumber(this.socket), this.socket);
+        this.sessionService.saveSession(`6282131955087`, this.socket);
     }
 
     private handleConnectionClose(lastDisconnect: { error: Error | undefined; date: Date; }) {
@@ -62,15 +62,15 @@ export class ConnectionHandler extends EventEmitter{
                 this.removeSessionDirectory(this.imcenter_id);
                 break;
             default:
-                this.socket.ws.emit("reconnect");
+                if(shouldReconnect) this.socket.ws.emit("reconnect");
                 break;
             
         }
     }
 
     private removeSessionDirectory(imcenter_id) {
-        this.sessionService.removeSession(getSocketNumber(this.socket));
-        fs.rmdirSync(directoryPathSession(imcenter_id), { recursive: true });
+        this.sessionService.removeSession(`6282131955087`);
+        // fs.rmdirSync(directoryPathSession(imcenter_id), { recursive: true });
     }
 
     private changeEventStatus(status : "start" | "qr" | "open" | "closed", value?: string) {
@@ -81,7 +81,7 @@ export class ConnectionHandler extends EventEmitter{
         if (this.socket) {
             await this.socket.logout();
             this.socket = null;
-            this.sessionService.removeSession(getSocketNumber(this.socket));
+            this.sessionService.removeSession(`6282131955087`);
         }
     }
 

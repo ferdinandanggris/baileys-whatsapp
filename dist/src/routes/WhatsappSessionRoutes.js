@@ -34,7 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const whatsappController = __importStar(require("../controllers/whatsappSessionController"));
+const whatsappController = __importStar(require("../controllers/WhatsappSessionController"));
 const WhatsappSessionRoute = (0, express_1.Router)();
 WhatsappSessionRoute.post('/', whatsappController.createSession); // Membuat sesi baru
 WhatsappSessionRoute.get('/:nomorhp', whatsappController.getQrCode); // Mendapatkan QR Code

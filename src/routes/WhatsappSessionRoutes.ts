@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as whatsappController from '../controllers/whatsappSessionController';
+import * as whatsappController from '../controllers/WhatsappSessionController';
 
 const WhatsappSessionRoute = Router();
 

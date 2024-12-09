@@ -17,20 +17,21 @@ export class WhatsappService extends EventEmitter {
     private connectionHandler: ConnectionHandler;
     private status: WhatsappServiceStatus = "start";
     private qrcode: string = null;
-    private sessionPath : string = "";
+    private sessionPath : string = "+6282131955087";
 
 
     constructor(private imcenter_id: number, private basePath: string = "sessions") {
         super();
-        this.sessionPath = `${imcenter_id}_imcenter_id`;
     }
 
     async init(): Promise<string> {
         // Tentukan folder untuk setiap instance
-        const sessionPath = directoryPathSession(this.imcenter_id);
+        // const sessionPath = directoryPathSession(this.imcenter_id);
+        const sessionPath = join(this.basePath, this.sessionPath);
 
         const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
-        this.socket = makeWASocket({ auth: state, printQRInTerminal: true });
+        this.socket = makeWASocket({ 
+            auth: state, printQRInTerminal: true });
 
         // Inisialisasi MessageHandler dan ConnectionHandler
         this.messageHandler = new MessageHandler(this.socket, new ImcenterLogService());

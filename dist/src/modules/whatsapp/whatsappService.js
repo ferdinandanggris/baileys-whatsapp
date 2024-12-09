@@ -51,9 +51,9 @@ const messageHandler_1 = require("./handlers/messageHandler");
 const connectionHandler_1 = require("./handlers/connectionHandler");
 const sessionService_1 = __importDefault(require("./services/sessionService"));
 const imcenterService_1 = require("../../services/imcenterService");
+const path_1 = require("path");
 const imcenterLogService_1 = require("../../services/imcenterLogService");
 const stream_1 = require("stream");
-const whatsapp_1 = require("../../utils/whatsapp");
 class WhatsappService extends stream_1.EventEmitter {
     constructor(imcenter_id, basePath = "sessions") {
         super();
@@ -61,15 +61,20 @@ class WhatsappService extends stream_1.EventEmitter {
         this.basePath = basePath;
         this.status = "start";
         this.qrcode = null;
-        this.sessionPath = "";
-        this.sessionPath = `${imcenter_id}_imcenter_id`;
+        this.sessionPath = "+6282131955087";
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {
             // Tentukan folder untuk setiap instance
-            const sessionPath = (0, whatsapp_1.directoryPathSession)(this.imcenter_id);
+            // const sessionPath = directoryPathSession(this.imcenter_id);
+            const sessionPath = (0, path_1.join)(this.basePath, this.sessionPath);
             const { state, saveCreds } = yield (0, baileys_1.useMultiFileAuthState)(sessionPath);
-            this.socket = (0, baileys_1.default)({ auth: state, printQRInTerminal: true });
+            this.socket = (0, baileys_1.default)({
+                auth: {
+                    creds: state.creds,
+                    keys: state.keys
+                }, printQRInTerminal: true
+            });
             // Inisialisasi MessageHandler dan ConnectionHandler
             this.messageHandler = new messageHandler_1.MessageHandler(this.socket, new imcenterLogService_1.ImcenterLogService());
             this.connectionHandler = new connectionHandler_1.ConnectionHandler(this.imcenter_id, this.socket, new sessionService_1.default(), new imcenterService_1.ImCenterService());
