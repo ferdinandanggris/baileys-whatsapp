@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ImCenterService } from '../services/imcenterService';
+import { ImCenterService } from '../modules/whatsapp/services/imcenterService';
 
 const imcenterService = new ImCenterService();
 

@@ -19,4 +19,7 @@ export class Imcenter{
 
     @Column({type : 'varchar', nullable : true})
     qrcode!: string;
+
+    @Column({type : 'enum', enum : ['start', 'qr', 'open', 'closed'], default : 'closed'})
+    status!: string;
 }

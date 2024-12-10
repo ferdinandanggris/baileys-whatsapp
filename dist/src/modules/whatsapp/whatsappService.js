@@ -50,18 +50,12 @@ const baileys_1 = __importStar(require("baileys"));
 const messageHandler_1 = require("./handlers/messageHandler");
 const connectionHandler_1 = require("./handlers/connectionHandler");
 const sessionService_1 = __importDefault(require("./services/sessionService"));
-const imcenterService_1 = require("../../services/imcenterService");
-const imcenterLogService_1 = require("../../services/imcenterLogService");
-const stream_1 = require("stream");
+const imcenterService_1 = require("./services/imcenterService");
 const whatsapp_1 = require("../../utils/whatsapp");
-class WhatsappService extends stream_1.EventEmitter {
-    // private sessionPath : string = "+6282131955087";
-    constructor(imcenter_id, basePath = "sessions") {
-        super();
+const messageService_1 = require("./services/messageService");
+class WhatsappService {
+    constructor(imcenter_id) {
         this.imcenter_id = imcenter_id;
-        this.basePath = basePath;
-        this.status = "start";
-        this.qrcode = null;
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -72,8 +66,8 @@ class WhatsappService extends stream_1.EventEmitter {
                 auth: state, printQRInTerminal: true
             });
             // Inisialisasi MessageHandler dan ConnectionHandler
-            this.messageHandler = new messageHandler_1.MessageHandler(this.socket, new imcenterLogService_1.ImcenterLogService());
-            this.connectionHandler = new connectionHandler_1.ConnectionHandler(this.imcenter_id, this.socket, new sessionService_1.default(), new imcenterService_1.ImCenterService());
+            this.messageHandler = new messageHandler_1.MessageHandler(this.socket, new messageService_1.MessageService(this.imcenter_id));
+            this.connectionHandler = new connectionHandler_1.ConnectionHandler(this.imcenter_id, this.socket, new sessionService_1.default(), new imcenterService_1.ImCenterService(), new messageService_1.MessageService(this.imcenter_id));
             // Tangani event koneksi
             this.connectionHandler.handleConnectionEvents();
             // Tangani pesan
@@ -82,20 +76,19 @@ class WhatsappService extends stream_1.EventEmitter {
             this.socket.ev.on("creds.update", saveCreds);
             // reconnection
             this.socket.ws.on("reconnect", () => {
-                this.init();
-                this.status = "start";
                 console.log("Reconnecting...");
+                return this.init();
             });
-            // change status to closed
-            this.socket.ws.on("close", () => {
-                this.status = "closed";
-            });
-            // change status to qr
-            this.socket.ws.on("qr", (qrcode) => __awaiter(this, void 0, void 0, function* () {
-                this.qrcode = qrcode;
-                this.status = "qr";
-            }));
-            return null;
+            return yield this.waitingQRCode();
+        });
+    }
+    connect() {
+        return __awaiter(this, void 0, void 0, function* () {
+            // check if service is ready
+            if (this.socket) {
+                return yield this.connectionHandler.getImcenterQRCode();
+            }
+            return yield this.init();
         });
     }
     serviceIsReady() {

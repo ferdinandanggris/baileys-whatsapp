@@ -1,16 +1,13 @@
 import { ConnectionState, DisconnectReason, WASocket } from "baileys";
 import SessionService from "../services/sessionService";
-import { ImCenterService } from "../../../services/imcenterService"
+import { ImCenterService } from "../services/imcenterService";
 import { Boom } from '@hapi/boom'
-import { EventEmitter } from "stream";
 import { directoryPathSession, getSocketNumber, qrCodeToBase64 } from "../../../utils/whatsapp";
 import fs from "fs";
+import { MessageService } from "../services/messageService";
 
-export class ConnectionHandler extends EventEmitter{
-    constructor(private imcenter_id: number,private socket: WASocket, private sessionService : SessionService, private imcenterService: ImCenterService) {
-        super();
-        this.socket = socket;
-    }
+export class ConnectionHandler{
+    constructor(private imcenter_id: number,private socket: WASocket, private sessionService : SessionService, private imcenterService: ImCenterService, private messageService : MessageService) {}
 
     handleConnectionEvents() {
         this.socket.ev.on("connection.update", async (update : Partial<ConnectionState>) => {
@@ -33,7 +30,26 @@ export class ConnectionHandler extends EventEmitter{
     private async handleQRUpdate(update : Partial<ConnectionState>) {
         this.changeEventStatus("qr", await qrCodeToBase64(update.qr));
         console.log("QR Code tersedia. Silakan scan! ", this.imcenter_id);
-        this.imcenterService.updateQRCode(this.imcenter_id, update.qr);
+        this.imcenterService.updateStatus(this.imcenter_id, "qr");
+        this.imcenterService.updateQRCode(this.imcenter_id, await qrCodeToBase64(update.qr));
+        this.messageService.createLog("QR Code tersedia. Silakan scan!");
+    }
+
+    async getImcenterQRCode() {
+        const imcenter = await this.imcenterService.getImcenterById(this.imcenter_id);
+        if (!imcenter) {
+            throw new Error("Imcenter not found");
+        }
+
+        switch(imcenter.status) {
+            case "connected":
+                return null;
+            case "qr":
+                return imcenter.qrcode;
+            case "closed":
+                this.socket.ws.emit("reconnect");
+                throw new Error("Please wait for a seconds and try again");
+        }
     }
 
     private async  handleConnectionOpen() {
@@ -43,11 +59,15 @@ export class ConnectionHandler extends EventEmitter{
         if (!flagScannerValid) {
             console.log("Scanner tidak valid, silakan logout");
             this.socket.logout();
+            this.messageService.createLog("[GAGAL SCAN QR] Nomor Whatsapp tidak cocok dengan yang terdaftar");
         }
 
         console.log("Koneksi berhasil dibuka!");
         this.changeEventStatus("connected");
+        this.imcenterService.updateStatus(this.imcenter_id, "open");
+        this.imcenterService.updateQRCode(this.imcenter_id, null);
         this.sessionService.saveSession(getSocketNumber(this.socket), this.socket);
+        this.messageService.createLog("Login Berhasil");
     }
 
     private handleConnectionClose(lastDisconnect: { error: Error | undefined; date: Date; }) {
@@ -60,9 +80,13 @@ export class ConnectionHandler extends EventEmitter{
         switch((lastDisconnect.error as Boom)?.output?.statusCode){
             case DisconnectReason.loggedOut:
                 this.removeSessionDirectory(this.imcenter_id);
+                this.imcenterService.updateStatus(this.imcenter_id, "closed");
                 break;
             default:
-                if(shouldReconnect) this.socket.ws.emit("reconnect");
+                if(shouldReconnect) {
+                    this.socket.ws.emit("reconnect")
+                    this.imcenterService.updateStatus(this.imcenter_id, "start");
+                };
                 break;
             
         }
@@ -70,7 +94,11 @@ export class ConnectionHandler extends EventEmitter{
 
     private removeSessionDirectory(imcenter_id) {
         this.sessionService.removeSession(getSocketNumber(this.socket));
-        fs.rmdirSync(directoryPathSession(imcenter_id), { recursive: true });
+        fs.rm(directoryPathSession(imcenter_id), { recursive: true }, (err) => {
+            if (err) {
+                console.error("Error removing session directory", err);
+            }
+        });
     }
 
     private changeEventStatus(status : "start" | "qr" | "connected" | "closed", value?: string) {

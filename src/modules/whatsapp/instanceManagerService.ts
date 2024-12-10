@@ -1,12 +1,12 @@
-import { ImCenterService } from "../../services/imcenterService";
+import { ImCenterService } from "./services/imcenterService";
 import { WhatsappService } from "./whatsappService";
-import { WhatsappSessionService } from "../../services/whatsappSessionService";
+import SessionService from "./services/sessionService";
 
 
 class InstanceManager {
     private instances: Map<number, WhatsappService>;
     private imcenterService = new ImCenterService();    
-    private whatsappSession = new WhatsappSessionService();
+    private sessionService = new SessionService();
 
     constructor() {
         this.instances = new Map();
@@ -63,7 +63,7 @@ class InstanceManager {
 
     public async checkAutoActiveSessions(): Promise<void> {
         const imcenters = await this.imcenterService.getAutoActiveSession();
-        const sessions = await this.whatsappSession.getSessionByListJID(imcenters.map(imcenter => imcenter.nomorhp));
+        const sessions = await this.sessionService.getSessionByListJID(imcenters.map(imcenter => imcenter.nomorhp));
 
         // for (const session of sessions) {
         //     const socket = this.getInstance(session.);

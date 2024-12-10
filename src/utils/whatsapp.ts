@@ -1,8 +1,8 @@
 import { proto, WASocket } from "baileys";
 import  QRCode  from "qrcode";
 
-const numberToJid = (jid: string) => jid.includes('@s.whatsapp.net') ? jid : `${ jid }@s.whatsapp.net`;
-const jidToNumber = (jid: string) => jid.replace('@s.whatsapp.net', '');
+const numberToJid = (jid: string) => jid?.includes('@s.whatsapp.net') ? jid : `${ jid }@s.whatsapp.net` || null;
+const jidToNumber = (jid: string) => jid?.replace('@s.whatsapp.net', '') || null;
 const isFromGroup = (jid: string) => jid.includes('@g.us');
 const isFromBroadcast = (jid: string) => jid.includes('@broadcast');
 const isFromPersonalChat = (jid: string) => jid.includes('@s.whatsapp.net');

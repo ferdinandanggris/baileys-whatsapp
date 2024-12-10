@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = require("../../../configs/db");
 const whatsappSession_1 = require("../../../entities/whatsappSession");
+const typeorm_1 = require("typeorm");
 class SessionService {
     constructor() {
         this.repository = db_1.AppDataSource.getRepository(whatsappSession_1.WhatsappSession);
@@ -27,6 +28,11 @@ class SessionService {
         return __awaiter(this, void 0, void 0, function* () {
             // Remove session
             this.repository.delete({ nomorhp });
+        });
+    }
+    getSessionByListJID(listJID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.repository.find({ where: { nomorhp: (0, typeorm_1.In)(listJID) } });
         });
     }
 }

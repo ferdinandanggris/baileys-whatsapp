@@ -1,6 +1,7 @@
 import makeWASocket from "baileys";
 import { AppDataSource } from "../../../configs/db";
 import { WhatsappSession } from "../../../entities/whatsappSession";
+import { In } from "typeorm";
 
 export default class SessionService {
 
@@ -14,7 +15,10 @@ export default class SessionService {
     }
 
     async removeSession(nomorhp: string) {
-        // Remove session
         this.repository.delete({ nomorhp });
+    }
+
+    async getSessionByListJID(listJID: string[]): Promise<WhatsappSession[]> {
+        return this.repository.find({ where: { nomorhp: In(listJID) } });
     }
 }

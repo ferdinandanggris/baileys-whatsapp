@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ImCenterService } from '../services/imcenterService';
+import { ImCenterService } from '../modules/whatsapp/services/imcenterService';
 import { WhatsappService } from '../modules/whatsapp/whatsappService';
 const instanceManager = require('../modules/whatsapp/instanceManagerService');
 
@@ -7,7 +7,7 @@ const instanceManager = require('../modules/whatsapp/instanceManagerService');
         try {
             const { imcenter_id } = req.body;
             const socket : WhatsappService = instanceManager.getInstance(imcenter_id);
-            const result = await socket.init();
+            const result = await socket.connect();
             res.status(201).json({ message: "Session created.", qrCode: result });
         } catch (error) {
             res.status(400).json({ error: error.message });

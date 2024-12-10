@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImcenterController = void 0;
-const imcenterService_1 = require("../services/imcenterService");
+const imcenterService_1 = require("../modules/whatsapp/services/imcenterService");
 const imcenterService = new imcenterService_1.ImCenterService();
 class ImcenterController {
     static createImcenter(req, res) {

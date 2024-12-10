@@ -10,8 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImCenterService = void 0;
-const db_1 = require("../configs/db");
-const imcenter_1 = require("../entities/imcenter");
+const db_1 = require("../../../configs/db");
+const imcenter_1 = require("../../../entities/imcenter");
 class ImCenterService {
     constructor() {
         this.repository = db_1.AppDataSource.getRepository(imcenter_1.Imcenter);

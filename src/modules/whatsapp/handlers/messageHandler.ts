@@ -1,11 +1,11 @@
 import { WASocket } from "baileys";
-import { ImcenterLogService } from "../../../services/imcenterLogService";
 import { isInboxMessage, numberToJid } from "../../../utils/whatsapp";
+import { MessageService } from "../services/messageService";
 
 export class MessageHandler {
     private socket: WASocket;
 
-    constructor(socket: WASocket, private imcenterLogService: ImcenterLogService) {
+    constructor(socket: WASocket, private messageService: MessageService) {
         this.socket = socket;
     }
 
@@ -14,8 +14,7 @@ export class MessageHandler {
             const jid = numberToJid(number);
             await this.socket.sendMessage(jid, { text: content });
 
-            // Log pesan yang terkirim
-            await this.imcenterLogService.insertData(jid, { key: { remoteJid: jid }, message: { conversation: content } }, "outbox");
+            await this.messageService.insertData({ key: { remoteJid: jid }, message: { conversation: content } }, "outbox");
 
             console.log(`Pesan terkirim ke ${jid}: ${content}`);
         } catch (error) {
@@ -32,8 +31,7 @@ export class MessageHandler {
                 console.log(`Pesan diterima dari ${jid}: ${content}`);
 
                 if (isInboxMessage(message)) {
-                    // Implementasikan logika tambahan di sini
-                    await this.imcenterLogService.insertData(jid, message);
+                    await this.messageService.insertData(message);
                 }
 
             }
@@ -44,7 +42,6 @@ export class MessageHandler {
         for (const jid of jids) {
             await this.sendMessage(jid, content);
 
-            // Kasih jeda 1 detik antar pengiriman pesan
             await new Promise((resolve) => setTimeout(resolve, 1000));
         }
     }

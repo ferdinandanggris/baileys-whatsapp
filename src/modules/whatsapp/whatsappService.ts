@@ -2,27 +2,16 @@ import makeWASocket, { useMultiFileAuthState } from "baileys";
 import { MessageHandler } from "./handlers/messageHandler";
 import { ConnectionHandler } from "./handlers/connectionHandler";
 import SessionService from "./services/sessionService";
-import { ImCenterService } from "../../services/imcenterService";
-import { join } from "path";
-import { ImcenterLogService } from "../../services/imcenterLogService";
+import { ImCenterService } from "./services/imcenterService";
 import { EventEmitter } from "stream";
-import { QRCode } from "qrcode";
-import { directoryPathSession, qrCodeToBase64 } from "../../utils/whatsapp";
-
-type WhatsappServiceStatus = "start" | "qr" | "connected" | "closed";
-
-export class WhatsappService extends EventEmitter {
+import { directoryPathSession } from "../../utils/whatsapp";
+import { MessageService } from "./services/messageService";
+export class WhatsappService {
     private socket: ReturnType<typeof makeWASocket>;
     private messageHandler: MessageHandler;
     private connectionHandler: ConnectionHandler;
-    private status: WhatsappServiceStatus = "start";
-    private qrcode: string = null;
-    // private sessionPath : string = "+6282131955087";
 
-
-    constructor(private imcenter_id: number, private basePath: string = "sessions") {
-        super();
-    }
+    constructor(private imcenter_id: number) {}
 
     async init(): Promise<string> {
 
@@ -34,8 +23,8 @@ export class WhatsappService extends EventEmitter {
             auth: state, printQRInTerminal: true });
 
         // Inisialisasi MessageHandler dan ConnectionHandler
-        this.messageHandler = new MessageHandler(this.socket, new ImcenterLogService());
-        this.connectionHandler = new ConnectionHandler(this.imcenter_id,this.socket, new SessionService(), new ImCenterService());
+        this.messageHandler = new MessageHandler(this.socket, new MessageService(this.imcenter_id));
+        this.connectionHandler = new ConnectionHandler(this.imcenter_id,this.socket, new SessionService(), new ImCenterService(), new MessageService(this.imcenter_id));
 
         // Tangani event koneksi
         this.connectionHandler.handleConnectionEvents();
@@ -48,24 +37,22 @@ export class WhatsappService extends EventEmitter {
 
         // reconnection
         this.socket.ws.on("reconnect", () => {
-            this.init();
-            this.status = "start";
             console.log("Reconnecting...");
+            return this.init();
         });
 
-        // change status to closed
-        this.socket.ws.on("close", () => {
-            this.status = "closed";
-        });
-
-        // change status to qr
-        this.socket.ws.on("qr", async (qrcode) => {
-            this.qrcode = qrcode;
-            this.status = "qr";
-        });
-
-        return null;
+        return await this.waitingQRCode();
     }
+
+    async connect() : Promise<string> {
+        // check if service is ready
+        if (this.socket) {
+            return await this.connectionHandler.getImcenterQRCode();
+        }
+        return await this.init();
+    }
+
+
 
     private serviceIsReady() : boolean {
         if (this.socket?.authState?.creds?.me?.id) return true;

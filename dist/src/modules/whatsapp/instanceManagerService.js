@@ -8,14 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const imcenterService_1 = require("../../services/imcenterService");
+const imcenterService_1 = require("./services/imcenterService");
 const whatsappService_1 = require("./whatsappService");
-const whatsappSessionService_1 = require("../../services/whatsappSessionService");
+const sessionService_1 = __importDefault(require("./services/sessionService"));
 class InstanceManager {
     constructor() {
         this.imcenterService = new imcenterService_1.ImCenterService();
-        this.whatsappSession = new whatsappSessionService_1.WhatsappSessionService();
+        this.sessionService = new sessionService_1.default();
         this.instances = new Map();
     }
     createInstance(imcenter_id) {
@@ -66,7 +69,7 @@ class InstanceManager {
     checkAutoActiveSessions() {
         return __awaiter(this, void 0, void 0, function* () {
             const imcenters = yield this.imcenterService.getAutoActiveSession();
-            const sessions = yield this.whatsappSession.getSessionByListJID(imcenters.map(imcenter => imcenter.nomorhp));
+            const sessions = yield this.sessionService.getSessionByListJID(imcenters.map(imcenter => imcenter.nomorhp));
             // for (const session of sessions) {
             //     const socket = this.getInstance(session.);
             //     socket.init();

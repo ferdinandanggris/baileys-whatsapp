@@ -1,16 +1,14 @@
-import { AppDataSource } from '../configs/db';
-import { Imcenter } from '../entities/imcenter';
+import { AppDataSource } from '../../../configs/db';
+import { Imcenter } from '../../../entities/imcenter';
 
 export class ImCenterService {
     private repository = AppDataSource.getRepository(Imcenter);
 
     async createImcenter(number: string): Promise<string> {
         const existingSession = await this.repository.findOneBy({ nomorhp: number });
-
         if (existingSession) {
             return `Imcenter with number "${number}" already exists.`;
         }
-
         await this.repository.save({ nomorhp: number, aktif: false, standby: false });
     }
 
@@ -22,18 +20,15 @@ export class ImCenterService {
         return true;
     }
 
-    // Mendapatkan semua sesi
     async getAllSessions(): Promise<Imcenter[]> {
         return this.repository.find();
     }
 
-    // Menghapus sesi
     async deleteSession(id: number): Promise<string> {
         const session = await this.repository.findOneBy({ id });
         if (!session) {
             throw new Error(`Session with key "${id}" not found.`);
         }
-
         await this.repository.delete({ id });
         return `Session "${id}" deleted.`;
     }
@@ -43,7 +38,6 @@ export class ImCenterService {
         if (!session) {
             throw new Error(`Session with key "${id}" not found.`);
         }
-
         return session;
     }
     
@@ -67,6 +61,15 @@ export class ImCenterService {
         return session.qrcode;
     }
 
+    async getImcenterById(imcenter_id: number): Promise<Imcenter> {
+        const imcenter = await this.repository.findOneBy({ id: imcenter_id });
+        if (!imcenter) {
+            throw new Error(`imcenter with key "${imcenter_id}" not found.`);
+        }
+
+        return imcenter;
+    }
+
     async updateModeStandby(standby: boolean, imcenter_id: number): Promise<string> {
         const imcenter = await this.repository.findOneBy({ id : imcenter_id });
         if (!imcenter) {
@@ -80,6 +83,16 @@ export class ImCenterService {
 
     public async getAutoActiveSession(): Promise<Imcenter[]> {
         return this.repository.findBy({ auto_aktif: true });
+    }
+
+    async updateStatus(imcenter_id: number, status: "start" | "qr" | "open" | "closed"): Promise<string> {
+        const imcenter = await this.repository.findOneBy({ id: imcenter_id });
+        if (!imcenter) {
+            throw new Error(`Session with key "${imcenter_id}" not found.`);
+        }
+        imcenter.status = status;
+        await this.repository.save(imcenter);
+        return `Session "${imcenter_id}" status updated.`;
     }
     
 }

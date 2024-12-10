@@ -38,6 +38,10 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
     __metadata("design:type", String)
 ], Imcenter.prototype, "qrcode", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'enum', enum: ['start', 'qr', 'open', 'closed'], default: 'closed' }),
+    __metadata("design:type", String)
+], Imcenter.prototype, "status", void 0);
 exports.Imcenter = Imcenter = __decorate([
     (0, typeorm_1.Entity)('imcenter')
 ], Imcenter);

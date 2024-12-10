@@ -12,8 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageHandler = void 0;
 const whatsapp_1 = require("../../../utils/whatsapp");
 class MessageHandler {
-    constructor(socket, imcenterLogService) {
-        this.imcenterLogService = imcenterLogService;
+    constructor(socket, messageService) {
+        this.messageService = messageService;
         this.socket = socket;
     }
     sendMessage(number, content) {
@@ -22,7 +22,7 @@ class MessageHandler {
                 const jid = (0, whatsapp_1.numberToJid)(number);
                 yield this.socket.sendMessage(jid, { text: content });
                 // Log pesan yang terkirim
-                yield this.imcenterLogService.insertData(jid, { key: { remoteJid: jid }, message: { conversation: content } }, "outbox");
+                yield this.messageService.insertData({ key: { remoteJid: jid }, message: { conversation: content } }, "outbox");
                 console.log(`Pesan terkirim ke ${jid}: ${content}`);
             }
             catch (error) {
@@ -39,7 +39,7 @@ class MessageHandler {
                 console.log(`Pesan diterima dari ${jid}: ${content}`);
                 if ((0, whatsapp_1.isInboxMessage)(message)) {
                     // Implementasikan logika tambahan di sini
-                    yield this.imcenterLogService.insertData(jid, message);
+                    yield this.messageService.insertData(message);
                 }
             }
         }));

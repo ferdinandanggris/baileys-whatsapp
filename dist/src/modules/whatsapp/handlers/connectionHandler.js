@@ -18,12 +18,13 @@ const stream_1 = require("stream");
 const whatsapp_1 = require("../../../utils/whatsapp");
 const fs_1 = __importDefault(require("fs"));
 class ConnectionHandler extends stream_1.EventEmitter {
-    constructor(imcenter_id, socket, sessionService, imcenterService) {
+    constructor(imcenter_id, socket, sessionService, imcenterService, messageService) {
         super();
         this.imcenter_id = imcenter_id;
         this.socket = socket;
         this.sessionService = sessionService;
         this.imcenterService = imcenterService;
+        this.messageService = messageService;
         this.socket = socket;
     }
     handleConnectionEvents() {
@@ -47,7 +48,26 @@ class ConnectionHandler extends stream_1.EventEmitter {
         return __awaiter(this, void 0, void 0, function* () {
             this.changeEventStatus("qr", yield (0, whatsapp_1.qrCodeToBase64)(update.qr));
             console.log("QR Code tersedia. Silakan scan! ", this.imcenter_id);
-            this.imcenterService.updateQRCode(this.imcenter_id, update.qr);
+            this.imcenterService.updateStatus(this.imcenter_id, "qr");
+            this.imcenterService.updateQRCode(this.imcenter_id, yield (0, whatsapp_1.qrCodeToBase64)(update.qr));
+            this.messageService.createLog("QR Code tersedia. Silakan scan!");
+        });
+    }
+    getImcenterQRCode() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const imcenter = yield this.imcenterService.getImcenterById(this.imcenter_id);
+            if (!imcenter) {
+                throw new Error("Imcenter not found");
+            }
+            switch (imcenter.status) {
+                case "connected":
+                    return null;
+                case "qr":
+                    return imcenter.qrcode;
+                case "closed":
+                    this.socket.ws.emit("reconnect");
+                    throw new Error("Please wait for a seconds and try again");
+            }
         });
     }
     handleConnectionOpen() {
@@ -57,10 +77,14 @@ class ConnectionHandler extends stream_1.EventEmitter {
             if (!flagScannerValid) {
                 console.log("Scanner tidak valid, silakan logout");
                 this.socket.logout();
+                this.messageService.createLog("[GAGAL SCAN QR] Nomor Whatsapp tidak cocok dengan yang terdaftar");
             }
             console.log("Koneksi berhasil dibuka!");
             this.changeEventStatus("connected");
+            this.imcenterService.updateStatus(this.imcenter_id, "open");
+            this.imcenterService.updateQRCode(this.imcenter_id, null);
             this.sessionService.saveSession((0, whatsapp_1.getSocketNumber)(this.socket), this.socket);
+            this.messageService.createLog("Login Berhasil");
         });
     }
     handleConnectionClose(lastDisconnect) {
@@ -72,16 +96,24 @@ class ConnectionHandler extends stream_1.EventEmitter {
         switch ((_e = (_d = lastDisconnect.error) === null || _d === void 0 ? void 0 : _d.output) === null || _e === void 0 ? void 0 : _e.statusCode) {
             case baileys_1.DisconnectReason.loggedOut:
                 this.removeSessionDirectory(this.imcenter_id);
+                this.imcenterService.updateStatus(this.imcenter_id, "closed");
                 break;
             default:
-                if (shouldReconnect)
+                if (shouldReconnect) {
                     this.socket.ws.emit("reconnect");
+                    this.imcenterService.updateStatus(this.imcenter_id, "start");
+                }
+                ;
                 break;
         }
     }
     removeSessionDirectory(imcenter_id) {
         this.sessionService.removeSession((0, whatsapp_1.getSocketNumber)(this.socket));
-        fs_1.default.rmdirSync((0, whatsapp_1.directoryPathSession)(imcenter_id), { recursive: true });
+        fs_1.default.rm((0, whatsapp_1.directoryPathSession)(imcenter_id), { recursive: true }, (err) => {
+            if (err) {
+                console.error("Error removing session directory", err);
+            }
+        });
     }
     changeEventStatus(status, value) {
         this.socket.ws.emit(status, value);

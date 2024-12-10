@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.broadcastMessage = exports.updateModeStandby = exports.sendMessage = exports.removeSession = exports.getQrCode = exports.createSession = void 0;
-const imcenterService_1 = require("../services/imcenterService");
+const imcenterService_1 = require("../modules/whatsapp/services/imcenterService");
 const instanceManager = require('../modules/whatsapp/instanceManagerService');
 const createSession = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { imcenter_id } = req.body;
         const socket = instanceManager.getInstance(imcenter_id);
-        const result = yield socket.init();
+        const result = yield socket.connect();
         res.status(201).json({ message: "Session created.", qrCode: result });
     }
     catch (error) {
