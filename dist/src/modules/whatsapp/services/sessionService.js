@@ -12,27 +12,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = require("../../../configs/db");
 const whatsappSession_1 = require("../../../entities/whatsappSession");
 const typeorm_1 = require("typeorm");
+const whatsapp_1 = require("../../../utils/whatsapp");
 class SessionService {
     constructor() {
         this.repository = db_1.AppDataSource.getRepository(whatsappSession_1.WhatsappSession);
     }
     saveSession(nomorhp, socket) {
         return __awaiter(this, void 0, void 0, function* () {
-            const whatsappSession = yield this.repository.findOneBy({ nomorhp });
+            const jid = (0, whatsapp_1.numberToJid)(nomorhp);
+            const whatsappSession = yield this.repository.findOneBy({ jid });
             if (!whatsappSession) {
-                this.repository.save({ nomorhp: nomorhp, sessionCred: socket.authState.creds, sessionKey: socket.authState.keys });
+                this.repository.save({ jid: jid, });
             }
         });
     }
-    removeSession(nomorhp) {
+    getSession(imcenter_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            // Remove session
-            this.repository.delete({ nomorhp });
+            return this.repository.findOneBy({ imcenter_id });
         });
     }
-    getSessionByListJID(listJID) {
+    saveUpsertSession(imcenter_id, jid, auth) {
+        return this.repository.upsert({ imcenter_id, jid, auth }, { conflictPaths: ["imcenter_id"] });
+    }
+    removeSession(jid) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.repository.find({ where: { nomorhp: (0, typeorm_1.In)(listJID) } });
+            this.repository.delete({ jid });
+        });
+    }
+    getSessionByListImcenterId(listImcenterId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.repository.find({ where: { imcenter_id: (0, typeorm_1.In)(listImcenterId) } });
         });
     }
 }

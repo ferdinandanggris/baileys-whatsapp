@@ -66,14 +66,14 @@ class InstanceManager {
             console.log("All instances logged out.");
         });
     }
-    checkAutoActiveSessions() {
+    autoActiveSession() {
         return __awaiter(this, void 0, void 0, function* () {
             const imcenters = yield this.imcenterService.getAutoActiveSession();
-            const sessions = yield this.sessionService.getSessionByListJID(imcenters.map(imcenter => imcenter.nomorhp));
-            // for (const session of sessions) {
-            //     const socket = this.getInstance(session.);
-            //     socket.init();
-            // }
+            const sessions = yield this.sessionService.getSessionByListImcenterId(imcenters.map(imcenter => imcenter.id));
+            for (const session of sessions) {
+                const socket = this.getInstance(session.imcenter_id);
+                socket.init();
+            }
         });
     }
 }

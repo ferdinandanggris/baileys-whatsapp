@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.directoryPathSession = exports.getSocketNumber = exports.qrCodeToBase64 = exports.isInboxMessage = exports.isFromPersonalChat = exports.isFromBroadcast = exports.isFromGroup = exports.jidToNumber = exports.numberToJid = void 0;
+exports.getSocketJid = exports.directoryPathSession = exports.getSocketNumber = exports.qrCodeToBase64 = exports.isInboxMessage = exports.isFromPersonalChat = exports.isFromBroadcast = exports.isFromGroup = exports.jidToNumber = exports.numberToJid = void 0;
 const qrcode_1 = __importDefault(require("qrcode"));
 const numberToJid = (jid) => (jid === null || jid === void 0 ? void 0 : jid.includes('@s.whatsapp.net')) ? jid : `${jid}@s.whatsapp.net` || null;
 exports.numberToJid = numberToJid;
@@ -30,6 +30,8 @@ const qrCodeToBase64 = (text) => __awaiter(void 0, void 0, void 0, function* () 
 exports.qrCodeToBase64 = qrCodeToBase64;
 const getSocketNumber = (socket) => socket.authState.creds.me.id.split(':')[0] || '';
 exports.getSocketNumber = getSocketNumber;
+const getSocketJid = (socket) => socket.authState.creds.me.id || '';
+exports.getSocketJid = getSocketJid;
 const directoryPathSession = (imcenter_id) => `./sessions/${imcenter_id}_imcenter_id`;
 exports.directoryPathSession = directoryPathSession;
 //# sourceMappingURL=whatsapp.js.map

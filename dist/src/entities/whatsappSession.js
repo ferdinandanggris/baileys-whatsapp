@@ -19,18 +19,18 @@ __decorate([
     __metadata("design:type", Number)
 ], WhatsappSession.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
     __metadata("design:type", String)
-], WhatsappSession.prototype, "nomorhp", void 0);
+], WhatsappSession.prototype, "jid", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'jsonb', nullable: true }),
-    __metadata("design:type", Object)
-], WhatsappSession.prototype, "sessionCred", void 0);
+    (0, typeorm_1.Column)({ type: "int", unique: true }),
+    __metadata("design:type", Number)
+], WhatsappSession.prototype, "imcenter_id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'jsonb', nullable: true }),
-    __metadata("design:type", Object)
-], WhatsappSession.prototype, "sessionKey", void 0);
+    (0, typeorm_1.Column)({ type: "text" }),
+    __metadata("design:type", String)
+], WhatsappSession.prototype, "auth", void 0);
 exports.WhatsappSession = WhatsappSession = __decorate([
-    (0, typeorm_1.Entity)('whatsapp_sessions')
+    (0, typeorm_1.Entity)('whatsapp_nodejs_sessions')
 ], WhatsappSession);
 //# sourceMappingURL=whatsappSession.js.map

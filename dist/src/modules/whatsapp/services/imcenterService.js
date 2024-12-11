@@ -8,39 +8,40 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImCenterService = void 0;
 const db_1 = require("../../../configs/db");
-const imcenter_1 = require("../../../entities/imcenter");
+const imcenter_1 = __importDefault(require("../../../entities/imcenter"));
 class ImCenterService {
     constructor() {
-        this.repository = db_1.AppDataSource.getRepository(imcenter_1.Imcenter);
+        this.repository = db_1.AppDataSource.getRepository(imcenter_1.default);
     }
-    createImcenter(number) {
+    createImcenter(numberPhone) {
         return __awaiter(this, void 0, void 0, function* () {
-            const existingSession = yield this.repository.findOneBy({ nomorhp: number });
+            const existingSession = yield this.repository.findOneBy({ username: numberPhone });
             if (existingSession) {
-                return `Imcenter with number "${number}" already exists.`;
+                return `Imcenter with numberPhone "${numberPhone}" already exists.`;
             }
-            yield this.repository.save({ nomorhp: number, aktif: false, standby: false });
+            yield this.repository.save({ username: numberPhone, aktif: false, standby: false });
         });
     }
-    checkScannerIsValid(imcenter_id, nomorhp) {
+    checkScannerIsValid(imcenter_id, numberPhone) {
         return __awaiter(this, void 0, void 0, function* () {
-            const session = yield this.repository.findOneBy({ id: imcenter_id, nomorhp });
+            const session = yield this.repository.findOneBy({ id: imcenter_id, username: numberPhone });
             if (!session) {
                 return false;
             }
             return true;
         });
     }
-    // Mendapatkan semua sesi
     getAllSessions() {
         return __awaiter(this, void 0, void 0, function* () {
             return this.repository.find();
         });
     }
-    // Menghapus sesi
     deleteSession(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const session = yield this.repository.findOneBy({ id });
@@ -66,18 +67,18 @@ class ImCenterService {
             if (!session) {
                 throw new Error(`Session with key "${id}" not found.`);
             }
-            session.qrcode = qrcode;
+            session.qr = qrcode;
             yield this.repository.save(session);
-            return `Session "${session.nomorhp}" QR Code updated.`;
+            return `Session "${session.username}" QR Code updated.`;
         });
     }
-    getQRCode(nomorhp) {
+    getQRCode(numberPhone) {
         return __awaiter(this, void 0, void 0, function* () {
-            const session = yield this.repository.findOneBy({ nomorhp });
+            const session = yield this.repository.findOneBy({ username: numberPhone });
             if (!session) {
-                throw new Error(`Session with key "${nomorhp}" not found.`);
+                throw new Error(`Session with key "${numberPhone}" not found.`);
             }
-            return session.qrcode;
+            return session.qr;
         });
     }
     getImcenterById(imcenter_id) {
@@ -89,29 +90,18 @@ class ImCenterService {
             return imcenter;
         });
     }
-    updateModeStandby(standby, imcenter_id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const imcenter = yield this.repository.findOneBy({ id: imcenter_id });
-            if (!imcenter) {
-                throw new Error(`Session with key "${imcenter_id}" not found.`);
-            }
-            imcenter.standby = standby;
-            yield this.repository.save(imcenter);
-            return `Session "${imcenter_id}" standby mode updated.`;
-        });
-    }
     getAutoActiveSession() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.repository.findBy({ auto_aktif: true });
+            return this.repository.findBy({ aktif: true });
         });
     }
-    updateStatus(imcenter_id, status) {
+    updateStatus(imcenter_id, status_login) {
         return __awaiter(this, void 0, void 0, function* () {
             const imcenter = yield this.repository.findOneBy({ id: imcenter_id });
             if (!imcenter) {
                 throw new Error(`Session with key "${imcenter_id}" not found.`);
             }
-            imcenter.status = status;
+            imcenter.status_login = status_login;
             yield this.repository.save(imcenter);
             return `Session "${imcenter_id}" status updated.`;
         });

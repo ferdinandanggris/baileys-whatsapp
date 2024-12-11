@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImcenterLogs = void 0;
 const typeorm_1 = require("typeorm");
+const types_1 = require("./types");
 let ImcenterLogs = class ImcenterLogs {
 };
 exports.ImcenterLogs = ImcenterLogs;
@@ -19,9 +20,9 @@ __decorate([
     __metadata("design:type", Number)
 ], ImcenterLogs.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: () => 'CURRENT_TIMESTAMP' }),
+    (0, typeorm_1.Column)({}),
     __metadata("design:type", Date)
-], ImcenterLogs.prototype, "tgl_entry", void 0);
+], ImcenterLogs.prototype, "tgl_entri", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'int' }),
     __metadata("design:type", Number)
@@ -31,11 +32,15 @@ __decorate([
     __metadata("design:type", String)
 ], ImcenterLogs.prototype, "message_id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'enum', enum: ['log', 'outbox', 'inbox'], default: 'log' }),
+    (0, typeorm_1.Column)({ type: 'enum', enum: Object.values(types_1.TIPE_APLIKASI), default: types_1.TIPE_APLIKASI.GOLANG }),
     __metadata("design:type", String)
-], ImcenterLogs.prototype, "type", void 0);
+], ImcenterLogs.prototype, "aplikasi", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
+    (0, typeorm_1.Column)({ type: 'enum', enum: Object.values(ImcenterLogs) }),
+    __metadata("design:type", String)
+], ImcenterLogs.prototype, "tipe", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
     __metadata("design:type", String)
 ], ImcenterLogs.prototype, "keterangan", void 0);
 __decorate([
@@ -47,7 +52,7 @@ __decorate([
     __metadata("design:type", String)
 ], ImcenterLogs.prototype, "pengirim", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'enum', enum: ['Diterima', 'Dibaca'], nullable: true }),
+    (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
     __metadata("design:type", String)
 ], ImcenterLogs.prototype, "status", void 0);
 __decorate([

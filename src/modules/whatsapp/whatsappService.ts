@@ -6,23 +6,29 @@ import { ImCenterService } from "./services/imcenterService";
 import { EventEmitter } from "stream";
 import { directoryPathSession } from "../../utils/whatsapp";
 import { MessageService } from "./services/messageService";
+import AuthHandler from "./handlers/authHandler";
+import { DataSource } from "typeorm";
+import log from "baileys/lib/Utils/logger";
 export class WhatsappService {
     private socket: ReturnType<typeof makeWASocket>;
     private messageHandler: MessageHandler;
     private connectionHandler: ConnectionHandler;
+    private authHandler : AuthHandler;
 
     constructor(private imcenter_id: number) {}
 
     async init(): Promise<string> {
 
-        // Tentukan folder untuk setiap instance
-        const sessionPath = directoryPathSession(this.imcenter_id);
-
-        const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
-        this.socket = makeWASocket({ 
-            auth: state, printQRInTerminal: true });
+        const logger = log.child({});
+        logger.level = "silent";
 
         // Inisialisasi MessageHandler dan ConnectionHandler
+        this.authHandler = new AuthHandler(this.imcenter_id);
+        const { state, saveState } = await this.authHandler.useAuthHandle();
+
+        this.socket = makeWASocket({ 
+            auth: state, printQRInTerminal: true, logger : logger });
+
         this.messageHandler = new MessageHandler(this.socket, new MessageService(this.imcenter_id));
         this.connectionHandler = new ConnectionHandler(this.imcenter_id,this.socket, new SessionService(), new ImCenterService(), new MessageService(this.imcenter_id));
 
@@ -33,7 +39,7 @@ export class WhatsappService {
         this.messageHandler.listenForMessages();
 
         // Simpan kredensial secara otomatis
-        this.socket.ev.on("creds.update", saveCreds);
+        this.socket.ev.on("creds.update", saveState);
 
         // reconnection
         this.socket.ws.on("reconnect", () => {
@@ -52,14 +58,6 @@ export class WhatsappService {
         return await this.init();
     }
 
-
-
-    private serviceIsReady() : boolean {
-        if (this.socket?.authState?.creds?.me?.id) return true;
-        return false;
-    }
-
-
     private async waitingQRCode(): Promise<string> {
         return await this.connectionHandler.waitingQRCode();
     }
@@ -71,11 +69,6 @@ export class WhatsappService {
     async logout() {
         await this.connectionHandler.Logout();
     }
-
-    async updateModeStandby(standby: boolean) {
-        await this.connectionHandler.updateModeStandby(standby);
-    }
-
     async broadcastMessage(jids: string[], message: string) {
         await this.messageHandler.broadcastMessage(jids, message);
     }

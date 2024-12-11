@@ -2,33 +2,43 @@ import { proto } from "baileys";
 import { AppDataSource } from "../../../configs/db";
 import { ImcenterLogs } from "../../../entities/imcenterLogs";
 import { jidToNumber } from "../../../utils/whatsapp";
-import { Imcenter } from "../../../entities/imcenter";
+import Imcenter from "../../../entities/imcenter";
+import { TIPE_APLIKASI, TIPE_LOG } from "../../../entities/types";
+import { timeToDate } from "../../../utils/date";
 
 export class MessageService{
 
     private repository = AppDataSource.getRepository(ImcenterLogs);
     constructor(private imcenter_id: number) {}
 
-    async insertData(message: proto.IWebMessageInfo, type : string = "inbox") {
-        switch(type){
-            case "inbox":
-                await this.createInbox(message);
-                break;
-            case "outbox":
-                await this.createOutbox(message);
-                break;
-        }
+    async saveMessage(message: proto.IWebMessageInfo,tipe : TIPE_LOG) {
+        const imcenterLog = this.getSkeletonLog();
+        imcenterLog.keterangan = message?.message?.conversation;
+        imcenterLog.tipe =tipe;
+        imcenterLog.pengirim = message.key.remoteJid;
+        imcenterLog.message_id = message.key.id;
+        imcenterLog.sender_timestamp = timeToDate(Number(message.messageTimestamp))
+        imcenterLog.raw_message = JSON.stringify(message)
+        await this.repository.save(imcenterLog);
     }
 
-    private async createInbox(message: proto.IWebMessageInfo) {
-        await this.repository.save({ imcenter_id : this.imcenter_id, message_id :message.key.id, type : "inbox", keterangan : message.message?.conversation || null, raw_message : JSON.stringify(message), pengirim : message.key.remoteJid });
+    async saveLog(message : string, tipe : TIPE_LOG){
+        const imcenterLog = this.getSkeletonLog();
+        imcenterLog.keterangan = message;
+        imcenterLog.tipe = tipe
+        await this.repository.save(imcenterLog);
     }
 
-    private async createOutbox(message: proto.IWebMessageInfo) {
-        await this.repository.save({ imcenter_id : this.imcenter_id, message_id :message.key.id, type : "outbox", keterangan : message.message?.conversation || null, raw_message : JSON.stringify(message), pengirim : message.key.remoteJid });
+    private getSkeletonLog() : ImcenterLogs{
+        const imcenterLog = new ImcenterLogs();
+        imcenterLog.aplikasi = TIPE_APLIKASI.NODEJS;
+        imcenterLog.imcenter_id = this.imcenter_id;
+        imcenterLog.tgl_entri = new Date();
+
+        return imcenterLog;
     }
 
-    async createLog(message: string) {
-        await this.repository.save({ imcenter_id : this.imcenter_id, type : "log", keterangan : message || null });
+    async getMessageByMessageId(messageId: string): Promise<ImcenterLogs> {
+        return this.repository.findOneBy({ message_id: messageId });
     }
 }

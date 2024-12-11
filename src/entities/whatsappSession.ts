@@ -1,16 +1,16 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('whatsapp_sessions')
+@Entity('whatsapp_nodejs_sessions')
 export class WhatsappSession{
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({unique : true})
-    nomorhp!: string;
+    @Column({type : 'varchar',nullable : true})
+    jid!: string;
 
-    @Column({type : 'jsonb', nullable : true})
-    sessionCred!: Record<string, any> | null;
+    @Column({ type: "int",unique : true })
+    imcenter_id!: number;
 
-    @Column({type : 'jsonb', nullable : true})
-    sessionKey!: Record<string, any> | null;
+    @Column({ type: "text" })
+    auth: string;
 }

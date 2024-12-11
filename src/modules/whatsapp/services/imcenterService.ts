@@ -1,19 +1,20 @@
 import { AppDataSource } from '../../../configs/db';
-import { Imcenter } from '../../../entities/imcenter';
+import Imcenter from '../../../entities/imcenter';
+import { STATUS_LOGIN } from '../../../entities/types';
 
 export class ImCenterService {
     private repository = AppDataSource.getRepository(Imcenter);
 
-    async createImcenter(number: string): Promise<string> {
-        const existingSession = await this.repository.findOneBy({ nomorhp: number });
+    async createImcenter(numberPhone: string): Promise<string> {
+        const existingSession = await this.repository.findOneBy({ username: numberPhone });
         if (existingSession) {
-            return `Imcenter with number "${number}" already exists.`;
+            return `Imcenter with numberPhone "${numberPhone}" already exists.`;
         }
-        await this.repository.save({ nomorhp: number, aktif: false, standby: false });
+        await this.repository.save({ username: numberPhone, aktif: false, standby: false });
     }
 
-    async checkScannerIsValid(imcenter_id : number,nomorhp: string): Promise<boolean> {
-        const session = await this.repository.findOneBy({ id: imcenter_id, nomorhp });
+    async checkScannerIsValid(imcenter_id : number,numberPhone: string): Promise<boolean> {
+        const session = await this.repository.findOneBy({ id: imcenter_id, username: numberPhone });
         if (!session) {
             return false;
         }
@@ -47,18 +48,18 @@ export class ImCenterService {
             throw new Error(`Session with key "${id}" not found.`);
         }
 
-        session.qrcode = qrcode;
+        session.qr = qrcode;
         await this.repository.save(session);
-        return `Session "${session.nomorhp}" QR Code updated.`;
+        return `Session "${session.username}" QR Code updated.`;
     }
 
-    async getQRCode(nomorhp: string): Promise<string> {
-        const session = await this.repository.findOneBy({ nomorhp });
+    async getQRCode(numberPhone: string): Promise<string> {
+        const session = await this.repository.findOneBy({ username : numberPhone });
         if (!session) {
-            throw new Error(`Session with key "${nomorhp}" not found.`);
+            throw new Error(`Session with key "${numberPhone}" not found.`);
         }
 
-        return session.qrcode;
+        return session.qr;
     }
 
     async getImcenterById(imcenter_id: number): Promise<Imcenter> {
@@ -66,31 +67,19 @@ export class ImCenterService {
         if (!imcenter) {
             throw new Error(`imcenter with key "${imcenter_id}" not found.`);
         }
-
         return imcenter;
     }
 
-    async updateModeStandby(standby: boolean, imcenter_id: number): Promise<string> {
-        const imcenter = await this.repository.findOneBy({ id : imcenter_id });
-        if (!imcenter) {
-            throw new Error(`Session with key "${imcenter_id}" not found.`);
-        }
-
-        imcenter.standby = standby;
-        await this.repository.save(imcenter);
-        return `Session "${imcenter_id}" standby mode updated.`;
-    }
-
     public async getAutoActiveSession(): Promise<Imcenter[]> {
-        return this.repository.findBy({ auto_aktif: true });
+        return this.repository.findBy({ aktif: true });
     }
 
-    async updateStatus(imcenter_id: number, status: "start" | "qr" | "open" | "closed"): Promise<string> {
+    async updateStatus(imcenter_id: number, status_login: STATUS_LOGIN): Promise<string> {
         const imcenter = await this.repository.findOneBy({ id: imcenter_id });
         if (!imcenter) {
             throw new Error(`Session with key "${imcenter_id}" not found.`);
         }
-        imcenter.status = status;
+        imcenter.status_login = status_login;
         await this.repository.save(imcenter);
         return `Session "${imcenter_id}" status updated.`;
     }

@@ -9,40 +9,92 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Imcenter = void 0;
 const typeorm_1 = require("typeorm");
+const types_1 = require("./types");
 let Imcenter = class Imcenter {
 };
-exports.Imcenter = Imcenter;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
 ], Imcenter.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, typeorm_1.Column)({ type: 'enum', enum: Object.values(types_1.IMCENTER_TYPE) }),
     __metadata("design:type", String)
-], Imcenter.prototype, "nomorhp", void 0);
+], Imcenter.prototype, "tipe", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'bool' }),
-    __metadata("design:type", Boolean)
-], Imcenter.prototype, "aktif", void 0);
+    (0, typeorm_1.Column)({ type: 'varchar' }),
+    __metadata("design:type", String)
+], Imcenter.prototype, "label", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'bool' }),
-    __metadata("design:type", Boolean)
-], Imcenter.prototype, "standby", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'bool', default: false }),
-    __metadata("design:type", Boolean)
-], Imcenter.prototype, "auto_aktif", void 0);
+    (0, typeorm_1.Column)({ type: 'varchar' }),
+    __metadata("design:type", String)
+], Imcenter.prototype, "username", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
     __metadata("design:type", String)
-], Imcenter.prototype, "qrcode", void 0);
+], Imcenter.prototype, "token_api", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'enum', enum: ['start', 'qr', 'open', 'closed'], default: 'closed' }),
+    (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
     __metadata("design:type", String)
-], Imcenter.prototype, "status", void 0);
-exports.Imcenter = Imcenter = __decorate([
-    (0, typeorm_1.Entity)('imcenter')
+], Imcenter.prototype, "connect_api", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
+    __metadata("design:type", String)
+], Imcenter.prototype, "status_pesan", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'int', default: 0 }),
+    __metadata("design:type", Number)
+], Imcenter.prototype, "expired_inbox", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'int', default: 0 }),
+    __metadata("design:type", Number)
+], Imcenter.prototype, "pause_kirim", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'bool', default: false }),
+    __metadata("design:type", Boolean)
+], Imcenter.prototype, "aktif", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'bool', default: false }),
+    __metadata("design:type", Boolean)
+], Imcenter.prototype, "disable", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'bool', default: false }),
+    __metadata("design:type", Boolean)
+], Imcenter.prototype, "broadcast", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'bool', default: false }),
+    __metadata("design:type", Boolean)
+], Imcenter.prototype, "griyabayar", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
+    __metadata("design:type", String)
+], Imcenter.prototype, "im_jid", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
+    __metadata("design:type", String)
+], Imcenter.prototype, "qr", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', default: false }),
+    __metadata("design:type", String)
+], Imcenter.prototype, "device", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'enum', enum: Object.values(types_1.TIPE_APLIKASI) }),
+    __metadata("design:type", String)
+], Imcenter.prototype, "aplikasi", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'enum', enum: Object.values(types_1.STATUS_LOGIN) }),
+    __metadata("design:type", String)
+], Imcenter.prototype, "status_login", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Date)
+], Imcenter.prototype, "tgl_aktivitas", void 0);
+__decorate([
+    (0, typeorm_1.Column)({}),
+    __metadata("design:type", Date)
+], Imcenter.prototype, "tgl_update", void 0);
+Imcenter = __decorate([
+    (0, typeorm_1.Entity)({ schema: 'terminal', name: 'imcenter' })
 ], Imcenter);
+exports.default = Imcenter;
 //# sourceMappingURL=imcenter.js.map

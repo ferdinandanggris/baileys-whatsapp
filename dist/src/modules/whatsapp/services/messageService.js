@@ -12,38 +12,44 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageService = void 0;
 const db_1 = require("../../../configs/db");
 const imcenterLogs_1 = require("../../../entities/imcenterLogs");
+const types_1 = require("../../../entities/types");
+const date_1 = require("../../../utils/date");
 class MessageService {
     constructor(imcenter_id) {
         this.imcenter_id = imcenter_id;
         this.repository = db_1.AppDataSource.getRepository(imcenterLogs_1.ImcenterLogs);
     }
-    insertData(message_1) {
-        return __awaiter(this, arguments, void 0, function* (message, type = "inbox") {
-            switch (type) {
-                case "inbox":
-                    yield this.createInbox(message);
-                    break;
-                case "outbox":
-                    yield this.createOutbox(message);
-                    break;
-            }
-        });
-    }
-    createInbox(message) {
+    saveMessage(message, tipe) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
-            yield this.repository.save({ imcenter_id: this.imcenter_id, message_id: message.key.id, type: "inbox", keterangan: ((_a = message.message) === null || _a === void 0 ? void 0 : _a.conversation) || null, raw_message: JSON.stringify(message), pengirim: message.key.remoteJid });
+            const imcenterLog = this.getSkeletonLog();
+            imcenterLog.keterangan = (_a = message === null || message === void 0 ? void 0 : message.message) === null || _a === void 0 ? void 0 : _a.conversation;
+            imcenterLog.tipe = tipe;
+            imcenterLog.pengirim = message.key.remoteJid;
+            imcenterLog.message_id = message.key.id;
+            imcenterLog.sender_timestamp = (0, date_1.timeToDate)(Number(message.messageTimestamp));
+            imcenterLog.raw_message = JSON.stringify(message);
+            yield this.repository.save(imcenterLog);
         });
     }
-    createOutbox(message) {
+    saveLog(message, tipe) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            yield this.repository.save({ imcenter_id: this.imcenter_id, message_id: message.key.id, type: "outbox", keterangan: ((_a = message.message) === null || _a === void 0 ? void 0 : _a.conversation) || null, raw_message: JSON.stringify(message), pengirim: message.key.remoteJid });
+            const imcenterLog = this.getSkeletonLog();
+            imcenterLog.keterangan = message;
+            imcenterLog.tipe = tipe;
+            yield this.repository.save(imcenterLog);
         });
     }
-    createLog(message) {
+    getSkeletonLog() {
+        const imcenterLog = new imcenterLogs_1.ImcenterLogs();
+        imcenterLog.aplikasi = types_1.TIPE_APLIKASI.NODEJS;
+        imcenterLog.imcenter_id = this.imcenter_id;
+        imcenterLog.tgl_entri = new Date();
+        return imcenterLog;
+    }
+    getMessageByMessageId(messageId) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.repository.save({ imcenter_id: this.imcenter_id, type: "log", keterangan: message || null });
+            return this.repository.findOneBy({ message_id: messageId });
         });
     }
 }

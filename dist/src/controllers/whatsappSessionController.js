@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.broadcastMessage = exports.updateModeStandby = exports.sendMessage = exports.removeSession = exports.getQrCode = exports.createSession = void 0;
+exports.broadcastMessage = exports.sendMessage = exports.removeSession = exports.getQrCode = exports.createSession = void 0;
 const imcenterService_1 = require("../modules/whatsapp/services/imcenterService");
 const instanceManager = require('../modules/whatsapp/instanceManagerService');
 const createSession = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -48,18 +48,6 @@ const removeSession = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.removeSession = removeSession;
-const updateModeStandby = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { standby, sessionId } = req.body;
-        const socket = instanceManager.getInstance(sessionId);
-        yield socket.updateModeStandby(standby);
-        res.status(200).json({ message: "Mode updated." });
-    }
-    catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
-exports.updateModeStandby = updateModeStandby;
 const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { sessionId, message, nomor_penerima } = req.body;

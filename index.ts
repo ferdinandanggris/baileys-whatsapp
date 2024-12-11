@@ -24,7 +24,10 @@ AppDataSource.initialize()
             console.log(`Server is running on port ${PORT}`);
         });
 
-        // const whatsappSessionService = new WhatsappSessionService();
-        // await whatsappSessionService.checkAutoActiveSessions();
+        // auto run if session is exist
+        const instanceManager = require('./src/modules/whatsapp/instanceManagerService');
+        instanceManager.autoActiveSession()
+
+
 	})
     .catch((error) => console.error('Error connecting to database:', error));

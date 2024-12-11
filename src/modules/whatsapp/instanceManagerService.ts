@@ -2,7 +2,6 @@ import { ImCenterService } from "./services/imcenterService";
 import { WhatsappService } from "./whatsappService";
 import SessionService from "./services/sessionService";
 
-
 class InstanceManager {
     private instances: Map<number, WhatsappService>;
     private imcenterService = new ImCenterService();    
@@ -61,14 +60,14 @@ class InstanceManager {
         console.log("All instances logged out.");
     }
 
-    public async checkAutoActiveSessions(): Promise<void> {
+    public async autoActiveSession(): Promise<void> {
         const imcenters = await this.imcenterService.getAutoActiveSession();
-        const sessions = await this.sessionService.getSessionByListJID(imcenters.map(imcenter => imcenter.nomorhp));
+        const sessions = await this.sessionService.getSessionByListImcenterId(imcenters.map(imcenter => imcenter.id));
 
-        // for (const session of sessions) {
-        //     const socket = this.getInstance(session.);
-        //     socket.init();
-        // }
+        for (const session of sessions) {
+            const socket = this.getInstance(session.imcenter_id);
+            socket.init();
+        }
     }
 }
 

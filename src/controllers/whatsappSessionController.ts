@@ -36,17 +36,6 @@ const instanceManager = require('../modules/whatsapp/instanceManagerService');
         }
     }
 
-    const updateModeStandby = async (req: Request, res: Response): Promise<void> => {
-        try {
-            const { standby, sessionId } = req.body;
-            const socket : WhatsappService = instanceManager.getInstance(sessionId);
-            await socket.updateModeStandby(standby);
-            res.status(200).json({ message: "Mode updated." });
-        } catch (error) {
-            res.status(400).json({ error: error.message });
-        }
-    }
-
     const sendMessage = async (req: Request, res: Response): Promise<void> => {
         try {
             const { sessionId, message, nomor_penerima} = req.body;
@@ -69,4 +58,4 @@ const instanceManager = require('../modules/whatsapp/instanceManagerService');
         }
     }
 
-    export { createSession, getQrCode, removeSession, sendMessage, updateModeStandby, broadcastMessage };
+    export { createSession, getQrCode, removeSession, sendMessage, broadcastMessage };

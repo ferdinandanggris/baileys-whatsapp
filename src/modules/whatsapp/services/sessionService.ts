@@ -2,23 +2,33 @@ import makeWASocket from "baileys";
 import { AppDataSource } from "../../../configs/db";
 import { WhatsappSession } from "../../../entities/whatsappSession";
 import { In } from "typeorm";
+import { numberToJid } from "../../../utils/whatsapp";
 
 export default class SessionService {
 
     private repository = AppDataSource.getRepository(WhatsappSession);
 
     async saveSession(nomorhp : string, socket: ReturnType<typeof makeWASocket>) {
-        const whatsappSession = await this.repository.findOneBy({ nomorhp });
+        const jid = numberToJid(nomorhp);
+        const whatsappSession = await this.repository.findOneBy({ jid });
         if(!whatsappSession) {
-            this.repository.save({ nomorhp : nomorhp, sessionCred : socket.authState.creds, sessionKey: socket.authState.keys });
+            this.repository.save({ jid : jid,  });
         }
     }
 
-    async removeSession(nomorhp: string) {
-        this.repository.delete({ nomorhp });
+    async getSession(imcenter_id: number): Promise<WhatsappSession> {
+        return this.repository.findOneBy({ imcenter_id });
     }
 
-    async getSessionByListJID(listJID: string[]): Promise<WhatsappSession[]> {
-        return this.repository.find({ where: { nomorhp: In(listJID) } });
+    saveUpsertSession(imcenter_id: number, jid : string, auth: string) {
+        return this.repository.upsert({ imcenter_id, jid, auth }, { conflictPaths: ["imcenter_id"] });
+    }
+
+    async removeSession(jid: string) {
+        this.repository.delete({ jid });
+    }
+
+    async getSessionByListImcenterId(listImcenterId: number[]): Promise<WhatsappSession[]> {
+        return this.repository.find({ where: { imcenter_id: In(listImcenterId) } });
     }
 }
