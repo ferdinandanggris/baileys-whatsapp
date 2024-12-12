@@ -31,4 +31,8 @@ export default class SessionService {
     async getSessionByListImcenterId(listImcenterId: number[]): Promise<WhatsappSession[]> {
         return this.repository.find({ where: { imcenter_id: In(listImcenterId) } });
     }
+
+    async getAllSession(): Promise<WhatsappSession[]> {
+        return this.repository.find();
+    }
 }

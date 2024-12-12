@@ -1,6 +1,6 @@
 import amqp from 'amqplib';
 
-const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost';
+const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost:5672';
 
 export const createConnection = async () => {
   try {

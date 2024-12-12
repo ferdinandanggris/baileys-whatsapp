@@ -53,7 +53,7 @@ class ConnectionHandler {
             }
         });
     }
-    getImcenterQRCode() {
+    checkStatus() {
         return __awaiter(this, void 0, void 0, function* () {
             const imcenter = yield this.imcenterService.getImcenterById(this.imcenter_id);
             if (!imcenter) {
@@ -129,50 +129,32 @@ class ConnectionHandler {
         }
     }
     removeSession() {
-        try {
-            this.sessionService.removeSession((0, whatsapp_1.getSocketJid)(this.socket));
-        }
-        catch (error) {
-            console.error("Gagal menghapus session", error);
-            this.messageService.saveLog("Gagal menghapus session", types_1.TIPE_LOG.ERROR);
-        }
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield this.sessionService.removeSession((0, whatsapp_1.getSocketJid)(this.socket));
+            }
+            catch (error) {
+                console.error("Gagal menghapus session", error);
+                yield this.messageService.saveLog("Gagal menghapus session", types_1.TIPE_LOG.ERROR);
+            }
+        });
     }
     changeEventStatus(status, value) {
         this.socket.ws.emit(status, value);
     }
-    Logout() {
+    logout() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (this.socket) {
                     yield this.socket.logout();
+                    yield this.sessionService.removeSession((0, whatsapp_1.getSocketNumber)(this.socket));
                     this.socket = null;
-                    this.sessionService.removeSession((0, whatsapp_1.getSocketNumber)(this.socket));
                 }
             }
             catch (error) {
                 console.error("Gagal logout", error);
                 this.messageService.saveLog("Gagal Logout", types_1.TIPE_LOG.ERROR);
             }
-        });
-    }
-    waitingQRCode() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const qrCodePromise = new Promise((resolve) => {
-                this.socket.ev.on("connection.update", (update) => __awaiter(this, void 0, void 0, function* () {
-                    const { connection, qr } = update;
-                    if (connection === "open") {
-                        resolve(null);
-                    }
-                    if (qr) {
-                        resolve(qr);
-                    }
-                }));
-            });
-            const qrCodeValue = yield qrCodePromise;
-            if (qrCodeValue) {
-                return (0, whatsapp_1.qrCodeToBase64)(qrCodeValue);
-            }
-            return null;
         });
     }
 }

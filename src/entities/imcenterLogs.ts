@@ -10,7 +10,7 @@ export class ImcenterLogs{
     tgl_entri!: Date;
 
     @Column({type : 'int'})
-    imcenter_id!: number;
+    imcenter_id: number;
 
     @Column({type : 'varchar', nullable : true})
     message_id!: string;

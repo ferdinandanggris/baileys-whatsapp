@@ -16,11 +16,13 @@ exports.MessageHandler = void 0;
 const whatsapp_1 = require("../../../utils/whatsapp");
 const types_1 = require("../../../entities/types");
 const parameterService_1 = __importDefault(require("../../autoResponse/services/parameterService"));
+const imcenterLogs_1 = require("../../../entities/imcenterLogs");
+const date_1 = require("../../../utils/date");
 class MessageHandler {
     constructor(socket, messageService) {
         this.messageService = messageService;
-        this.socket = socket;
         this.parameterService = new parameterService_1.default();
+        this.socket = socket;
     }
     sendMessage(number, content) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -38,23 +40,62 @@ class MessageHandler {
     }
     listenForMessages() {
         this.socket.ev.on("messages.upsert", (msg) => __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a;
             for (const message of msg.messages) {
                 const jid = message.key.remoteJid;
                 const content = ((_a = message.message) === null || _a === void 0 ? void 0 : _a.conversation) || "Pesan tidak memiliki teks";
                 console.log(`Pesan diterima dari ${jid}: ${content}`);
-                if ((0, whatsapp_1.isInboxMessage)(message) && ((_b = message.message) === null || _b === void 0 ? void 0 : _b.conversation)) {
-                    yield this.messageService.saveMessage(message, types_1.TIPE_LOG.INBOX);
-                    // Auto response
-                    const response = yield this.parameterService.getParameterAutoResponse(content);
-                    if (response) {
-                        yield this.markAsRead(message.key);
-                        if (response.value)
-                            yield this.sendMessage(jid, response.value);
-                    }
-                }
+                // if (isInboxMessage(message) && message.message?.conversation) {
+                //     await this.messageService.saveMessage(message, TIPE_LOG.INBOX);
+                // Auto response
+                // const response = await this.parameterService.getParameterAutoResponse(content);
+                // if (response) {
+                //     await this.markAsRead(message.key);
+                //     if(response.value) await this.sendMessage(jid, response.value);
+                // }
+                // }
             }
+            const imcenterLogs = yield this.inboxValidation(msg.messages);
+            if (imcenterLogs.length > 0)
+                yield this.messageService.saveMultipleMessage(imcenterLogs);
         }));
+    }
+    inboxValidation(messages) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            const imcenterLogs = [];
+            for (const message of messages) {
+                const jid = message.key.remoteJid;
+                // message validation not null conversation
+                if (!((_a = message.message) === null || _a === void 0 ? void 0 : _a.conversation)) {
+                    continue;
+                }
+                // get latest imcenter_log latest message, and compare with current message
+                const latestMessage = yield this.messageService.getLatestMessageByImcenter();
+                const messageTimestamp = Number(message.messageTimestamp);
+                // compare with latest message
+                if (latestMessage && (0, date_1.timeToDate)(messageTimestamp) <= latestMessage.sender_timestamp) {
+                    continue;
+                }
+                if ((0, whatsapp_1.isFromBroadcast)(jid) || (0, whatsapp_1.isFromGroup)(jid)) {
+                    continue;
+                }
+                // check if this message is from reseller
+                // TODO: check if this message is from reseller
+                const imcenterLog = new imcenterLogs_1.ImcenterLogs();
+                imcenterLog.keterangan = (_b = message.message) === null || _b === void 0 ? void 0 : _b.conversation;
+                imcenterLog.tipe = types_1.TIPE_LOG.INBOX;
+                imcenterLog.pengirim = jid;
+                imcenterLog.message_id = message.key.id;
+                imcenterLog.sender_timestamp = (0, date_1.timeToDate)(messageTimestamp);
+                imcenterLog.raw_message = JSON.stringify(message);
+                imcenterLog.tgl_entri = new Date();
+                imcenterLog.aplikasi = types_1.TIPE_APLIKASI.NODEJS;
+                imcenterLog.imcenter_id = this.messageService.getImcenterId();
+                imcenterLogs.push(imcenterLog);
+            }
+            return imcenterLogs;
+        });
     }
     markAsRead(messageId) {
         return __awaiter(this, void 0, void 0, function* () {

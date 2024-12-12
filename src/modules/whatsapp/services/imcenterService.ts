@@ -1,9 +1,14 @@
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { AppDataSource } from '../../../configs/db';
 import Imcenter from '../../../entities/imcenter';
-import { STATUS_LOGIN } from '../../../entities/types';
+import { IMCENTER_TYPE, STATUS_LOGIN, TIPE_APLIKASI } from '../../../entities/types';
 
 export class ImCenterService {
-    private repository = AppDataSource.getRepository(Imcenter);
+    private repository : Repository<Imcenter> = AppDataSource.getRepository(Imcenter);
+
+    queryAdditionalForWhatsappNodejs(query: SelectQueryBuilder<Imcenter>): SelectQueryBuilder<Imcenter> {
+        return query.where('tipe = :whatsapp AND aplikasi = :nodejs', { whatsapp : IMCENTER_TYPE.WHATSAPP, nodejs : TIPE_APLIKASI.NODEJS });
+    }
 
     async createImcenter(numberPhone: string): Promise<string> {
         const existingSession = await this.repository.findOneBy({ username: numberPhone });
@@ -22,7 +27,7 @@ export class ImCenterService {
     }
 
     async getAllSessions(): Promise<Imcenter[]> {
-        return this.repository.find();
+        return this.queryAdditionalForWhatsappNodejs(this.repository.createQueryBuilder('imcenter')).getMany();
     }
 
     async deleteSession(id: number): Promise<string> {
@@ -72,6 +77,11 @@ export class ImCenterService {
 
     public async getAutoActiveSession(): Promise<Imcenter[]> {
         return this.repository.findBy({ aktif: true });
+    }
+
+    public async getNotHaveLoginStatus(status : STATUS_LOGIN ): Promise<Imcenter[]> {
+       return await this.queryAdditionalForWhatsappNodejs(this.repository.createQueryBuilder('imcenter'))
+        .andWhere('status_login != :status', { status }).getMany();
     }
 
     async updateStatus(imcenter_id: number, status_login: STATUS_LOGIN): Promise<string> {

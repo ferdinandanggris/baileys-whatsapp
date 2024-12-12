@@ -5,11 +5,16 @@ import { jidToNumber } from "../../../utils/whatsapp";
 import Imcenter from "../../../entities/imcenter";
 import { TIPE_APLIKASI, TIPE_LOG } from "../../../entities/types";
 import { timeToDate } from "../../../utils/date";
+import { FindOperator, IsNull, Not } from "typeorm";
 
 export class MessageService{
 
     private repository = AppDataSource.getRepository(ImcenterLogs);
     constructor(private imcenter_id: number) {}
+
+    getImcenterId() {
+        return this.imcenter_id;
+    }
 
     async saveMessage(message: proto.IWebMessageInfo,tipe : TIPE_LOG) {
         const imcenterLog = this.getSkeletonLog();
@@ -40,5 +45,13 @@ export class MessageService{
 
     async getMessageByMessageId(messageId: string): Promise<ImcenterLogs> {
         return this.repository.findOneBy({ message_id: messageId });
+    }
+
+    async getLatestMessageByImcenter(): Promise<ImcenterLogs> {
+        return this.repository.findOne({ where : {imcenter_id : this.imcenter_id,sender_timestamp : Not(IsNull())},order: { sender_timestamp: 'DESC' } });
+    }
+
+    async saveMultipleMessage(messages: ImcenterLogs[]) {
+        await this.repository.save(messages);
     }
 }

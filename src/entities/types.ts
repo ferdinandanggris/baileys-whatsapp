@@ -1,6 +1,6 @@
 
 export enum IMCENTER_TYPE  {
-    WHATSAPP = 'Whatsapp',
+    WHATSAPP = 'WhatsApp',
     TELEGRAM_BOT = 'Telegram Bot'
 }
 
@@ -24,4 +24,22 @@ export enum TIPE_LOG {
     ERROR = 'error',
     INBOX = 'inbox',
     OUTBOX = 'outbox'
+}
+
+export enum GROUP_MERCHANT{
+    RETAIL = 'Retail',
+    SERVER = 'Server',
+}
+
+export enum TIPE_AKTIVITAS{
+    AKTIF = 'Aktif',
+    BARU_1_HARI = 'Baru 1 Hari',
+    BARU_1_MINGGU = 'Baru 1 Minggu',
+    BARU_1_BULAN = 'Baru 1 Bulan',
+    BARU_3_BULAN = 'Baru 3 Bulan',
+    PASIF_1_BULAN = 'Pasif 1 Bulan',
+    PASIF_3_BULAN = 'Pasif 3 Bulan',
+    PASIF_6_BULAN = 'Pasif 6 Bulan',
+    PASIF_1_TAHUN = 'Pasif 1 Tahun',
+    PASIF_3_TAHUN = 'Pasif 3 Tahun',
 }

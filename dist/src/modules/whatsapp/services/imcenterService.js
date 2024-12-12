@@ -15,9 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImCenterService = void 0;
 const db_1 = require("../../../configs/db");
 const imcenter_1 = __importDefault(require("../../../entities/imcenter"));
+const types_1 = require("../../../entities/types");
 class ImCenterService {
     constructor() {
         this.repository = db_1.AppDataSource.getRepository(imcenter_1.default);
+    }
+    queryAdditionalForWhatsappNodejs(query) {
+        return query.where('tipe = :whatsapp AND aplikasi = :nodejs', { whatsapp: types_1.IMCENTER_TYPE.WHATSAPP, nodejs: types_1.TIPE_APLIKASI.NODEJS });
     }
     createImcenter(numberPhone) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -39,7 +43,7 @@ class ImCenterService {
     }
     getAllSessions() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.repository.find();
+            return this.queryAdditionalForWhatsappNodejs(this.repository.createQueryBuilder('imcenter')).getMany();
         });
     }
     deleteSession(id) {
@@ -93,6 +97,12 @@ class ImCenterService {
     getAutoActiveSession() {
         return __awaiter(this, void 0, void 0, function* () {
             return this.repository.findBy({ aktif: true });
+        });
+    }
+    getNotHaveLoginStatus(status) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.queryAdditionalForWhatsappNodejs(this.repository.createQueryBuilder('imcenter'))
+                .andWhere('status_login != :status', { status }).getMany();
         });
     }
     updateStatus(imcenter_id, status_login) {

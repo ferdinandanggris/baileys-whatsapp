@@ -14,10 +14,14 @@ const db_1 = require("../../../configs/db");
 const imcenterLogs_1 = require("../../../entities/imcenterLogs");
 const types_1 = require("../../../entities/types");
 const date_1 = require("../../../utils/date");
+const typeorm_1 = require("typeorm");
 class MessageService {
     constructor(imcenter_id) {
         this.imcenter_id = imcenter_id;
         this.repository = db_1.AppDataSource.getRepository(imcenterLogs_1.ImcenterLogs);
+    }
+    getImcenterId() {
+        return this.imcenter_id;
     }
     saveMessage(message, tipe) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -50,6 +54,16 @@ class MessageService {
     getMessageByMessageId(messageId) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.repository.findOneBy({ message_id: messageId });
+        });
+    }
+    getLatestMessageByImcenter() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.repository.findOne({ where: { imcenter_id: this.imcenter_id, sender_timestamp: (0, typeorm_1.Not)((0, typeorm_1.IsNull)()) }, order: { sender_timestamp: 'DESC' } });
+        });
+    }
+    saveMultipleMessage(messages) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.repository.save(messages);
         });
     }
 }

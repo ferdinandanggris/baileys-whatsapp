@@ -17,49 +17,47 @@ export class WhatsappService {
 
     constructor(private imcenter_id: number) {}
 
-    async init(): Promise<string> {
+    async init() {
+        try{
 
-        const logger = log.child({});
-        logger.level = "silent";
-
-        // Inisialisasi MessageHandler dan ConnectionHandler
-        this.authHandler = new AuthHandler(this.imcenter_id);
-        const { state, saveState } = await this.authHandler.useAuthHandle();
-
-        this.socket = makeWASocket({ 
-            auth: state, printQRInTerminal: true, logger : logger });
-
-        this.messageHandler = new MessageHandler(this.socket, new MessageService(this.imcenter_id));
-        this.connectionHandler = new ConnectionHandler(this.imcenter_id,this.socket, new SessionService(), new ImCenterService(), new MessageService(this.imcenter_id));
-
-        // Tangani event koneksi
-        this.connectionHandler.handleConnectionEvents();
-
-        // Tangani pesan
-        this.messageHandler.listenForMessages();
-
-        // Simpan kredensial secara otomatis
-        this.socket.ev.on("creds.update", saveState);
-
-        // reconnection
-        this.socket.ws.on("reconnect", () => {
-            console.log("Reconnecting...");
-            return this.init();
-        });
-
-        return await this.waitingQRCode();
+            const logger = log.child({});
+            logger.level = "silent";
+    
+            // Inisialisasi MessageHandler dan ConnectionHandler
+            this.authHandler = new AuthHandler(this.imcenter_id);
+            const { state, saveState } = await this.authHandler.useAuthHandle();
+    
+            this.socket = makeWASocket({ 
+                auth: state, printQRInTerminal: true, logger : logger });
+    
+            this.messageHandler = new MessageHandler(this.socket, new MessageService(this.imcenter_id));
+            this.connectionHandler = new ConnectionHandler(this.imcenter_id,this.socket, new SessionService(), new ImCenterService(), new MessageService(this.imcenter_id));
+    
+            // Tangani event koneksi
+            this.connectionHandler.handleConnectionEvents();
+    
+            // Tangani pesan
+            this.messageHandler.listenForMessages();
+    
+            // Simpan kredensial secara otomatis
+            this.socket.ev.on("creds.update", saveState);
+    
+            // reconnection
+            this.socket.ws.on("reconnect", () => {
+                console.log("Reconnecting...");
+                return this.init();
+            });
+        }catch(error) {
+            console.error("Gagal inisialisasi", error);
+        }
     }
 
     async connect() : Promise<string> {
         // check if service is ready
         if (this.socket) {
-            return await this.connectionHandler.getImcenterQRCode();
+            return await this.connectionHandler.checkStatus();
         }
-        return await this.init();
-    }
-
-    private async waitingQRCode(): Promise<string> {
-        return await this.connectionHandler.waitingQRCode();
+        await this.init();
     }
 
     async sendMessage(number: string, message: string) {
@@ -67,7 +65,7 @@ export class WhatsappService {
     }
 
     async logout() {
-        await this.connectionHandler.Logout();
+        await this.connectionHandler?.logout();
     }
     async broadcastMessage(jids: string[], message: string) {
         await this.messageHandler.broadcastMessage(jids, message);

@@ -1,5 +1,9 @@
 import { createConnection } from '../configs/rabbitmq';
 import amqp from 'amqplib';
+import { consumeLoginQueue } from './consumers/loginConsumer';
+import { consumeLogoutQueue } from './consumers/logoutConsumer';
+import { consumeLoginAllQueue } from './consumers/loginAllConsumer';
+import { consumeLogoutAllQueue } from './consumers/logoutAllConsumer';
 
 let channel: amqp.Channel;
 
@@ -15,3 +19,10 @@ export const getChannel = () => {
   }
   return channel;
 };
+
+export const startConsumers = async () => {
+  await consumeLoginQueue();
+  await consumeLoginAllQueue();
+  await consumeLogoutQueue();
+  await consumeLogoutAllQueue();
+}

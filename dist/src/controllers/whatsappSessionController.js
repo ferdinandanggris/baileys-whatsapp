@@ -8,16 +8,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.broadcastMessage = exports.sendMessage = exports.removeSession = exports.getQrCode = exports.createSession = void 0;
 const imcenterService_1 = require("../modules/whatsapp/services/imcenterService");
+const loginPublisher_1 = require("../queues/publishers/loginPublisher");
+const imcenter_1 = __importDefault(require("../entities/imcenter"));
 const instanceManager = require('../modules/whatsapp/instanceManagerService');
 const createSession = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { imcenter_id } = req.body;
-        const socket = instanceManager.getInstance(imcenter_id);
-        const result = yield socket.connect();
-        res.status(201).json({ message: "Session created.", qrCode: result });
+        const imcenter = new imcenter_1.default();
+        imcenter.id = imcenter_id;
+        yield (0, loginPublisher_1.publishToLoginQueue)(imcenter);
+        res.status(201).json({ message: "Session created." });
     }
     catch (error) {
         res.status(400).json({ error: error.message });
@@ -38,8 +44,8 @@ const getQrCode = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getQrCode = getQrCode;
 const removeSession = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { nomorhp } = req.params;
-        const socket = instanceManager.getInstance(nomorhp);
+        const { imcenter_id } = req.params;
+        const socket = instanceManager.getInstance(parseInt(imcenter_id));
         socket.logout();
         res.status(200).json({ message: "Session removed." });
     }
@@ -62,8 +68,8 @@ const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.sendMessage = sendMessage;
 const broadcastMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { sessionId, message, nomor_penerima } = req.body;
-        const socket = instanceManager.getInstance(sessionId);
+        const { imcenter_id, message, nomor_penerima } = req.body;
+        const socket = instanceManager.getInstance(imcenter_id);
         const response = yield socket.broadcastMessage(nomor_penerima, message);
         res.status(200).json({ message: "Send message" });
     }

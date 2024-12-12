@@ -44,6 +44,11 @@ class SessionService {
             return this.repository.find({ where: { imcenter_id: (0, typeorm_1.In)(listImcenterId) } });
         });
     }
+    getAllSession() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.repository.find();
+        });
+    }
 }
 exports.default = SessionService;
 //# sourceMappingURL=sessionService.js.map

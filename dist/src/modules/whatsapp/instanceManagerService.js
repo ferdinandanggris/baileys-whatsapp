@@ -12,9 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.InstanceManager = void 0;
 const imcenterService_1 = require("./services/imcenterService");
 const whatsappService_1 = require("./whatsappService");
 const sessionService_1 = __importDefault(require("./services/sessionService"));
+const types_1 = require("../../entities/types");
 class InstanceManager {
     constructor() {
         this.imcenterService = new imcenterService_1.ImCenterService();
@@ -33,11 +35,16 @@ class InstanceManager {
      * Membuat atau mendapatkan instance berdasarkan imcenter_id
      */
     getInstance(imcenter_id) {
-        if (!this.instances.has(imcenter_id)) {
-            const instance = new whatsappService_1.WhatsappService(imcenter_id);
-            this.instances.set(imcenter_id, instance);
+        try {
+            if (!this.instances.has(imcenter_id)) {
+                const instance = new whatsappService_1.WhatsappService(imcenter_id);
+                this.instances.set(imcenter_id, instance);
+            }
+            return this.instances.get(imcenter_id);
         }
-        return this.instances.get(imcenter_id);
+        catch (error) {
+            console.log(error);
+        }
     }
     /**
      * Hapus instance berdasarkan imcenter_id
@@ -66,16 +73,34 @@ class InstanceManager {
             console.log("All instances logged out.");
         });
     }
+    loginAllSessions() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const imcenters = yield this.imcenterService.getNotHaveLoginStatus(types_1.STATUS_LOGIN.SUDAH_LOGIN);
+            for (const imcenter of imcenters) {
+                const socket = this.getInstance(imcenter.id);
+                yield socket.connect();
+            }
+        });
+    }
     autoActiveSession() {
         return __awaiter(this, void 0, void 0, function* () {
-            const imcenters = yield this.imcenterService.getAutoActiveSession();
-            const sessions = yield this.sessionService.getSessionByListImcenterId(imcenters.map(imcenter => imcenter.id));
+            const imcentersAutoActive = yield this.imcenterService.getAutoActiveSession();
+            const sessions = yield this.sessionService.getSessionByListImcenterId(imcentersAutoActive.map(imcenter => imcenter.id));
+            const sessionActive = yield this.sessionService.getAllSession();
+            const imcenters = yield this.imcenterService.getAllSessions();
+            for (const imcenter of imcenters) {
+                if (sessionActive.find(session => session.imcenter_id === imcenter.id)) {
+                    continue;
+                }
+                yield this.imcenterService.updateStatus(imcenter.id, types_1.STATUS_LOGIN.BELUM_LOGIN);
+            }
             for (const session of sessions) {
                 const socket = this.getInstance(session.imcenter_id);
-                socket.init();
+                socket.connect();
             }
         });
     }
 }
+exports.InstanceManager = InstanceManager;
 module.exports = new InstanceManager();
 //# sourceMappingURL=instanceManagerService.js.map

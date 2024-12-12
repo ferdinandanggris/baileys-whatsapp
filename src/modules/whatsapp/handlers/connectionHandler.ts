@@ -8,7 +8,6 @@ import { STATUS_LOGIN, TIPE_LOG } from "../../../entities/types";
 
 export class ConnectionHandler{
     constructor(private imcenter_id: number,private socket: WASocket, private sessionService : SessionService, private imcenterService: ImCenterService, private messageService : MessageService) {
-
     }
 
     handleConnectionEvents() {
@@ -42,7 +41,7 @@ export class ConnectionHandler{
         }
     }
 
-    async getImcenterQRCode() {
+    async checkStatus() {
         const imcenter = await this.imcenterService.getImcenterById(this.imcenter_id);
         if (!imcenter) {
             throw new Error("Imcenter not found");
@@ -117,12 +116,12 @@ export class ConnectionHandler{
 
     }
 
-    private removeSession() {
+    private async removeSession() {
         try{
-            this.sessionService.removeSession(getSocketJid(this.socket));
+           await this.sessionService.removeSession(getSocketJid(this.socket));
         }catch(error) {
             console.error("Gagal menghapus session", error);
-            this.messageService.saveLog("Gagal menghapus session", TIPE_LOG.ERROR);
+            await this.messageService.saveLog("Gagal menghapus session", TIPE_LOG.ERROR);
         }
     }
 
@@ -130,37 +129,16 @@ export class ConnectionHandler{
         this.socket.ws.emit(status, value);
     }
 
-    async Logout() {
+    async logout() {
         try{
             if (this.socket) {
                 await this.socket.logout();
+                await this.sessionService.removeSession(getSocketNumber(this.socket));
                 this.socket = null;
-                this.sessionService.removeSession(getSocketNumber(this.socket));
             }
         }catch(error) {
             console.error("Gagal logout", error);
             this.messageService.saveLog("Gagal Logout", TIPE_LOG.ERROR);
-        }
-       
+        }  
     }
-
-    async waitingQRCode(): Promise<string> {
-        const qrCodePromise = new Promise((resolve) => {
-            this.socket.ev.on("connection.update", async (update) => {
-                const { connection, qr } = update;
-                if (connection === "open") {
-                    resolve(null);
-                }
-                if (qr) {
-                    resolve(qr);
-                }
-            });
-        }) as Promise<string>;
-
-        const qrCodeValue = await qrCodePromise;
-        if (qrCodeValue) {
-            return qrCodeToBase64(qrCodeValue);
-        }
-        return null;
-    } 
 }
