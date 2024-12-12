@@ -19,13 +19,13 @@ const consumeLoginAllQueue = () => __awaiter(void 0, void 0, void 0, function* (
     channel.consume(queueName, (message) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             if (message) {
-                console.log('Message received from userQueue: login all');
+                console.log(`Message received from : ${queueName}`, message.content.toString());
                 yield (0, queueHandler_1.handleLoginAllMessage)();
                 channel.ack(message);
             }
         }
         catch (error) {
-            console.log('Error in consumeLoginAllQueue:', error);
+            console.log(`Error in consumeLoginAllQueue: ${queueName}`, error);
         }
     }));
 });

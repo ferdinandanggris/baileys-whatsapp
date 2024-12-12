@@ -9,11 +9,13 @@ import { MessageService } from "./services/messageService";
 import AuthHandler from "./handlers/authHandler";
 import { DataSource } from "typeorm";
 import log from "baileys/lib/Utils/logger";
+import { ProfileHandler } from "./handlers/profileHandler";
 export class WhatsappService {
     private socket: ReturnType<typeof makeWASocket>;
     private messageHandler: MessageHandler;
     private connectionHandler: ConnectionHandler;
     private authHandler : AuthHandler;
+    private profileHandler: ProfileHandler;
 
     constructor(private imcenter_id: number) {}
 
@@ -32,6 +34,7 @@ export class WhatsappService {
     
             this.messageHandler = new MessageHandler(this.socket, new MessageService(this.imcenter_id));
             this.connectionHandler = new ConnectionHandler(this.imcenter_id,this.socket, new SessionService(), new ImCenterService(), new MessageService(this.imcenter_id));
+            this.profileHandler = new ProfileHandler(this.imcenter_id,this.socket, new ImCenterService());
     
             // Tangani event koneksi
             this.connectionHandler.handleConnectionEvents();
@@ -62,6 +65,10 @@ export class WhatsappService {
 
     async sendMessage(number: string, message: string) {
         await this.messageHandler.sendMessage(number, message);
+    }
+
+    async updateProfileStatus() {
+        await this.profileHandler.updateProfileStatus();
     }
 
     async logout() {

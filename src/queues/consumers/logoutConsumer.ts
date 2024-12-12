@@ -11,12 +11,12 @@ export const consumeLogoutQueue = async () => {
         const content = JSON.parse(message.content.toString());
 
         if(!Object.keys(content).includes('id')){
-            console.log('Invalid message received from LogoutQueue:', content);
+            console.log(`Invalid message received from loginQueue: ${queueName}`, content);
             channel.ack(message);
             return;
         }
 
-        console.log('Message received from userQueue:', content);
+        console.log(`Message received from : ${queueName}`, content);
         await handleLogoutMessage(content);
         channel.ack(message);
       }

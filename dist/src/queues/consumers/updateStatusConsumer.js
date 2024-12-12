@@ -9,26 +9,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.consumeLogoutQueue = void 0;
+exports.consumeUpdateStatusQueue = void 0;
 const queueHandler_1 = require("../handlers/queueHandler");
 const index_1 = require("../index");
-const consumeLogoutQueue = () => __awaiter(void 0, void 0, void 0, function* () {
+const consumeUpdateStatusQueue = () => __awaiter(void 0, void 0, void 0, function* () {
     const channel = (0, index_1.getChannel)();
-    const queueName = 'whatsapp_logout';
+    const queueName = 'whatsapp_update_status';
     yield channel.assertQueue(queueName);
     channel.consume(queueName, (message) => __awaiter(void 0, void 0, void 0, function* () {
         if (message && message.content.length > 0) {
             const content = JSON.parse(message.content.toString());
             if (!Object.keys(content).includes('id')) {
-                console.log(`Invalid message received from loginQueue: ${queueName}`, content);
+                console.log(`Invalid message received from ${queueName}:`, content);
                 channel.ack(message);
                 return;
             }
             console.log(`Message received from : ${queueName}`, content);
-            yield (0, queueHandler_1.handleLogoutMessage)(content);
+            yield (0, queueHandler_1.handleUpdateStatusMessage)(content);
             channel.ack(message);
         }
     }));
 });
-exports.consumeLogoutQueue = consumeLogoutQueue;
-//# sourceMappingURL=logoutConsumer.js.map
+exports.consumeUpdateStatusQueue = consumeUpdateStatusQueue;
+//# sourceMappingURL=updateStatusConsumer.js.map

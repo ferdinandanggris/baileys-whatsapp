@@ -19,7 +19,7 @@ const consumeLogoutAllQueue = () => __awaiter(void 0, void 0, void 0, function* 
     channel.consume(queueName, (message) => __awaiter(void 0, void 0, void 0, function* () {
         if (message) {
             // const content = JSON.parse(message.content.toString());
-            console.log('Message received from userQueue: logout all');
+            console.log(`Message received from : ${queueName}`, message);
             yield (0, queueHandler_1.handleLogoutAllMessage)();
             channel.ack(message);
         }

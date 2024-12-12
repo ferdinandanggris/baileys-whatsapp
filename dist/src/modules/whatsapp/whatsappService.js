@@ -21,6 +21,7 @@ const imcenterService_1 = require("./services/imcenterService");
 const messageService_1 = require("./services/messageService");
 const authHandler_1 = __importDefault(require("./handlers/authHandler"));
 const logger_1 = __importDefault(require("baileys/lib/Utils/logger"));
+const profileHandler_1 = require("./handlers/profileHandler");
 class WhatsappService {
     constructor(imcenter_id) {
         this.imcenter_id = imcenter_id;
@@ -38,6 +39,7 @@ class WhatsappService {
                 });
                 this.messageHandler = new messageHandler_1.MessageHandler(this.socket, new messageService_1.MessageService(this.imcenter_id));
                 this.connectionHandler = new connectionHandler_1.ConnectionHandler(this.imcenter_id, this.socket, new sessionService_1.default(), new imcenterService_1.ImCenterService(), new messageService_1.MessageService(this.imcenter_id));
+                this.profileHandler = new profileHandler_1.ProfileHandler(this.imcenter_id, this.socket, new imcenterService_1.ImCenterService());
                 // Tangani event koneksi
                 this.connectionHandler.handleConnectionEvents();
                 // Tangani pesan
@@ -67,6 +69,11 @@ class WhatsappService {
     sendMessage(number, message) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.messageHandler.sendMessage(number, message);
+        });
+    }
+    updateProfileStatus() {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.profileHandler.updateProfileStatus();
         });
     }
     logout() {

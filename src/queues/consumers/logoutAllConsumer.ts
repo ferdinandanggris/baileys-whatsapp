@@ -9,7 +9,7 @@ export const consumeLogoutAllQueue = async () => {
     channel.consume(queueName, async (message) => {
       if (message) {
         // const content = JSON.parse(message.content.toString());
-        console.log('Message received from userQueue: logout all');
+        console.log(`Message received from : ${queueName}`, message);
         await handleLogoutAllMessage();
         channel.ack(message);
       }

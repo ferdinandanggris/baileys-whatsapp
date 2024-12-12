@@ -8,12 +8,12 @@ export const consumeLoginAllQueue = async () => {
     channel.consume(queueName, async (message) => {
         try {
             if (message) {
-                console.log('Message received from userQueue: login all');
+                console.log(`Message received from : ${queueName}`, message.content.toString());
                 await handleLoginAllMessage();
                 channel.ack(message);
             }
         } catch (error) {
-            console.log('Error in consumeLoginAllQueue:', error);
+            console.log(`Error in consumeLoginAllQueue: ${queueName}`, error);
 
         }
     });

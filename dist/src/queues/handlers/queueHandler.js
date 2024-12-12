@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handleLogoutAllMessage = exports.handleLogoutMessage = exports.handleLoginAllMessage = exports.handleLoginMessage = void 0;
+exports.handleUpdateStatusMessage = exports.handleLogoutAllMessage = exports.handleLogoutMessage = exports.handleLoginAllMessage = exports.handleLoginMessage = void 0;
 const instanceManager = require('../../modules/whatsapp/instanceManagerService');
 const handleLoginMessage = (imcenter) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Processing user message:', imcenter);
@@ -34,4 +34,10 @@ const handleLogoutAllMessage = () => __awaiter(void 0, void 0, void 0, function*
     yield instanceManager.logoutAll();
 });
 exports.handleLogoutAllMessage = handleLogoutAllMessage;
+const handleUpdateStatusMessage = (imcenter) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('Processing user message:', imcenter);
+    const socket = instanceManager.getInstance(imcenter.id);
+    yield socket.updateProfileStatus();
+});
+exports.handleUpdateStatusMessage = handleUpdateStatusMessage;
 //# sourceMappingURL=queueHandler.js.map
