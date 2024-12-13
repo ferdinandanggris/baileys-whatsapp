@@ -22,8 +22,10 @@ const messageService_1 = require("./services/messageService");
 const authHandler_1 = __importDefault(require("./handlers/authHandler"));
 const logger_1 = __importDefault(require("baileys/lib/Utils/logger"));
 const profileHandler_1 = require("./handlers/profileHandler");
-class WhatsappService {
+const PlatformTools_1 = require("typeorm/platform/PlatformTools");
+class WhatsappService extends PlatformTools_1.EventEmitter {
     constructor(imcenter_id) {
+        super();
         this.imcenter_id = imcenter_id;
     }
     init() {
@@ -31,60 +33,48 @@ class WhatsappService {
             try {
                 const logger = logger_1.default.child({});
                 logger.level = "silent";
-                // Inisialisasi MessageHandler dan ConnectionHandler
                 this.authHandler = new authHandler_1.default(this.imcenter_id);
                 const { state, saveState } = yield this.authHandler.useAuthHandle();
                 this.socket = (0, baileys_1.default)({
-                    auth: state, printQRInTerminal: true, logger: logger
+                    auth: state, printQRInTerminal: true, logger: logger, syncFullHistory: true
                 });
-                this.messageHandler = new messageHandler_1.MessageHandler(this.socket, new messageService_1.MessageService(this.imcenter_id));
-                this.connectionHandler = new connectionHandler_1.ConnectionHandler(this.imcenter_id, this.socket, new sessionService_1.default(), new imcenterService_1.ImCenterService(), new messageService_1.MessageService(this.imcenter_id));
-                this.profileHandler = new profileHandler_1.ProfileHandler(this.imcenter_id, this.socket, new imcenterService_1.ImCenterService());
-                // Tangani event koneksi
-                this.connectionHandler.handleConnectionEvents();
-                // Tangani pesan
-                this.messageHandler.listenForMessages();
+                this.setEventHandlers();
                 // Simpan kredensial secara otomatis
                 this.socket.ev.on("creds.update", saveState);
-                // reconnection
-                this.socket.ws.on("reconnect", () => {
-                    console.log("Reconnecting...");
-                    return this.init();
-                });
             }
             catch (error) {
                 console.error("Gagal inisialisasi", error);
             }
         });
     }
+    setEventHandlers() {
+        const props = {
+            imcenter_id: this.imcenter_id,
+            socket: this.socket,
+            sessionService: new sessionService_1.default(),
+            imcenterService: new imcenterService_1.ImCenterService(),
+            messageService: new messageService_1.MessageService(this.imcenter_id)
+        };
+        this.messageHandler = new messageHandler_1.MessageHandler(props);
+        this.connectionHandler = new connectionHandler_1.ConnectionHandler(props);
+        this.profileHandler = new profileHandler_1.ProfileHandler(props);
+        // Tangani event koneksi
+        this.connectionHandler.handleConnectionEvents();
+        // Tangani pesan
+        this.messageHandler.listenForMessages();
+        // reconnection
+        this.socket.ws.on("reconnect", () => {
+            console.log("Reconnecting...");
+            return this.init();
+        });
+    }
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
             // check if service is ready
             if (this.socket) {
-                return yield this.connectionHandler.checkStatus();
+                yield this.connectionHandler.checkStatus();
             }
             yield this.init();
-        });
-    }
-    sendMessage(number, message) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.messageHandler.sendMessage(number, message);
-        });
-    }
-    updateProfileStatus() {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.profileHandler.updateProfileStatus();
-        });
-    }
-    logout() {
-        return __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            yield ((_a = this.connectionHandler) === null || _a === void 0 ? void 0 : _a.logout());
-        });
-    }
-    broadcastMessage(jids, message) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.messageHandler.broadcastMessage(jids, message);
         });
     }
 }

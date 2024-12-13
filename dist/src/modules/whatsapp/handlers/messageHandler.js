@@ -19,22 +19,22 @@ const parameterService_1 = __importDefault(require("../../autoResponse/services/
 const imcenterLogs_1 = require("../../../entities/imcenterLogs");
 const date_1 = require("../../../utils/date");
 class MessageHandler {
-    constructor(socket, messageService) {
-        this.messageService = messageService;
+    constructor(props) {
+        this.props = props;
         this.parameterService = new parameterService_1.default();
-        this.socket = socket;
+        this.socket = props.socket;
     }
-    sendMessage(number, content) {
+    sendMessage(message) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const jid = (0, whatsapp_1.numberToJid)(number);
-                const response = yield this.socket.sendMessage(jid, { text: content });
-                yield this.messageService.saveMessage(response, types_1.TIPE_LOG.OUTBOX);
-                console.log(`Pesan terkirim ke ${jid}: ${content}`);
+                const jid = (0, whatsapp_1.numberToJid)(message.receiver);
+                const response = yield this.socket.sendMessage(jid, { text: message.message });
+                yield this.props.messageService.saveMessage(response, types_1.TIPE_LOG.OUTBOX);
+                console.log(`Pesan terkirim ke ${jid}: ${message.message}`);
             }
             catch (error) {
-                console.error(`Gagal mengirim pesan ke ${number}:`, error);
-                this.messageService.saveLog(`Gagal mengirim pesan ke ${number}`, types_1.TIPE_LOG.ERROR);
+                console.error(`Gagal mengirim pesan ke ${message.receiver}:`, error);
+                this.props.messageService.saveLog(`Gagal mengirim pesan ke ${message.receiver}`, types_1.TIPE_LOG.ERROR);
             }
         });
     }
@@ -45,19 +45,15 @@ class MessageHandler {
                 const jid = message.key.remoteJid;
                 const content = ((_a = message.message) === null || _a === void 0 ? void 0 : _a.conversation) || "Pesan tidak memiliki teks";
                 console.log(`Pesan diterima dari ${jid}: ${content}`);
-                // if (isInboxMessage(message) && message.message?.conversation) {
-                //     await this.messageService.saveMessage(message, TIPE_LOG.INBOX);
-                // Auto response
-                // const response = await this.parameterService.getParameterAutoResponse(content);
-                // if (response) {
-                //     await this.markAsRead(message.key);
-                //     if(response.value) await this.sendMessage(jid, response.value);
-                // }
-                // }
             }
             const imcenterLogs = yield this.inboxValidation(msg.messages);
             if (imcenterLogs.length > 0)
-                yield this.messageService.saveMultipleMessage(imcenterLogs);
+                yield this.props.messageService.saveMultipleMessage(imcenterLogs);
+        }));
+        this.socket.ev.on("messaging-history.set", (msg) => __awaiter(this, void 0, void 0, function* () {
+            const imcenterLogs = yield this.inboxValidation(msg.messages);
+            if (imcenterLogs.length > 0)
+                yield this.props.messageService.saveMultipleMessage(imcenterLogs);
         }));
     }
     inboxValidation(messages) {
@@ -71,7 +67,7 @@ class MessageHandler {
                     continue;
                 }
                 // get latest imcenter_log latest message, and compare with current message
-                const latestMessage = yield this.messageService.getLatestMessageByImcenter();
+                const latestMessage = yield this.props.messageService.getLatestMessageByImcenter();
                 const messageTimestamp = Number(message.messageTimestamp);
                 // compare with latest message
                 if (latestMessage && (0, date_1.timeToDate)(messageTimestamp) <= latestMessage.sender_timestamp) {
@@ -80,18 +76,22 @@ class MessageHandler {
                 if ((0, whatsapp_1.isFromBroadcast)(jid) || (0, whatsapp_1.isFromGroup)(jid)) {
                     continue;
                 }
+                var tipe_log = types_1.TIPE_LOG.INBOX;
+                if ((0, whatsapp_1.isFromMe)(message)) {
+                    tipe_log = types_1.TIPE_LOG.OUTBOX;
+                }
                 // check if this message is from reseller
                 // TODO: check if this message is from reseller
                 const imcenterLog = new imcenterLogs_1.ImcenterLogs();
                 imcenterLog.keterangan = (_b = message.message) === null || _b === void 0 ? void 0 : _b.conversation;
-                imcenterLog.tipe = types_1.TIPE_LOG.INBOX;
+                imcenterLog.tipe = tipe_log;
                 imcenterLog.pengirim = jid;
                 imcenterLog.message_id = message.key.id;
                 imcenterLog.sender_timestamp = (0, date_1.timeToDate)(messageTimestamp);
                 imcenterLog.raw_message = JSON.stringify(message);
                 imcenterLog.tgl_entri = new Date();
                 imcenterLog.aplikasi = types_1.TIPE_APLIKASI.NODEJS;
-                imcenterLog.imcenter_id = this.messageService.getImcenterId();
+                imcenterLog.imcenter_id = this.props.messageService.getImcenterId();
                 imcenterLogs.push(imcenterLog);
             }
             return imcenterLogs;
@@ -100,23 +100,24 @@ class MessageHandler {
     markAsRead(messageId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const message = yield this.messageService.getMessageByMessageId(messageId.id);
+                const message = yield this.props.messageService.getMessageByMessageId(messageId.id);
                 if (message) {
                     yield this.socket.readMessages([messageId]);
-                    yield this.sendMessage(messageId.remoteJid, `Pesan "${message.keterangan}" telah diterima dan akan segera diproses.`);
+                    // await this.sendMessage(messageId.remoteJid, `Pesan "${message.keterangan}" telah diterima dan akan segera diproses.`);
+                    yield this.props.messageService.updateStatus(messageId.id, types_1.STATUS_LOG.DIBACA);
                     console.log(`Pesan dari ${messageId.remoteJid} telah dibaca`);
                 }
             }
             catch (error) {
                 console.error(`Gagal membaca pesan dari ${messageId.remoteJid}:`, error);
-                this.messageService.saveLog(`Gagal membaca pesan dari ${messageId.remoteJid}`, types_1.TIPE_LOG.ERROR);
+                this.props.messageService.saveLog(`Gagal membaca pesan dari ${messageId.remoteJid}`, types_1.TIPE_LOG.ERROR);
             }
         });
     }
     broadcastMessage(jids, content) {
         return __awaiter(this, void 0, void 0, function* () {
             for (const jid of jids) {
-                yield this.sendMessage(jid, content);
+                // await this.sendMessage(jid, content);
                 yield new Promise((resolve) => setTimeout(resolve, 1000));
             }
         });

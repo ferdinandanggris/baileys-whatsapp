@@ -94,6 +94,15 @@ class ImCenterService {
             return imcenter;
         });
     }
+    getImcenterByNumberPhone(numberPhone) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const imcenter = yield this.repository.findOneBy({ username: numberPhone });
+            if (!imcenter) {
+                throw new Error(`imcenter with key "${numberPhone}" not found.`);
+            }
+            return imcenter;
+        });
+    }
     getAutoActiveSession() {
         return __awaiter(this, void 0, void 0, function* () {
             return this.repository.findBy({ aktif: true });

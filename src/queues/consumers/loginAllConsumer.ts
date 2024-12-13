@@ -5,6 +5,7 @@ export const consumeLoginAllQueue = async () => {
     const channel = getChannel();
     const queueName = 'whatsapp_login_all';
     await channel.assertQueue(queueName);
+    console.log(`Consuming messages from : ${queueName}`);
     channel.consume(queueName, async (message) => {
         try {
             if (message) {
@@ -13,6 +14,7 @@ export const consumeLoginAllQueue = async () => {
                 channel.ack(message);
             }
         } catch (error) {
+            channel.nack(message);
             console.log(`Error in consumeLoginAllQueue: ${queueName}`, error);
 
         }

@@ -20,15 +20,26 @@ const PORT = process.env.PORT || 3000
 
 AppDataSource.initialize()
     .then(async () => {
-		console.log('Database connected!')
-        // auto run if session is exist
-        const instanceManager : InstanceManager = require('./src/modules/whatsapp/instanceManagerService');
-        instanceManager.autoActiveSession();
-
-        await initQueue(); // Inisialisasi RabbitMQ
-        await startConsumers();
-        app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
-        });
+        try {
+            console.log('Database connected!')
+            // auto run if session is exist
+            const instanceManager : InstanceManager = require('./src/modules/whatsapp/instanceManagerService');
+            instanceManager.autoActiveSession();
+    
+            await initQueue(); // Inisialisasi RabbitMQ
+            await startConsumers();
+            app.listen(PORT, () => {
+                console.log(`Server is running on port ${PORT}`);
+            });
+        } catch (error) {
+            console.error('Error starting server:', error);
+        }
 	})
     .catch((error) => console.error('Error connecting to database:', error));
+
+
+// aplikasi ditutup
+process.on('SIGINT', async () => {
+    console.log('Shutting down gracefully...');
+    process.exit(0);
+});

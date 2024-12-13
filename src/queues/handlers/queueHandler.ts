@@ -1,11 +1,14 @@
 import Imcenter from "../../entities/imcenter";
+import  { IWhatsappService,Message } from "../../interfaces/whatsapp";
 import { InstanceManager } from "../../modules/whatsapp/instanceManagerService";
-import { WhatsappService } from "../../modules/whatsapp/whatsappService";
+import { ImCenterService } from "../../modules/whatsapp/services/imcenterService";
+import { publishToMessageImcenterQueue } from "../publishers/messageToImcenterPublisher";
 const instanceManager : InstanceManager = require('../../modules/whatsapp/instanceManagerService');
+const imcenterService = new ImCenterService();
 
 export const handleLoginMessage = async (imcenter: Imcenter) => {
     console.log('Processing user message:', imcenter);
-    const socket : WhatsappService = instanceManager.getInstance(imcenter.id);
+    const socket : IWhatsappService = instanceManager.getInstance(imcenter.id);
     await socket.connect();
   };
 
@@ -16,8 +19,8 @@ export const handleLoginMessage = async (imcenter: Imcenter) => {
 
   export const handleLogoutMessage = async (imcenter: Imcenter) => {
     console.log('Processing user message:', imcenter);
-    const socket : WhatsappService = instanceManager.getInstance(imcenter.id);
-    await socket.logout();
+    const socket : IWhatsappService = instanceManager.getInstance(imcenter.id);
+    await socket.connectionHandler.logout();
     await instanceManager.removeInstance(imcenter.id);
   }
 
@@ -28,6 +31,22 @@ export const handleLoginMessage = async (imcenter: Imcenter) => {
 
   export const handleUpdateStatusMessage = async (imcenter: Imcenter) => {
     console.log('Processing user message:', imcenter);
-    const socket : WhatsappService = instanceManager.getInstance(imcenter.id);
-    await socket.updateProfileStatus();
+    const socket : IWhatsappService = instanceManager.getInstance(imcenter.id);
+    await socket.profileHandler.updateProfileStatus();
+  }
+
+  export const handlePublishToMessageImcenter = async (message: Message) => {
+    console.log('Processing user message:', message);
+    const imcenter = await imcenterService.getImcenterByNumberPhone(message.sender)
+    if(imcenter.id){
+        await publishToMessageImcenterQueue(imcenter, message);
+    }
+  }
+
+  export const handleImcenterSendMessage = async (imcenter : Imcenter,message: Message) => {
+    console.log('Processing user message:', message);
+    if(imcenter.id){
+        const socket : IWhatsappService = instanceManager.getInstance(imcenter.id);
+        await socket.messageHandler.sendMessage(message);
+    }
   }

@@ -62,15 +62,25 @@ app.use("/imcenter", imcenterRoutes_1.default);
 app.use("/wa-service", whatsappSessionRoutes_1.default);
 db_1.AppDataSource.initialize()
     .then(() => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('Database connected!');
-    // auto run if session is exist
-    const instanceManager = require('./src/modules/whatsapp/instanceManagerService');
-    instanceManager.autoActiveSession();
-    yield (0, queues_1.initQueue)(); // Inisialisasi RabbitMQ
-    yield (0, queues_1.startConsumers)();
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-    });
+    try {
+        console.log('Database connected!');
+        // auto run if session is exist
+        const instanceManager = require('./src/modules/whatsapp/instanceManagerService');
+        instanceManager.autoActiveSession();
+        yield (0, queues_1.initQueue)(); // Inisialisasi RabbitMQ
+        yield (0, queues_1.startConsumers)();
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
+    }
+    catch (error) {
+        console.error('Error starting server:', error);
+    }
 }))
     .catch((error) => console.error('Error connecting to database:', error));
+// aplikasi ditutup
+process.on('SIGINT', () => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('Shutting down gracefully...');
+    process.exit(0);
+}));
 //# sourceMappingURL=index.js.map

@@ -12,19 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = require("../../../configs/db");
 const whatsappSession_1 = require("../../../entities/whatsappSession");
 const typeorm_1 = require("typeorm");
-const whatsapp_1 = require("../../../utils/whatsapp");
 class SessionService {
     constructor() {
         this.repository = db_1.AppDataSource.getRepository(whatsappSession_1.WhatsappSession);
-    }
-    saveSession(nomorhp, socket) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const jid = (0, whatsapp_1.numberToJid)(nomorhp);
-            const whatsappSession = yield this.repository.findOneBy({ jid });
-            if (!whatsappSession) {
-                this.repository.save({ jid: jid, });
-            }
-        });
     }
     getSession(imcenter_id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -36,7 +26,7 @@ class SessionService {
     }
     removeSession(jid) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.repository.delete({ jid });
+            yield this.repository.delete({ jid });
         });
     }
     getSessionByListImcenterId(listImcenterId) {

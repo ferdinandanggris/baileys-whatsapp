@@ -11,20 +11,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfileHandler = void 0;
 class ProfileHandler {
-    constructor(imcenter_id, socket, imcenterService) {
-        this.imcenter_id = imcenter_id;
-        this.socket = socket;
-        this.imcenterService = imcenterService;
+    constructor(props) {
+        this.props = props;
     }
     updateProfileStatus() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const imcenter = yield this.imcenterService.getImcenterById(this.imcenter_id);
+                const imcenter = yield this.props.imcenterService.getImcenterById(this.props.imcenter_id);
                 if (!imcenter) {
                     throw new Error("Imcenter not found");
                 }
                 if (imcenter.status_pesan) {
-                    this.socket.updateProfileStatus(imcenter.status_pesan);
+                    this.props.socket.updateProfileStatus(imcenter.status_pesan);
                 }
             }
             catch (error) {

@@ -1,18 +1,17 @@
-import { WASocket } from "baileys";
-import { ImCenterService } from "../services/imcenterService";
+import { WhatsappServiceProps } from "../../../interfaces/whatsapp";
 
 export class ProfileHandler{
-    constructor(private imcenter_id : number,private socket: WASocket, private imcenterService : ImCenterService) {
+    constructor(private props : WhatsappServiceProps) {
     }
 
-    async updateProfileStatus() {
+    async updateProfileStatus() : Promise<void> {
         try {
-            const imcenter = await this.imcenterService.getImcenterById(this.imcenter_id);
+            const imcenter = await this.props.imcenterService.getImcenterById(this.props.imcenter_id);
             if (!imcenter) {
                 throw new Error("Imcenter not found");
             }
             if(imcenter.status_pesan){
-                this.socket.updateProfileStatus(imcenter.status_pesan);
+                this.props.socket.updateProfileStatus(imcenter.status_pesan);
             }
         } catch (error) {
             console.error("Gagal update status", error);

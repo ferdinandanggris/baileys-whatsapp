@@ -9,8 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handleUpdateStatusMessage = exports.handleLogoutAllMessage = exports.handleLogoutMessage = exports.handleLoginAllMessage = exports.handleLoginMessage = void 0;
+exports.handleImcenterSendMessage = exports.handlePublishToMessageImcenter = exports.handleUpdateStatusMessage = exports.handleLogoutAllMessage = exports.handleLogoutMessage = exports.handleLoginAllMessage = exports.handleLoginMessage = void 0;
+const imcenterService_1 = require("../../modules/whatsapp/services/imcenterService");
+const messageToImcenterPublisher_1 = require("../publishers/messageToImcenterPublisher");
 const instanceManager = require('../../modules/whatsapp/instanceManagerService');
+const imcenterService = new imcenterService_1.ImCenterService();
 const handleLoginMessage = (imcenter) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Processing user message:', imcenter);
     const socket = instanceManager.getInstance(imcenter.id);
@@ -25,7 +28,7 @@ exports.handleLoginAllMessage = handleLoginAllMessage;
 const handleLogoutMessage = (imcenter) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Processing user message:', imcenter);
     const socket = instanceManager.getInstance(imcenter.id);
-    yield socket.logout();
+    yield socket.connectionHandler.logout();
     yield instanceManager.removeInstance(imcenter.id);
 });
 exports.handleLogoutMessage = handleLogoutMessage;
@@ -37,7 +40,23 @@ exports.handleLogoutAllMessage = handleLogoutAllMessage;
 const handleUpdateStatusMessage = (imcenter) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Processing user message:', imcenter);
     const socket = instanceManager.getInstance(imcenter.id);
-    yield socket.updateProfileStatus();
+    yield socket.profileHandler.updateProfileStatus();
 });
 exports.handleUpdateStatusMessage = handleUpdateStatusMessage;
+const handlePublishToMessageImcenter = (message) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('Processing user message:', message);
+    const imcenter = yield imcenterService.getImcenterByNumberPhone(message.sender);
+    if (imcenter.id) {
+        yield (0, messageToImcenterPublisher_1.publishToMessageImcenterQueue)(imcenter, message);
+    }
+});
+exports.handlePublishToMessageImcenter = handlePublishToMessageImcenter;
+const handleImcenterSendMessage = (imcenter, message) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('Processing user message:', message);
+    if (imcenter.id) {
+        const socket = instanceManager.getInstance(imcenter.id);
+        yield socket.messageHandler.sendMessage(message);
+    }
+});
+exports.handleImcenterSendMessage = handleImcenterSendMessage;
 //# sourceMappingURL=queueHandler.js.map

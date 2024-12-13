@@ -1,11 +1,9 @@
 import { proto } from "baileys";
 import { AppDataSource } from "../../../configs/db";
 import { ImcenterLogs } from "../../../entities/imcenterLogs";
-import { jidToNumber } from "../../../utils/whatsapp";
-import Imcenter from "../../../entities/imcenter";
-import { TIPE_APLIKASI, TIPE_LOG } from "../../../entities/types";
+import { STATUS_LOG, TIPE_APLIKASI, TIPE_LOG } from "../../../entities/types";
 import { timeToDate } from "../../../utils/date";
-import { FindOperator, IsNull, Not } from "typeorm";
+import { IsNull, Not } from "typeorm";
 
 export class MessageService{
 
@@ -45,6 +43,10 @@ export class MessageService{
 
     async getMessageByMessageId(messageId: string): Promise<ImcenterLogs> {
         return this.repository.findOneBy({ message_id: messageId });
+    }
+
+    async updateStatus(messageId: string, status: STATUS_LOG) {
+        await this.repository.update({ message_id: messageId }, { status });
     }
 
     async getLatestMessageByImcenter(): Promise<ImcenterLogs> {

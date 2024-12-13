@@ -43,3 +43,17 @@ export enum TIPE_AKTIVITAS{
     PASIF_1_TAHUN = 'Pasif 1 Tahun',
     PASIF_3_TAHUN = 'Pasif 3 Tahun',
 }
+
+export enum STATUS_LOG{
+    DIBACA = 'Dibaca',
+}
+
+export enum OUTBOX_STATUS{
+    BELUM_DIPROSES = 0,
+    STATUS_DIBATALKAN = 50,
+    STATUS_GAGAL = 40,
+    STATUS_SEDANG_DIPROSES = 1,
+    STATUS_SUKSES = 20,
+    STATUS_GAGAL_KIRIM = 3,
+    DEFAULT = -1
+}

@@ -56,6 +56,11 @@ class MessageService {
             return this.repository.findOneBy({ message_id: messageId });
         });
     }
+    updateStatus(messageId, status) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.repository.update({ message_id: messageId }, { status });
+        });
+    }
     getLatestMessageByImcenter() {
         return __awaiter(this, void 0, void 0, function* () {
             return this.repository.findOne({ where: { imcenter_id: this.imcenter_id, sender_timestamp: (0, typeorm_1.Not)((0, typeorm_1.IsNull)()) }, order: { sender_timestamp: 'DESC' } });

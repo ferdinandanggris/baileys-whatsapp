@@ -75,6 +75,14 @@ export class ImCenterService {
         return imcenter;
     }
 
+    async getImcenterByNumberPhone(numberPhone: string): Promise<Imcenter> {
+        const imcenter = await this.repository.findOneBy({ username: numberPhone });
+        if (!imcenter) {
+            throw new Error(`imcenter with key "${numberPhone}" not found.`);
+        }
+        return imcenter;
+    }
+
     public async getAutoActiveSession(): Promise<Imcenter[]> {
         return this.repository.findBy({ aktif: true });
     }

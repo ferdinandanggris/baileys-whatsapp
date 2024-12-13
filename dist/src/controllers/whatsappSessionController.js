@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.broadcastMessage = exports.sendMessage = exports.removeSession = exports.getQrCode = exports.createSession = void 0;
+exports.broadcastMessage = exports.removeSession = exports.getQrCode = exports.createSession = void 0;
 const imcenterService_1 = require("../modules/whatsapp/services/imcenterService");
 const loginPublisher_1 = require("../queues/publishers/loginPublisher");
 const imcenter_1 = __importDefault(require("../entities/imcenter"));
@@ -46,7 +46,7 @@ const removeSession = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         const { imcenter_id } = req.params;
         const socket = instanceManager.getInstance(parseInt(imcenter_id));
-        socket.logout();
+        socket.connectionHandler.logout();
         res.status(200).json({ message: "Session removed." });
     }
     catch (error) {
@@ -54,23 +54,11 @@ const removeSession = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.removeSession = removeSession;
-const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { sessionId, message, nomor_penerima } = req.body;
-        const socket = instanceManager.getInstance(sessionId);
-        const response = yield socket.sendMessage(nomor_penerima, message);
-        res.status(200).json({ message: "Send message" });
-    }
-    catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
-exports.sendMessage = sendMessage;
 const broadcastMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { imcenter_id, message, nomor_penerima } = req.body;
         const socket = instanceManager.getInstance(imcenter_id);
-        const response = yield socket.broadcastMessage(nomor_penerima, message);
+        const response = yield socket.messageHandler.broadcastMessage(nomor_penerima, message);
         res.status(200).json({ message: "Send message" });
     }
     catch (error) {

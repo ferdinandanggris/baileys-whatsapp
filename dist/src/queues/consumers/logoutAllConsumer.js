@@ -16,12 +16,15 @@ const consumeLogoutAllQueue = () => __awaiter(void 0, void 0, void 0, function* 
     const channel = (0, index_1.getChannel)();
     const queueName = 'whatsapp_logout_all';
     yield channel.assertQueue(queueName);
+    console.log(`Consuming messages from : ${queueName}`);
     channel.consume(queueName, (message) => __awaiter(void 0, void 0, void 0, function* () {
-        if (message) {
-            // const content = JSON.parse(message.content.toString());
+        try {
             console.log(`Message received from : ${queueName}`, message);
             yield (0, queueHandler_1.handleLogoutAllMessage)();
             channel.ack(message);
+        }
+        catch (error) {
+            channel.nack(message);
         }
     }));
 });

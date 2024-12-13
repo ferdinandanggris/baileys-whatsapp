@@ -16,6 +16,7 @@ const consumeLoginAllQueue = () => __awaiter(void 0, void 0, void 0, function* (
     const channel = (0, index_1.getChannel)();
     const queueName = 'whatsapp_login_all';
     yield channel.assertQueue(queueName);
+    console.log(`Consuming messages from : ${queueName}`);
     channel.consume(queueName, (message) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             if (message) {
@@ -25,6 +26,7 @@ const consumeLoginAllQueue = () => __awaiter(void 0, void 0, void 0, function* (
             }
         }
         catch (error) {
+            channel.nack(message);
             console.log(`Error in consumeLoginAllQueue: ${queueName}`, error);
         }
     }));

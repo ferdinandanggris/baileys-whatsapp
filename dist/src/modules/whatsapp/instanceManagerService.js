@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InstanceManager = void 0;
 const imcenterService_1 = require("./services/imcenterService");
-const whatsappService_1 = require("./whatsappService");
 const sessionService_1 = __importDefault(require("./services/sessionService"));
 const types_1 = require("../../entities/types");
+const whatsappService_1 = require("./whatsappService");
 class InstanceManager {
     constructor() {
         this.imcenterService = new imcenterService_1.ImCenterService();
@@ -67,7 +67,7 @@ class InstanceManager {
     logoutAll() {
         return __awaiter(this, void 0, void 0, function* () {
             for (const [imcenter_id, instance] of this.instances) {
-                yield instance.logout();
+                yield instance.connectionHandler.logout();
                 this.removeInstance(imcenter_id);
             }
             console.log("All instances logged out.");

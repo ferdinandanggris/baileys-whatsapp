@@ -16,6 +16,7 @@ const logoutConsumer_1 = require("./consumers/logoutConsumer");
 const loginAllConsumer_1 = require("./consumers/loginAllConsumer");
 const logoutAllConsumer_1 = require("./consumers/logoutAllConsumer");
 const updateStatusConsumer_1 = require("./consumers/updateStatusConsumer");
+const sendMessageConsumer_1 = require("./consumers/sendMessageConsumer");
 let channel;
 const initQueue = () => __awaiter(void 0, void 0, void 0, function* () {
     const connection = yield (0, rabbitmq_1.createConnection)();
@@ -36,6 +37,7 @@ const startConsumers = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, logoutConsumer_1.consumeLogoutQueue)();
     yield (0, logoutAllConsumer_1.consumeLogoutAllQueue)();
     yield (0, updateStatusConsumer_1.consumeUpdateStatusQueue)();
+    yield (0, sendMessageConsumer_1.consumeSendMessageQueue)();
 });
 exports.startConsumers = startConsumers;
 //# sourceMappingURL=index.js.map

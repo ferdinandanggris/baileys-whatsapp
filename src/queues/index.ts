@@ -5,6 +5,7 @@ import { consumeLogoutQueue } from './consumers/logoutConsumer';
 import { consumeLoginAllQueue } from './consumers/loginAllConsumer';
 import { consumeLogoutAllQueue } from './consumers/logoutAllConsumer';
 import { consumeUpdateStatusQueue } from './consumers/updateStatusConsumer';
+import { consumeSendMessageQueue } from './consumers/sendMessageConsumer';
 
 let channel: amqp.Channel;
 
@@ -27,4 +28,5 @@ export const startConsumers = async () => {
   await consumeLogoutQueue();
   await consumeLogoutAllQueue();
   await consumeUpdateStatusQueue();
+  await consumeSendMessageQueue();
 }

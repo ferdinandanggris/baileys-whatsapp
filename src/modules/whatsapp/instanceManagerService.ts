@@ -1,10 +1,11 @@
 import { ImCenterService } from "./services/imcenterService";
-import { WhatsappService } from "./whatsappService";
 import SessionService from "./services/sessionService";
 import { STATUS_LOGIN } from "../../entities/types";
+import { WhatsappService } from "./whatsappService";
+import { IWhatsappService } from "../../interfaces/whatsapp";
 
 export class InstanceManager {
-    private instances: Map<number, WhatsappService>;
+    private instances: Map<number, IWhatsappService>;
     private imcenterService = new ImCenterService();
     private sessionService = new SessionService();
 
@@ -12,7 +13,7 @@ export class InstanceManager {
         this.instances = new Map();
     }
 
-    public createInstance(imcenter_id: number): WhatsappService {
+    public createInstance(imcenter_id: number): IWhatsappService {
         if (this.instances.has(imcenter_id)) {
             throw new Error("Instance already exists.");
         }
@@ -25,7 +26,7 @@ export class InstanceManager {
     /**
      * Membuat atau mendapatkan instance berdasarkan imcenter_id
      */
-    public getInstance(imcenter_id: number): WhatsappService {
+    public getInstance(imcenter_id: number): IWhatsappService {
         try {
             if (!this.instances.has(imcenter_id)) {
                 const instance = new WhatsappService(imcenter_id);
@@ -60,7 +61,7 @@ export class InstanceManager {
      */
     public async logoutAll(): Promise<void> {
         for (const [imcenter_id, instance] of this.instances) {
-            await instance.logout();
+            await instance.connectionHandler.logout();
             this.removeInstance(imcenter_id);
         }
         console.log("All instances logged out.");
