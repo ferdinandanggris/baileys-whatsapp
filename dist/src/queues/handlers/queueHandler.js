@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.handleImcenterSendMessage = exports.handlePublishToMessageImcenter = exports.handleUpdateStatusMessage = exports.handleLogoutAllMessage = exports.handleLogoutMessage = exports.handleLoginAllMessage = exports.handleLoginMessage = void 0;
+exports.handlePublishToMessageImcenter = exports.handleUpdateStatusMessage = exports.handleLogoutAllMessage = exports.handleLogoutMessage = exports.handleLoginAllMessage = exports.handleLoginMessage = void 0;
 const imcenterService_1 = require("../../modules/whatsapp/services/imcenterService");
 const messageToImcenterPublisher_1 = require("../publishers/messageToImcenterPublisher");
 const instanceManager = require('../../modules/whatsapp/instanceManagerService');
@@ -51,12 +51,11 @@ const handlePublishToMessageImcenter = (message) => __awaiter(void 0, void 0, vo
     }
 });
 exports.handlePublishToMessageImcenter = handlePublishToMessageImcenter;
-const handleImcenterSendMessage = (imcenter, message) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('Processing user message:', message);
-    if (imcenter.id) {
-        const socket = instanceManager.getInstance(imcenter.id);
-        yield socket.messageHandler.sendMessage(message);
-    }
-});
-exports.handleImcenterSendMessage = handleImcenterSendMessage;
+// export const handleImcenterSendMessage = async (imcenter : Imcenter,message: Message) => {
+//   console.log('Processing user message:', message);
+//   if(imcenter.id){
+//       const socket : IWhatsappService = instanceManager.getInstance(imcenter.id);
+//       await socket.messageHandler.sendMessage(message);
+//   }
+// }
 //# sourceMappingURL=queueHandler.js.map

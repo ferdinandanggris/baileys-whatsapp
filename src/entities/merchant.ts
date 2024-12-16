@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { GROUP_MERCHANT, TIPE_AKTIVITAS } from './types';
+import { Reseller } from './reseller';
+import { Pengirim } from './pengirim';
 
 @Entity('merchant', { schema: 'processor' })
 export class Merchant {
@@ -107,4 +109,5 @@ tgl_created: string;
 
 @Column()
 tgl_update: string;
+
 }

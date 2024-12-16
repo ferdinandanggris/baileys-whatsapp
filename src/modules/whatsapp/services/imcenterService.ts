@@ -2,8 +2,9 @@ import { Repository, SelectQueryBuilder } from 'typeorm';
 import { AppDataSource } from '../../../configs/db';
 import Imcenter from '../../../entities/imcenter';
 import { IMCENTER_TYPE, STATUS_LOGIN, TIPE_APLIKASI } from '../../../entities/types';
+import { IImcenterService } from '../../../interfaces/imcenter';
 
-export class ImCenterService {
+export class ImCenterService implements IImcenterService{
     private repository : Repository<Imcenter> = AppDataSource.getRepository(Imcenter);
 
     queryAdditionalForWhatsappNodejs(query: SelectQueryBuilder<Imcenter>): SelectQueryBuilder<Imcenter> {
@@ -28,6 +29,14 @@ export class ImCenterService {
 
     async getAllSessions(): Promise<Imcenter[]> {
         return this.queryAdditionalForWhatsappNodejs(this.repository.createQueryBuilder('imcenter')).getMany();
+    }
+
+    async getImcenterByJID(jid: string): Promise<Imcenter> {
+        const imcenter = await this.repository.findOneBy({ im_jid : jid });
+        if (!imcenter) {
+            throw new Error(`imcenter with key "${jid}" not found.`);
+        }
+        return imcenter;
     }
 
     async deleteSession(id: number): Promise<string> {
@@ -56,6 +65,17 @@ export class ImCenterService {
         session.qr = qrcode;
         await this.repository.save(session);
         return `Session "${session.username}" QR Code updated.`;
+    }
+
+    async updateActivity(id) : Promise<boolean> {
+        const imcenter = await this.repository.findOneBy({ id });
+        if (!imcenter) {
+            return false;
+        }
+
+        imcenter.tgl_aktivitas = new Date();
+        await this.repository.save(imcenter);
+        return true;
     }
 
     async getQRCode(numberPhone: string): Promise<string> {

@@ -57,3 +57,60 @@ export enum OUTBOX_STATUS{
     STATUS_GAGAL_KIRIM = 3,
     DEFAULT = -1
 }
+
+export enum TIPE_PENGIRIM{
+    NOMOR_HP = 'nomorhp',
+    WHATSAPP = 'whatsapp',
+    TELEGRAM = 'telegram',
+    APLIKASI = 'aplikasi',
+    IP = 'ip',
+}
+
+export enum PARAMETER_GROUP{
+    UNKNOWN = 'unknown',
+    FORMAT_REQUEST = 'FormatRequest',
+    FORMAT_BALASAN = 'FormatBalasan',
+    AUTO_RESPONSE = 'AutoResponse',
+    SETTING = 'Setting',
+    TELEGRAM_CENTER = 'TelegramCenter',
+}
+
+export enum STATUS_INBOX{
+   BELUM_DIPROSES = '0',
+    BUKAN_RESELLER = '41',
+    DIABAIKAN = '64',
+    DIBATALKAN = '50',
+    FORMAT_SALAH = '42',
+    GAGAL = '40',
+    GROUP_DISALLOWED = '67',
+    HARGA_TIDAK_SESUAI = '59',
+    INVALID_TERMINAL = '66',
+    KODE_AREA_TIDAK_COCOK = '54',
+    LIMIT_HARIAN = '62',
+    NOMOR_BLACKLIST = '56',
+    NOMOR_TIDAK_AKTIF = '58',
+    PARAMETER_SALAH = '48',
+    PIN_SALAH = '49',
+    PRODUK_GANGGUAN = '47',
+    PRODUK_SALAH = '44',
+    QTY_TIDAK_SESUAI = '61',
+    RESELLER_SUSPEND = '63',
+    RESELLER_TIDAK_AKTIF = '51',
+    SALDO_TIDAK_CUKUP = '43',
+    SEDANG_DIPROSES = '1',
+    STOK_KOSONG = '45',
+    SUKSES = '20',
+    SUKSES_DAN_MASUK_CS = '23',
+    SUKSES_DAN_MASUK_OUTBOX = '21',
+    SUKSES_DAN_MASUK_TRANSAKSI = '22',
+    TIDAK_ADA_DATA = '60',
+    TIMEOUT = '55',
+    TRANSAKSI_DOBEL = '46',
+    TUJUAN_DILUAR_WILAYAH = '53',
+    TUJUAN_SALAH = '52',
+    UNIT_TIDAK_CUKUP = '65',
+    WRONG_SIGNATURE = '57',
+}
+
+
+

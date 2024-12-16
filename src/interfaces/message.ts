@@ -5,6 +5,7 @@ import { ImcenterLogs } from "../entities/imcenterLogs";
 export interface IMessageService {
     saveLog(message : string, tipe_log : TIPE_LOG): Promise<void>;
     saveMessage(message : proto.IWebMessageInfo, tipe_log : TIPE_LOG): Promise<void>;
+    createLog(messageLog : ImcenterLogs): Promise<ImcenterLogs>;
     saveMultipleMessage(messages: ImcenterLogs[]): Promise<void>;
     getLatestMessageByImcenter(): Promise<ImcenterLogs>;
     getMessageByMessageId(messageId: string): Promise<ImcenterLogs>;

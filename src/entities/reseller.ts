@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinTable } from 'typeorm';
+import { Merchant } from './merchant';
 
 @Entity('reseller', { schema: 'processor' })
 export class Reseller {

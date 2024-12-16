@@ -36,6 +36,11 @@ class MessageService {
             yield this.repository.save(imcenterLog);
         });
     }
+    createLog(messageLog) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.repository.save(messageLog);
+        });
+    }
     saveLog(message, tipe) {
         return __awaiter(this, void 0, void 0, function* () {
             const imcenterLog = this.getSkeletonLog();

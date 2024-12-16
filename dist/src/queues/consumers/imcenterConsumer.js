@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.stopConsumeImcenterSendMessageQueue = exports.consumeImcenterSendMessageQueue = void 0;
-const queueHandler_1 = require("../handlers/queueHandler");
+// import { handleImcenterSendMessage } from "../handlers/queueHandler";
 const index_1 = require("../index");
 let consumerTag = new Map();
 const consumeImcenterSendMessageQueue = (imcenter) => __awaiter(void 0, void 0, void 0, function* () {
@@ -22,7 +22,7 @@ const consumeImcenterSendMessageQueue = (imcenter) => __awaiter(void 0, void 0, 
         try {
             const content = JSON.parse(message.content.toString());
             console.log(`Message received from : ${queueName}`, content);
-            yield (0, queueHandler_1.handleImcenterSendMessage)(imcenter, content);
+            // await handleImcenterSendMessage(imcenter,content);
             channel.ack(message);
         }
         catch (error) {

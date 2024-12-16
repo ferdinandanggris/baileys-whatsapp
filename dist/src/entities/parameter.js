@@ -16,7 +16,7 @@ let Parameter = class Parameter {
 exports.Parameter = Parameter;
 __decorate([
     (0, typeorm_1.PrimaryColumn)({ type: 'varchar' }),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], Parameter.prototype, "group", void 0);
 __decorate([
     (0, typeorm_1.PrimaryColumn)({ type: 'varchar' }),

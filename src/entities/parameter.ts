@@ -1,9 +1,10 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
+import { IParameter } from "../interfaces/parameter";
 
 @Entity({schema : 'processor', name : 'parameter'})
-export class Parameter{
+export class Parameter implements IParameter{
     @PrimaryColumn({type : 'varchar'})
-    group!: number;
+    group!: string;
 
     @PrimaryColumn({type : 'varchar'})
     key!: string;

@@ -11,13 +11,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const parameter_1 = require("../../../entities/parameter");
 const db_1 = require("../../../configs/db");
+const parameterGriyabayar_1 = require("../../../entities/parameterGriyabayar");
 class ParameterService {
     constructor() {
-        this.repository = db_1.AppDataSource.getRepository(parameter_1.Parameter);
+        this.repository = {
+            default: db_1.AppDataSource.getRepository(parameter_1.Parameter),
+            griyabayar: db_1.AppDataSource.getRepository(parameterGriyabayar_1.ParameterGriyaBayar)
+        };
     }
     getParameterAutoResponse(key) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.repository.createQueryBuilder('parameter').where(`key = LEFT('${key}',${key.length})`).addOrderBy("prioritas", "ASC").getOne();
+            return this.repository.griyabayar.createQueryBuilder('parameter').where(`key = LEFT('${key}',${key.length})`).addOrderBy("prioritas", "ASC").getOne();
+        });
+    }
+    findByGroupAndKey(group, key, griyabayar) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (griyabayar)
+                return this.repository.griyabayar.findOne({ where: { group: group, key } });
+            return this.repository.default.findOne({ where: { group: group, key } });
         });
     }
 }

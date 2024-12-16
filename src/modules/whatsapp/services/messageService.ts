@@ -4,8 +4,9 @@ import { ImcenterLogs } from "../../../entities/imcenterLogs";
 import { STATUS_LOG, TIPE_APLIKASI, TIPE_LOG } from "../../../entities/types";
 import { timeToDate } from "../../../utils/date";
 import { IsNull, Not } from "typeorm";
+import { IMessageService } from "../../../interfaces/message";
 
-export class MessageService{
+export class MessageService implements IMessageService{
 
     private repository = AppDataSource.getRepository(ImcenterLogs);
     constructor(private imcenter_id: number) {}
@@ -23,6 +24,10 @@ export class MessageService{
         imcenterLog.sender_timestamp = timeToDate(Number(message.messageTimestamp))
         imcenterLog.raw_message = JSON.stringify(message)
         await this.repository.save(imcenterLog);
+    }
+
+    async createLog(messageLog : ImcenterLogs) : Promise<ImcenterLogs> {
+        return await this.repository.save(messageLog);
     }
 
     async saveLog(message : string, tipe : TIPE_LOG){

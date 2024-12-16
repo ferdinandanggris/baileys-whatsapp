@@ -46,6 +46,15 @@ class ImCenterService {
             return this.queryAdditionalForWhatsappNodejs(this.repository.createQueryBuilder('imcenter')).getMany();
         });
     }
+    getImcenterByJID(jid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const imcenter = yield this.repository.findOneBy({ im_jid: jid });
+            if (!imcenter) {
+                throw new Error(`imcenter with key "${jid}" not found.`);
+            }
+            return imcenter;
+        });
+    }
     deleteSession(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const session = yield this.repository.findOneBy({ id });
@@ -74,6 +83,17 @@ class ImCenterService {
             session.qr = qrcode;
             yield this.repository.save(session);
             return `Session "${session.username}" QR Code updated.`;
+        });
+    }
+    updateActivity(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const imcenter = yield this.repository.findOneBy({ id });
+            if (!imcenter) {
+                return false;
+            }
+            imcenter.tgl_aktivitas = new Date();
+            yield this.repository.save(imcenter);
+            return true;
         });
     }
     getQRCode(numberPhone) {

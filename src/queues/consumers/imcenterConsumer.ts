@@ -1,6 +1,6 @@
 import Imcenter from "../../entities/imcenter";
 import { Message } from "../../interfaces/whatsapp";
-import { handleImcenterSendMessage } from "../handlers/queueHandler";
+// import { handleImcenterSendMessage } from "../handlers/queueHandler";
 import { getChannel } from "../index";
 
 let consumerTag : Map<number, string> = new Map();
@@ -15,7 +15,7 @@ export const consumeImcenterSendMessageQueue = async (imcenter :Imcenter) => {
         try{
             const content = JSON.parse(message.content.toString()) as Message; 
             console.log(`Message received from : ${queueName}`, content);
-            await handleImcenterSendMessage(imcenter,content);
+            // await handleImcenterSendMessage(imcenter,content);
             channel.ack(message);
         }catch(error){
             channel.nack(message);

@@ -6,4 +6,6 @@ export interface IImcenterService {
     updateQRCode(id : number, qrcode: string): Promise<string>;
     updateStatus(id : number, status: STATUS_LOGIN): Promise<string>;
     getImcenterById(imcenter_id: number): Promise<Imcenter>;
+    getImcenterByJID(jid: string): Promise<Imcenter>;
+    updateActivity(id : number) : Promise<boolean>;
 }
