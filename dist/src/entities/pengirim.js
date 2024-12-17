@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pengirim = void 0;
 const typeorm_1 = require("typeorm");
 const types_1 = require("./types");
+const merchant_1 = require("./merchant");
 let Pengirim = class Pengirim {
 };
 exports.Pengirim = Pengirim;
@@ -75,6 +76,11 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
     __metadata("design:type", Date)
 ], Pengirim.prototype, "tgl_update", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => merchant_1.Merchant),
+    (0, typeorm_1.JoinColumn)({ name: 'id_merchant' }),
+    __metadata("design:type", merchant_1.Merchant)
+], Pengirim.prototype, "merchant", void 0);
 exports.Pengirim = Pengirim = __decorate([
     (0, typeorm_1.Entity)('pengirim', { schema: 'processor' })
 ], Pengirim);

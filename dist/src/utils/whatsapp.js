@@ -12,12 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isFromMe = exports.getSocketJid = exports.getSocketNumber = exports.qrCodeToBase64 = exports.isInboxMessage = exports.isFromPersonalChat = exports.isFromBroadcast = exports.isFromGroup = exports.jidToNumber = exports.numberToJid = void 0;
+exports.isFromMe = exports.getSocketJid = exports.getSocketNumber = exports.qrCodeToBase64 = exports.isInboxMessage = exports.isFromPersonalChat = exports.isFromBroadcast = exports.isFromGroup = exports.jidToNumberPhone = exports.numberToJid = void 0;
 const qrcode_1 = __importDefault(require("qrcode"));
 const numberToJid = (jid) => (jid === null || jid === void 0 ? void 0 : jid.includes('@s.whatsapp.net')) ? jid : `${jid}@s.whatsapp.net` || null;
 exports.numberToJid = numberToJid;
-const jidToNumber = (jid) => (jid === null || jid === void 0 ? void 0 : jid.replace('@s.whatsapp.net', '')) || null;
-exports.jidToNumber = jidToNumber;
+const jidToNumberPhone = (jid) => (jid === null || jid === void 0 ? void 0 : jid.replace('@s.whatsapp.net', '')) || null;
+exports.jidToNumberPhone = jidToNumberPhone;
 const isFromGroup = (jid) => jid.includes('@g.us');
 exports.isFromGroup = isFromGroup;
 const isFromBroadcast = (jid) => jid.includes('@broadcast');

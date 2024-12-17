@@ -12,6 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Merchant = void 0;
 const typeorm_1 = require("typeorm");
 const types_1 = require("./types");
+const reseller_1 = require("./reseller");
+const pengirim_1 = require("./pengirim");
 let Merchant = class Merchant {
 };
 exports.Merchant = Merchant;
@@ -155,6 +157,16 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Merchant.prototype, "tgl_update", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => reseller_1.Reseller, reseller => reseller.merchant),
+    (0, typeorm_1.JoinColumn)({ referencedColumnName: 'id_merchant' }),
+    __metadata("design:type", Array)
+], Merchant.prototype, "resellers", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => pengirim_1.Pengirim, pengirim => pengirim.merchant),
+    (0, typeorm_1.JoinColumn)({ referencedColumnName: 'id_merchant' }),
+    __metadata("design:type", Array)
+], Merchant.prototype, "pengirim", void 0);
 exports.Merchant = Merchant = __decorate([
     (0, typeorm_1.Entity)('merchant', { schema: 'processor' })
 ], Merchant);

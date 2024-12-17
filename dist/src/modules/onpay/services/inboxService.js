@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = require("../../../configs/db");
-const inboxGriyabayar_1 = require("../../../entities/inboxGriyabayar");
-class InboxGriyabayarService {
+const inbox_1 = require("../../../entities/inbox");
+class InboxService {
     constructor() {
-        this.repository = db_1.AppDataSource.getRepository(inboxGriyabayar_1.InboxGriyabayar);
+        this.repository = db_1.AppDataSource.getRepository(inbox_1.Inbox);
     }
     createInbox(inbox) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -21,5 +21,5 @@ class InboxGriyabayarService {
         });
     }
 }
-exports.default = InboxGriyabayarService;
+exports.default = InboxService;
 //# sourceMappingURL=inboxService.js.map

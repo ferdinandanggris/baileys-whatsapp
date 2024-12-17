@@ -15,6 +15,8 @@ const merchant_1 = require("../entities/merchant");
 const parameterGriyabayar_1 = require("../entities/parameterGriyabayar");
 const inboxGriyabayar_1 = require("../entities/inboxGriyabayar");
 const pengirimGriyabayar_1 = require("../entities/pengirimGriyabayar");
+const resellerGriyabayar_1 = require("../entities/resellerGriyabayar");
+const inbox_1 = require("../entities/inbox");
 require('dotenv').config();
 exports.AppDataSource = new typeorm_1.DataSource({
     type: 'postgres',
@@ -23,7 +25,7 @@ exports.AppDataSource = new typeorm_1.DataSource({
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: [whatsappSession_1.WhatsappSession, imcenter_1.default, imcenterLogs_1.ImcenterLogs, parameter_1.Parameter, reseller_1.Reseller, pengirim_1.Pengirim, merchant_1.Merchant, parameter_1.Parameter, parameterGriyabayar_1.ParameterGriyaBayar, inboxGriyabayar_1.InboxGriyabayar, pengirimGriyabayar_1.PengirimGriyabayar],
+    entities: [whatsappSession_1.WhatsappSession, imcenter_1.default, imcenterLogs_1.ImcenterLogs, parameter_1.Parameter, reseller_1.Reseller, pengirim_1.Pengirim, merchant_1.Merchant, parameter_1.Parameter, parameterGriyabayar_1.ParameterGriyaBayar, inboxGriyabayar_1.InboxGriyabayar, pengirimGriyabayar_1.PengirimGriyabayar, resellerGriyabayar_1.ResellerGriyabayar, inbox_1.Inbox],
     synchronize: false, // Auto-create tables (use migrations in production)
 });
 //# sourceMappingURL=db.js.map

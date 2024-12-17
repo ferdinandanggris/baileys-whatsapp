@@ -43,10 +43,10 @@ export const handleLoginMessage = async (imcenter: Imcenter) => {
     }
   }
 
-  // export const handleImcenterSendMessage = async (imcenter : Imcenter,message: Message) => {
-  //   console.log('Processing user message:', message);
-  //   if(imcenter.id){
-  //       const socket : IWhatsappService = instanceManager.getInstance(imcenter.id);
-  //       await socket.messageHandler.sendMessage(message);
-  //   }
-  // }
+  export const handleImcenterSendMessage = async (imcenter : Imcenter,message: Message) => {
+    console.log('Processing user message:', message);
+    if(imcenter.id){
+        const socket : IWhatsappService = instanceManager.getInstance(imcenter.id);
+        await socket.messageHandler.sendMessage(message);
+    }
+  }

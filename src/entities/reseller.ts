@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinTable, JoinColumn } from 'typeorm';
 import { Merchant } from './merchant';
 
 @Entity('reseller', { schema: 'processor' })
@@ -38,4 +38,8 @@ tglAktivitas: Date;
 
 @Column({ name: 'tgl_update', type: 'timestamp', nullable: true })
 tglUpdate: Date;
+
+@ManyToOne(() => Merchant)
+@JoinColumn({ name: 'id_merchant' })
+merchant: Merchant;
 }

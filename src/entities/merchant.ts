@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn } from 'typeorm';
 import { GROUP_MERCHANT, TIPE_AKTIVITAS } from './types';
 import { Reseller } from './reseller';
 import { Pengirim } from './pengirim';
@@ -110,4 +110,11 @@ tgl_created: string;
 @Column()
 tgl_update: string;
 
+@OneToMany(() => Reseller, reseller => reseller.merchant)
+@JoinColumn({ referencedColumnName: 'id_merchant' })
+resellers: Reseller[];
+
+@OneToMany(() => Pengirim, pengirim => pengirim.merchant)
+@JoinColumn({ referencedColumnName: 'id_merchant' })
+pengirim: Pengirim[];
 }

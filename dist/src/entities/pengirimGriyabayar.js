@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PengirimGriyabayar = void 0;
 const typeorm_1 = require("typeorm");
 const types_1 = require("./types");
+const resellerGriyabayar_1 = require("./resellerGriyabayar");
 let PengirimGriyabayar = class PengirimGriyabayar {
 };
 exports.PengirimGriyabayar = PengirimGriyabayar;
@@ -76,6 +77,11 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', nullable: true }),
     __metadata("design:type", Date)
 ], PengirimGriyabayar.prototype, "tgl_aktivitas", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => resellerGriyabayar_1.ResellerGriyabayar),
+    (0, typeorm_1.JoinColumn)({ name: 'id_reseller' }),
+    __metadata("design:type", resellerGriyabayar_1.ResellerGriyabayar)
+], PengirimGriyabayar.prototype, "reseller", void 0);
 exports.PengirimGriyabayar = PengirimGriyabayar = __decorate([
     (0, typeorm_1.Entity)({ name: 'pengirim', schema: 'griyabayar' }),
     (0, typeorm_1.Unique)(['tipe', 'pengirim'])

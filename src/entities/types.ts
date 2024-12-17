@@ -45,7 +45,10 @@ export enum TIPE_AKTIVITAS{
 }
 
 export enum STATUS_LOG{
+    TERKIRIM = 'Terkirim',
+    DITERIMA = 'Diterima',
     DIBACA = 'Dibaca',
+    BELUM_DIBACA = 'Belum Dibaca',
 }
 
 export enum OUTBOX_STATUS{

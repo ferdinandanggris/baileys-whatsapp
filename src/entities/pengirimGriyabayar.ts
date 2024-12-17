@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Unique } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Unique, ManyToOne, JoinColumn } from 'typeorm';
 import { TIPE_PENGIRIM } from './types';
+import { ResellerGriyabayar } from './resellerGriyabayar';
 
 @Entity({ name: 'pengirim', schema: 'griyabayar' })
 @Unique(['tipe', 'pengirim'])
@@ -8,7 +9,7 @@ export class PengirimGriyabayar {
 id: number;
 
 @Column({ type: 'enum', enum: Object.values(TIPE_PENGIRIM), nullable: false }) // Replace with actual enum values
-tipe: string;
+tipe: TIPE_PENGIRIM;
 
 @Column({ type: 'varchar', nullable: false })
 pengirim: string;
@@ -48,4 +49,8 @@ tgl_update: Date;
 
 @Column({ type: 'timestamp', nullable: true })
 tgl_aktivitas?: Date;
+
+@ManyToOne(() => ResellerGriyabayar)
+@JoinColumn({ name: 'id_reseller' })
+reseller: ResellerGriyabayar;
 }

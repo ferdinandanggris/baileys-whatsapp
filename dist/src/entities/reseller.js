@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Reseller = void 0;
 const typeorm_1 = require("typeorm");
+const merchant_1 = require("./merchant");
 let Reseller = class Reseller {
 };
 exports.Reseller = Reseller;
@@ -62,6 +63,11 @@ __decorate([
     (0, typeorm_1.Column)({ name: 'tgl_update', type: 'timestamp', nullable: true }),
     __metadata("design:type", Date)
 ], Reseller.prototype, "tglUpdate", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => merchant_1.Merchant),
+    (0, typeorm_1.JoinColumn)({ name: 'id_merchant' }),
+    __metadata("design:type", merchant_1.Merchant)
+], Reseller.prototype, "merchant", void 0);
 exports.Reseller = Reseller = __decorate([
     (0, typeorm_1.Entity)('reseller', { schema: 'processor' })
 ], Reseller);

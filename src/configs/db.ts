@@ -9,6 +9,8 @@ import { Merchant } from "../entities/merchant";
 import { ParameterGriyaBayar } from "../entities/parameterGriyabayar";
 import { InboxGriyabayar } from "../entities/inboxGriyabayar";
 import { PengirimGriyabayar } from "../entities/pengirimGriyabayar";
+import { ResellerGriyabayar } from "../entities/resellerGriyabayar";
+import { Inbox } from "../entities/inbox";
 require('dotenv').config()
 
 export const AppDataSource = new DataSource({
@@ -18,6 +20,6 @@ export const AppDataSource = new DataSource({
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: [WhatsappSession, Imcenter, ImcenterLogs, Parameter, Reseller, Pengirim, Merchant, Parameter, ParameterGriyaBayar, InboxGriyabayar,PengirimGriyabayar],
+    entities: [WhatsappSession, Imcenter, ImcenterLogs, Parameter, Reseller, Pengirim, Merchant, Parameter, ParameterGriyaBayar, InboxGriyabayar,PengirimGriyabayar,ResellerGriyabayar, Inbox],
     synchronize: false, // Auto-create tables (use migrations in production)
 });

@@ -1,0 +1,1 @@
+{"version":3,"file":"inboxService.js","sourceRoot":"","sources":["../../../../../src/modules/onpay/services/inboxService.ts"],"names":[],"mappings":";;;;;;;;;;;AAAA,4CAAoD;AACpD,mDAAgD;AAIhD,MAAqB,YAAY;IAAjC;QACY,eAAU,GAAG,kBAAa,CAAC,aAAa,CAAC,aAAK,CAAC,CAAC;IAK5D,CAAC;IAHS,WAAW,CAAC,KAAY;;YAC1B,OAAO,IAAI,CAAC,UAAU,CAAC,IAAI,CAAC,KAAK,CAAC,CAAC;QACvC,CAAC;KAAA;CACJ;AAND,+BAMC"}

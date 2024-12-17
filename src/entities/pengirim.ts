@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToOne } from 'typeorm';
 import { TIPE_PENGIRIM } from './types';
+import { Merchant } from './merchant';
 
 @Entity('pengirim', { schema: 'processor' })
 export class Pengirim {
@@ -7,7 +8,7 @@ export class Pengirim {
 id: number;
 
 @Column({ type: 'enum', enum : Object.values(TIPE_PENGIRIM), nullable: true })
-tipe: string;
+tipe: TIPE_PENGIRIM;
 
 @Column({ type: 'varchar', nullable: true })
 pengirim: string;
@@ -47,4 +48,8 @@ tgl_created: Date;
 
 @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
 tgl_update: Date;
+
+@ManyToOne(() => Merchant)
+@JoinColumn({ name: 'id_merchant' })
+merchant: Merchant;
 }

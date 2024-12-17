@@ -48,7 +48,10 @@ var TIPE_AKTIVITAS;
 })(TIPE_AKTIVITAS || (exports.TIPE_AKTIVITAS = TIPE_AKTIVITAS = {}));
 var STATUS_LOG;
 (function (STATUS_LOG) {
+    STATUS_LOG["TERKIRIM"] = "Terkirim";
+    STATUS_LOG["DITERIMA"] = "Diterima";
     STATUS_LOG["DIBACA"] = "Dibaca";
+    STATUS_LOG["BELUM_DIBACA"] = "Belum Dibaca";
 })(STATUS_LOG || (exports.STATUS_LOG = STATUS_LOG = {}));
 var OUTBOX_STATUS;
 (function (OUTBOX_STATUS) {

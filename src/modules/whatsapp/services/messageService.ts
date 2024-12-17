@@ -61,4 +61,8 @@ export class MessageService implements IMessageService{
     async saveMultipleMessage(messages: ImcenterLogs[]) {
         await this.repository.save(messages);
     }
+
+    async processMessage(messages: proto.WebMessageInfo[]) {
+        
+    }
 }
