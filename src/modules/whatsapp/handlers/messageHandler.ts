@@ -75,7 +75,7 @@ export class MessageHandler {
 
         this.socket.ev.on("messaging-history.set", async (msg) => {
             if(msg.progress == 100 && msg.syncType == proto.HistorySync.HistorySyncType.RECENT){
-                await this.saveHistoryMessage(msg.messages);
+                // await this.saveHistoryMessage(msg.messages);
             }
         });
 
@@ -90,61 +90,61 @@ export class MessageHandler {
         });
     }
 
-    private async saveHistoryMessage(messages: proto.IWebMessageInfo[]) {
-        // find latest imcenter_logs
-        const listMessage : ImcenterLogs[] = [];
-        const latestImcenterLogs = await this.props.messageService.getLatestMessageByImcenter();
-        const filterHasConversation = messages.filter(message => message.message?.conversation != null);
-        const imcenter = await this.props.imcenterService.getImcenterById(this.props.imcenter_id);
+    // private async saveHistoryMessage(messages: proto.IWebMessageInfo[]) {
+    //     // find latest imcenter_logs
+    //     const listMessage : ImcenterLogs[] = [];
+    //     const latestImcenterLogs = await this.props.messageService.getLatestMessageByImcenter();
+    //     const filterHasConversation = messages.filter(message => message.message?.conversation != null);
+    //     const imcenter = await this.props.imcenterService.getImcenterById(this.props.imcenter_id);
 
-        if(imcenter == null) throw new Error(`Imcenter with id ${this.props.imcenter_id} not found`);
+    //     if(imcenter == null) throw new Error(`Imcenter with id ${this.props.imcenter_id} not found`);
 
-        for (const message of filterHasConversation) {
-            const messageTimestamp = Number(message.messageTimestamp);
-            const messageDate = timeToDate(messageTimestamp);
-            const dateNow = new Date();
-            if (latestImcenterLogs == null || latestImcenterLogs.sender_timestamp.getTime() < messageDate.getTime()) {
-                const flagImageMedia = message.message?.imageMessage?.url != null;
-                const flagValidationIsEditMessage = message.message?.editedMessage?.message?.protocolMessage != null && message.message?.editedMessage?.message?.protocolMessage?.editedMessage?.conversation != null && !message.key.fromMe;
-                // is image message
-                if((dateNow.getTime() - messageDate.getTime()) > 120000){
-                    switch (true) {
-                        // send message extended
-                        case (flagImageMedia):
-                            await this.validationImageMessage(message);
-                            continue;
-                        case (flagValidationIsEditMessage):
-                            await this.validationIsEditMessage(message);
-                            continue;
-                        case (isFromBroadcast(message.key.remoteJid) || isFromGroup(message.key.remoteJid) || isFromMe(message)):
-                            continue;
-                    }
-                }
+    //     for (const message of filterHasConversation) {
+    //         const messageTimestamp = Number(message.messageTimestamp);
+    //         const messageDate = timeToDate(messageTimestamp);
+    //         const dateNow = new Date();
+    //         if (latestImcenterLogs == null || latestImcenterLogs.sender_timestamp.getTime() < messageDate.getTime()) {
+    //             const flagImageMedia = message.message?.imageMessage?.url != null;
+    //             const flagValidationIsEditMessage = message.message?.editedMessage?.message?.protocolMessage != null && message.message?.editedMessage?.message?.protocolMessage?.editedMessage?.conversation != null && !message.key.fromMe;
+    //             // is image message
+    //             if((dateNow.getTime() - messageDate.getTime()) > 120000){
+    //                 switch (true) {
+    //                     // send message extended
+    //                     case (flagImageMedia):
+    //                         await this.validationImageMessage(message);
+    //                         continue;
+    //                     case (flagValidationIsEditMessage):
+    //                         await this.validationIsEditMessage(message);
+    //                         continue;
+    //                     case (isFromBroadcast(message.key.remoteJid) || isFromGroup(message.key.remoteJid) || isFromMe(message)):
+    //                         continue;
+    //                 }
+    //             }
 
-                const { kode_reseller, pengirim, messageText } = await this.fetchMessageAttributes(message, imcenter);
-                var imcenterLog : ImcenterLogs = new ImcenterLogs();
-                imcenterLog.tgl_entri= new Date();
-                imcenterLog.imcenter_id= this.props.imcenter_id;
-                imcenterLog.message_id= message.key.id;
-                imcenterLog.pengirim= pengirim;
-                imcenterLog.aplikasi= TIPE_APLIKASI.NODEJS;
-                imcenterLog.tipe= TIPE_LOG.INBOX;
-                imcenterLog.keterangan= messageText;
-                imcenterLog.kode_reseller= kode_reseller;
-                imcenterLog.sender_timestamp= timeToDate(Number(message.messageTimestamp));
+    //             const { kode_reseller, pengirim, messageText } = await this.fetchMessageAttributes(message, imcenter);
+    //             var imcenterLog : ImcenterLogs = new ImcenterLogs();
+    //             imcenterLog.tgl_entri= new Date();
+    //             imcenterLog.imcenter_id= this.props.imcenter_id;
+    //             imcenterLog.message_id= message.key.id;
+    //             imcenterLog.pengirim= pengirim;
+    //             imcenterLog.aplikasi= TIPE_APLIKASI.NODEJS;
+    //             imcenterLog.tipe= TIPE_LOG.INBOX;
+    //             imcenterLog.keterangan= messageText;
+    //             imcenterLog.kode_reseller= kode_reseller;
+    //             imcenterLog.sender_timestamp= timeToDate(Number(message.messageTimestamp));
     
-                if(message.key.fromMe){
-                    imcenterLog.status = STATUS_LOG.DIBACA;
-                }else{
-                    imcenterLog.raw_message = JSON.stringify(message);
-                } 
+    //             if(message.key.fromMe){
+    //                 imcenterLog.status = STATUS_LOG.DIBACA;
+    //             }else{
+    //                 imcenterLog.raw_message = JSON.stringify(message);
+    //             } 
                 
-                listMessage.push(imcenterLog);
-            }
-        }
+    //             listMessage.push(imcenterLog);
+    //         }
+    //     }
 
-        if(listMessage.length > 0) await this.props.messageService.saveMultipleMessage(listMessage);
-    }
+    //     if(listMessage.length > 0) await this.props.messageService.saveMultipleMessage(listMessage);
+    // }
 
     async checkNumberIsRegistered(number : string) : Promise<boolean> {
         try {
@@ -181,6 +181,7 @@ export class MessageHandler {
     }
 
     private async inboxValidation(messages: proto.IWebMessageInfo[]): Promise<void> {
+        const messageFiltered : proto.IWebMessageInfo[] = [];
         for (const message of messages) {
             const flagImageMedia = message.message?.imageMessage?.url != null;
             const flagValidationIsEditMessage = message.message?.editedMessage?.message?.protocolMessage != null && message.message?.editedMessage?.message?.protocolMessage?.editedMessage?.conversation != null && !message.key.fromMe;
@@ -207,175 +208,10 @@ export class MessageHandler {
                 case (isFromBroadcast(message.key.remoteJid) || isFromGroup(message.key.remoteJid) || isFromMe(message)):
                     continue;
                     break;
-            }
-
-            // save to imcenter_logs
-            await this.saveImcenterLogs(message);
-            // save to inbox / inbox griya bayar
-            await this.saveInbox(message);
-
+            };
+            messageFiltered.push(message);
         }
-    }
-
-    private async saveInbox(message : proto.IWebMessageInfo) {
-        try {
-            const imcenter = await this.props.imcenterService.getImcenterById(this.props.imcenter_id);
-            if(!imcenter) throw new Error(`imcenter with key "${message.key.remoteJid}" not found.`);
-
-            var { kode_reseller, pengirim, messageText, idReseller, idMerchant } = await this.fetchMessageAttributes(message, imcenter);
-
-            const listStatusActive = [STATUS_LOGIN.MENGIRIM_PESAN, STATUS_LOGIN.SUDAH_LOGIN];
-
-            if(listStatusActive.find(status => status == imcenter.status_login) != null){
-                console.debug("Imcenter aktif");
-
-                // set read message
-                await this.markAsRead(message.key);
-
-                if(imcenter.griyabayar){
-                    console.debug("Simpan inbox Griya bayar : " , imcenter.griyabayar);
-
-                    const inboxModel : InboxGriyabayar = {
-                        kode_reseller : kode_reseller,
-                        tgl_entri : new Date(),
-                        pengirim : pengirim,
-                        penerima : imcenter.username,
-                        tipe : TIPE_PENGIRIM.WHATSAPP,
-                        pesan : messageText,
-                        status : STATUS_INBOX.BELUM_DIPROSES,
-                        tgl_status : new Date(),
-                        id_imcenter : imcenter.id,
-                        sender_timestamp : timeToDate(Number(message.messageTimestamp)),
-                        service_center : "WhatsApp",
-                        raw_message : JSON.stringify(message)
-                    };
-
-                    await this.inboxGriyabayarService.createInbox(inboxModel);
-                }else{
-                    const inbox_status = STATUS_INBOX.DIABAIKAN;
-                    const inbox : Inbox = {
-                        id_reseller : idReseller,
-                        id_merchant : idMerchant,
-                        tgl_entri : new Date(),
-                        tipe : TIPE_PENGIRIM.WHATSAPP,
-                        pengirim : pengirim,
-                        penerima : imcenter.username,
-                        pesan : messageText,
-                        status : inbox_status,
-                        tgl_status : new Date(),
-                        id_imcenter : imcenter.id,
-                        sender_timestamp : timeToDate(Number(message.messageTimestamp)),
-                        service_center : "WhatsApp",
-                        raw_message : JSON.stringify(message)
-                    }
-
-                    await this.inboxService.createInbox(inbox);
-                }
-
-            }else{
-                console.debug("Imcenter belum aktif");
-            }
-
-        } catch (error) {
-            console.error(`Gagal menyimpan pesan dari ${message.key.remoteJid}:`, error);
-            this.props.messageService.saveLog(`Gagal menyimpan pesan dari ${message.key.remoteJid}`, TIPE_LOG.ERROR);
-        }
-    }
-
-
-    private async fetchMessageAttributes(message: proto.IWebMessageInfo, imcenter: Imcenter) {
-        var messageText;
-        if (message.message?.conversation != null) {
-            messageText = message.message.conversation;
-        } else if (message.message?.extendedTextMessage?.text != null) {
-            messageText = message.message.extendedTextMessage.text;
-        }
-
-        const pengirim = jidToNumberPhone(message.key.remoteJid);
-        var kode_reseller: string | null = null;
-        var idReseller, idMerchant: number | null = null;
-
-        if (!pengirim) throw new Error(`Pengirim tidak ditemukan`);
-
-        await this.props.imcenterService.updateActivity(this.props.imcenter_id);
-        const reseller = await this.resellerService.findByPhoneNumber(pengirim, imcenter.griyabayar, TIPE_PENGIRIM.WHATSAPP);
-
-        if (reseller == null) {
-            const waSetting = await this.parameterService.findByGroupAndKey(PARAMETER_GROUP.SETTING, "NomorHp=WhatsApp", imcenter.griyabayar);
-            if (waSetting != null && waSetting.value == "1") {
-                const reseller = await this.resellerService.findByPhoneNumber(pengirim, imcenter.griyabayar, TIPE_PENGIRIM.NOMOR_HP);
-                if (reseller) {
-                    kode_reseller = reseller.kode;
-                    idReseller = reseller.id_reseller;
-                    idMerchant = reseller.id_merchant;
-                }
-            }
-        } else {
-            kode_reseller = reseller.kode;
-            idReseller = reseller.id_reseller;
-            idMerchant = reseller.id_merchant;
-        }
-        return { kode_reseller, pengirim, messageText, idReseller, idMerchant };
-    }
-
-    async saveImcenterLogs(message: proto.IWebMessageInfo) : Promise<ImcenterLogs> {
-        try{
-            const imcenter = await this.props.imcenterService.getImcenterById(this.props.imcenter_id);
-            if(!imcenter) throw new Error(`imcenter with key "${message.key.remoteJid}" not found.`);
-
-            var messageText;
-            if(message.message?.conversation != null){
-                messageText = message.message.conversation;
-            }else if(message.message?.extendedTextMessage?.text != null){
-                messageText = message.message.extendedTextMessage.text;
-            }
-
-            const pengirim = jidToNumberPhone(message.key.remoteJid);
-            var kode_reseller : string | null = null;
-            var idReseller, idMerchant : number | null = null;
-
-            if(!pengirim) throw new Error(`Pengirim tidak ditemukan`);
-
-            await this.props.imcenterService.updateActivity(this.props.imcenter_id);
-            const reseller = await this.resellerService.findByPhoneNumber(pengirim, imcenter.griyabayar, TIPE_PENGIRIM.WHATSAPP);
-
-            if(reseller == null){
-                const waSetting = await this.parameterService.findByGroupAndKey(PARAMETER_GROUP.SETTING, "NomorHp=WhatsApp", imcenter.griyabayar);
-                if(waSetting != null && waSetting.value == "1"){
-                    const reseller = await this.resellerService.findByPhoneNumber(pengirim, imcenter.griyabayar, TIPE_PENGIRIM.NOMOR_HP);
-                    if(reseller){
-                        kode_reseller = reseller.kode;
-                        idReseller = reseller.id_reseller;
-                        idMerchant = reseller.id_merchant;
-                    }
-                }
-            }else{
-                kode_reseller = reseller.kode;
-                idReseller = reseller.id_reseller;
-                idMerchant = reseller.id_merchant;
-            }
-
-            var imcenterLog : ImcenterLogs = new ImcenterLogs();
-            imcenterLog.tgl_entri= new Date(),
-            imcenterLog.imcenter_id= this.props.imcenter_id,
-            imcenterLog.message_id= message.key.id,
-            imcenterLog.pengirim= pengirim,
-            imcenterLog.aplikasi= TIPE_APLIKASI.NODEJS,
-            imcenterLog.tipe= TIPE_LOG.INBOX,
-            imcenterLog.keterangan= messageText,
-            imcenterLog.kode_reseller= kode_reseller,
-            imcenterLog.sender_timestamp= timeToDate(Number(message.messageTimestamp));
-
-            if(imcenter.status_login != STATUS_LOGIN.MENGIRIM_PESAN && imcenter.status_login != STATUS_LOGIN.SUDAH_LOGIN){
-                imcenterLog.raw_message = JSON.stringify(message);
-            }
-
-            return await this.props.messageService.createLog(imcenterLog);
-
-        }catch(error){
-            console.error(`Gagal menyimpan pesan dari ${message.key.remoteJid}:`, error);
-            this.props.messageService.saveLog(`Gagal menyimpan pesan dari ${message.key.remoteJid}`, TIPE_LOG.ERROR);
-        }
+        this.props.messageService.processMessagesFromUpsert(messageFiltered);
     }
 
     async markAsRead(messageId: proto.IMessageKey) {

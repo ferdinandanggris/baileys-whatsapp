@@ -53,7 +53,7 @@ class WhatsappService extends PlatformTools_1.EventEmitter {
             socket: this.socket,
             sessionService: new sessionService_1.default(),
             imcenterService: new imcenterService_1.ImCenterService(),
-            messageService: new messageService_1.MessageService(this.imcenter_id)
+            messageService: new messageService_1.MessageService(this, this.imcenter_id)
         };
         this.messageHandler = new messageHandler_1.MessageHandler(props);
         this.connectionHandler = new connectionHandler_1.ConnectionHandler(props);

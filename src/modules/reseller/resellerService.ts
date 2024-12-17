@@ -5,7 +5,7 @@ import { PengirimGriyabayar } from "../../entities/pengirimGriyabayar";
 import { Reseller as ResellerEntity } from "../../entities/reseller";
 import { ResellerGriyabayar } from "../../entities/resellerGriyabayar";
 import { TIPE_PENGIRIM } from "../../entities/types";
-import { Reseller } from "../../interfaces/reseller";
+import { ResellerModel } from "../../interfaces/reseller";
 
 export default class ResellerService {
     private repository = {
@@ -13,7 +13,7 @@ export default class ResellerService {
         griyabayar : AppDataSource.getRepository(ResellerGriyabayar)
     }
 
-    async findByPhoneNumber(phone_number: string, is_griyabayar : boolean, tipe : TIPE_PENGIRIM): Promise<Reseller> {
+    async findByPhoneNumber(phone_number: string, is_griyabayar : boolean, tipe : TIPE_PENGIRIM): Promise<ResellerModel> {
 
         if (is_griyabayar) {
             if(phone_number.startsWith('62')){
@@ -27,7 +27,7 @@ export default class ResellerService {
                 .andWhere('pengirim.tipe = :tipe', { tipe }).getOne();
 
             // object Keys to type Reseller
-            var reseller: Reseller = {
+            var reseller: ResellerModel = {
                 kode: result?.kode,
                 tipe: result?.pengirim[0]?.tipe,
                 id_reseller: result?.id
@@ -43,7 +43,7 @@ export default class ResellerService {
         .andWhere('pengirim.tipe = :tipe', { tipe }).getOne();
 
 
-        var reseller : Reseller = {
+        var reseller : ResellerModel = {
             kode: result?.kode,
             tipe: result?.merchant?.pengirim[0]?.tipe,
             id_reseller: result?.id,

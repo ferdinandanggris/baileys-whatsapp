@@ -9,11 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const parameter_1 = require("../../../entities/parameter");
-const db_1 = require("../../../configs/db");
-class ParameterService {
+const db_1 = require("../configs/db");
+const parameterGriyabayar_1 = require("../entities/parameterGriyabayar");
+class ParameterGriyabayarService {
     constructor() {
-        this.repository = db_1.AppDataSource.getRepository(parameter_1.Parameter);
+        this.repository = db_1.AppDataSource.getRepository(parameterGriyabayar_1.ParameterGriyaBayar);
     }
     findByGroupAndKey(group, key) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -21,5 +21,5 @@ class ParameterService {
         });
     }
 }
-exports.default = ParameterService;
-//# sourceMappingURL=parameterService.js.map
+exports.default = ParameterGriyabayarService;
+//# sourceMappingURL=parameterGriyabayarRepository.js.map

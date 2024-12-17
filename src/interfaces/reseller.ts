@@ -1,6 +1,6 @@
 import { TIPE_PENGIRIM } from "../entities/types"
 
-export type Reseller = {
+export type ResellerModel = {
     kode: string;
     tipe: TIPE_PENGIRIM;
     id_master?: number;

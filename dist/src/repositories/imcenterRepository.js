@@ -8,18 +8,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const parameter_1 = require("../../../entities/parameter");
-const db_1 = require("../../../configs/db");
-class ParameterService {
+exports.ImcenterRepository = void 0;
+const db_1 = require("../configs/db");
+const imcenter_1 = __importDefault(require("../entities/imcenter"));
+class ImcenterRepository {
     constructor() {
-        this.repository = db_1.AppDataSource.getRepository(parameter_1.Parameter);
+        this.repository = db_1.AppDataSource.getRepository(imcenter_1.default);
     }
-    findByGroupAndKey(group, key) {
+    fetchById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.repository.findOne({ where: { group: group, key } });
+            return this.repository.findOne({ where: { id } });
+        });
+    }
+    updateActivityById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.repository.update(id, { tgl_aktivitas: new Date() });
+            return true;
         });
     }
 }
-exports.default = ParameterService;
-//# sourceMappingURL=parameterService.js.map
+exports.ImcenterRepository = ImcenterRepository;
+//# sourceMappingURL=imcenterRepository.js.map

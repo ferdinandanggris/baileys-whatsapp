@@ -9,17 +9,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const parameter_1 = require("../../../entities/parameter");
-const db_1 = require("../../../configs/db");
-class ParameterService {
+exports.ImcenterLogRepository = void 0;
+const db_1 = require("../configs/db");
+const imcenterLogs_1 = require("../entities/imcenterLogs");
+class ImcenterLogRepository {
     constructor() {
-        this.repository = db_1.AppDataSource.getRepository(parameter_1.Parameter);
+        this.repository = db_1.AppDataSource.getRepository(imcenterLogs_1.ImcenterLogs);
     }
-    findByGroupAndKey(group, key) {
+    create(imcenterLog) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.repository.findOne({ where: { group: group, key } });
+            return yield this.repository.save(imcenterLog);
         });
     }
 }
-exports.default = ParameterService;
-//# sourceMappingURL=parameterService.js.map
+exports.ImcenterLogRepository = ImcenterLogRepository;
+//# sourceMappingURL=imcenterLogRepository.js.map

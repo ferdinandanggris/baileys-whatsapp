@@ -10,4 +10,5 @@ export interface IMessageService {
     getLatestMessageByImcenter(): Promise<ImcenterLogs>;
     getMessageByMessageId(messageId: string): Promise<ImcenterLogs>;
     updateStatus(messageId: string, status: STATUS_LOG): Promise<void>;
+    processMessagesFromUpsert(message: proto.IWebMessageInfo[]): Promise<void>;
 }

@@ -50,7 +50,7 @@ export class WhatsappService extends EventEmitter implements IWhatsappService {
             socket: this.socket,
             sessionService  : new SessionService(),
             imcenterService: new ImCenterService(),
-            messageService: new MessageService(this.imcenter_id)
+            messageService: new MessageService(this,this.imcenter_id)
         }
 
         this.messageHandler = new MessageHandler(props);

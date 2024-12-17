@@ -9,17 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const parameter_1 = require("../../../entities/parameter");
-const db_1 = require("../../../configs/db");
-class ParameterService {
+const db_1 = require("../configs/db");
+const inbox_1 = require("../entities/inbox");
+class InboxRepository {
     constructor() {
-        this.repository = db_1.AppDataSource.getRepository(parameter_1.Parameter);
+        this.repository = db_1.AppDataSource.getRepository(inbox_1.Inbox);
     }
-    findByGroupAndKey(group, key) {
+    createInbox(inbox) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.repository.findOne({ where: { group: group, key } });
+            return this.repository.save(inbox);
         });
     }
 }
-exports.default = ParameterService;
-//# sourceMappingURL=parameterService.js.map
+exports.default = InboxRepository;
+//# sourceMappingURL=inboxRepository.js.map
