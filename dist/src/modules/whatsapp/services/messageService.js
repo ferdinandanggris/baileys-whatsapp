@@ -20,12 +20,12 @@ const date_1 = require("../../../utils/date");
 const imcenterRepository_1 = require("../../../repositories/imcenterRepository");
 const whatsapp_1 = require("../../../utils/whatsapp");
 const resellerRepository_1 = require("../../../repositories/resellerRepository");
-const parameterService_1 = __importDefault(require("../../autoResponse/services/parameterService"));
 const parameterGriyabayarRepository_1 = __importDefault(require("../../../repositories/parameterGriyabayarRepository"));
 const resellerGriyabayarRepository_1 = require("../../../repositories/resellerGriyabayarRepository");
 const imcenterLogRepository_1 = require("../../../repositories/imcenterLogRepository");
 const inboxGriyabayarRepository_1 = __importDefault(require("../../../repositories/inboxGriyabayarRepository"));
 const inboxRepository_1 = __importDefault(require("../../../repositories/inboxRepository"));
+const parameterRepository_1 = __importDefault(require("../../../repositories/parameterRepository"));
 class MessageService {
     constructor(whatsappService, imcenter_id) {
         this.whatsappService = whatsappService;
@@ -34,8 +34,8 @@ class MessageService {
         this.repositories = {
             imcenter: new imcenterRepository_1.ImcenterRepository(),
             reseller: new resellerRepository_1.ResellerRepository(),
+            parameter: new parameterRepository_1.default(),
             resellerGriyabayar: new resellerGriyabayarRepository_1.ResellerGriyabayarRepository(),
-            parameter: new parameterService_1.default(),
             parameterGriyabayar: new parameterGriyabayarRepository_1.default(),
             imcenterLog: new imcenterLogRepository_1.ImcenterLogRepository(),
             inboxGriyabayar: new inboxGriyabayarRepository_1.default(),

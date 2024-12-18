@@ -87,6 +87,7 @@ class ConnectionHandler {
                 console.log("Koneksi berhasil dibuka!");
                 this.props.imcenterService.updateStatus(this.props.imcenter_id, types_1.STATUS_LOGIN.SUDAH_LOGIN);
                 this.props.imcenterService.updateQRCode(this.props.imcenter_id, null);
+                this.props.imcenterService.updateImJID(this.props.imcenter_id, (0, whatsapp_1.getSocketJid)(this.props.socket));
                 this.props.messageService.saveLog("Login Berhasil", types_1.TIPE_LOG.LOG);
                 // run consume imcenter consume
                 yield (0, imcenterConsumer_1.consumeImcenterSendMessageQueue)(yield this.props.imcenterService.getImcenterById(this.props.imcenter_id));

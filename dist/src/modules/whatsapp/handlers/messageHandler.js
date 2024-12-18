@@ -8,25 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageHandler = void 0;
 const baileys_1 = require("baileys");
 const whatsapp_1 = require("../../../utils/whatsapp");
 const types_1 = require("../../../entities/types");
-const parameterService_1 = __importDefault(require("../../autoResponse/services/parameterService"));
-const resellerService_1 = __importDefault(require("../../reseller/resellerService"));
-const inboxService_1 = __importDefault(require("../../griyabayar/services/inboxService"));
-const inboxService_2 = __importDefault(require("../../onpay/services/inboxService"));
 class MessageHandler {
     constructor(props) {
         this.props = props;
-        this.parameterService = new parameterService_1.default();
-        this.resellerService = new resellerService_1.default();
-        this.inboxGriyabayarService = new inboxService_1.default();
-        this.inboxService = new inboxService_2.default();
         this.socket = props.socket;
     }
     sendMessage(message) {

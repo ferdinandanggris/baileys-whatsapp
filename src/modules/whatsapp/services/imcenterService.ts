@@ -27,6 +27,16 @@ export class ImCenterService implements IImcenterService{
         return true;
     }
 
+    async updateImJID(id : number, jid: string): Promise<string> {
+        const session = await this.repository.findOneBy({ id });
+        if (!session) {
+            throw new Error(`Session with key "${id}" not found.`);
+        }
+        session.im_jid = jid;
+        await this.repository.save(session);
+        return `Session "${session.username}" JID updated.`;
+    }
+
     async getAllSessions(): Promise<Imcenter[]> {
         return this.queryAdditionalForWhatsappNodejs(this.repository.createQueryBuilder('imcenter')).getMany();
     }

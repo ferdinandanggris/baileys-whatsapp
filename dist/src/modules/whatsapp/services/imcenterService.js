@@ -41,6 +41,17 @@ class ImCenterService {
             return true;
         });
     }
+    updateImJID(id, jid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const session = yield this.repository.findOneBy({ id });
+            if (!session) {
+                throw new Error(`Session with key "${id}" not found.`);
+            }
+            session.im_jid = jid;
+            yield this.repository.save(session);
+            return `Session "${session.username}" JID updated.`;
+        });
+    }
     getAllSessions() {
         return __awaiter(this, void 0, void 0, function* () {
             return this.queryAdditionalForWhatsappNodejs(this.repository.createQueryBuilder('imcenter')).getMany();

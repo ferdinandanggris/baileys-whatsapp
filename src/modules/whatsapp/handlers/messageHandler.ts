@@ -2,9 +2,6 @@ import { AnyMessageContent, MessageUserReceiptUpdate, proto, WASocket } from "ba
 import { isFromBroadcast, isFromGroup, isFromMe, numberToJid } from "../../../utils/whatsapp";
 import { TIPE_LOG } from "../../../entities/types";
 import { OTP, SendWhatsappMessage, WhatsappServiceProps } from "../../../interfaces/whatsapp";
-import InboxGriyabayarService from "../../griyabayar/services/inboxService";
-import InboxService from "../../onpay/services/inboxService";
-
 
 interface IMessageHandler {
     sendMessage(message: SendWhatsappMessage): Promise<void>;
@@ -18,8 +15,6 @@ interface IMessageHandler {
 
 export class MessageHandler  implements IMessageHandler {
     private socket: WASocket;
-    inboxGriyabayarService = new InboxGriyabayarService();
-    inboxService = new InboxService();
 
     constructor(private props: WhatsappServiceProps) {
         this.socket = props.socket;

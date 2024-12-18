@@ -1,8 +1,6 @@
-import { ConnectionState, DisconnectReason, WAConnectionState, WASocket } from "baileys";
-import { ImCenterService } from "../services/imcenterService";
+import { ConnectionState, DisconnectReason } from "baileys";
 import { Boom } from '@hapi/boom'
-import { getSocketJid, getSocketNumber, qrCodeToBase64 } from "../../../utils/whatsapp";
-import { MessageService } from "../services/messageService";
+import { getSocketJid, getSocketNumber } from "../../../utils/whatsapp";
 import { STATUS_LOGIN, TIPE_LOG } from "../../../entities/types";
 import { consumeImcenterSendMessageQueue, stopConsumeImcenterSendMessageQueue } from "../../../queues/consumers/imcenterConsumer";
 import { WhatsappServiceProps } from "../../../interfaces/whatsapp";
@@ -74,6 +72,7 @@ export class ConnectionHandler{
             console.log("Koneksi berhasil dibuka!");
             this.props.imcenterService.updateStatus(this.props.imcenter_id, STATUS_LOGIN.SUDAH_LOGIN);
             this.props.imcenterService.updateQRCode(this.props.imcenter_id, null);
+            this.props.imcenterService.updateImJID(this.props.imcenter_id, getSocketJid(this.props.socket));
             this.props.messageService.saveLog("Login Berhasil", TIPE_LOG.LOG);
 
             // run consume imcenter consume
