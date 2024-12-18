@@ -4,20 +4,10 @@ import { ParameterGriyaBayar } from "../entities/parameterGriyabayar";
 import { PARAMETER_GROUP } from "../entities/types";
 import { IParameter } from "../interfaces/parameter";
 
-export default class ParameterService {
-    private repository = {
-        default : AppDataSource.getRepository(Parameter),
-        griyabayar : AppDataSource.getRepository(ParameterGriyaBayar) 
-    }
-
-    async getParameterAutoResponse(key: string): Promise<Parameter> {
-        return this.repository.griyabayar.createQueryBuilder('parameter').where(`key = LEFT('${key}',${key.length})`).addOrderBy("prioritas", "ASC").getOne();
-    }
+export default class ParameterRepository {
+    private repository = AppDataSource.getRepository(ParameterGriyaBayar) 
     
-    async findByGroupAndKey(group : PARAMETER_GROUP, key : string , griyabayar : boolean): Promise<IParameter> {
-        if(griyabayar)
-            return this.repository.griyabayar.findOne({where : {group : group, key}});
-
-        return this.repository.default.findOne({where : {group : group, key}});
+    async findByGroupAndKey(group : PARAMETER_GROUP, key : string): Promise<IParameter> {
+        return this.repository.findOne({where : {group : group, key}});
     }
 }

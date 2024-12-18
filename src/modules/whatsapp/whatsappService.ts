@@ -1,4 +1,4 @@
-import makeWASocket, { proto, useMultiFileAuthState } from "baileys";
+import makeWASocket, { ConnectionState, proto, useMultiFileAuthState, WAConnectionState } from "baileys";
 import { MessageHandler } from "./handlers/messageHandler";
 import { ConnectionHandler } from "./handlers/connectionHandler";
 import SessionService from "./services/sessionService";
@@ -16,12 +16,13 @@ export class WhatsappService extends EventEmitter implements IWhatsappService {
     public connectionHandler: ConnectionHandler;
     public authHandler: AuthHandler;
     public profileHandler: ProfileHandler;
+    public connectionState : any;
 
     constructor(private imcenter_id: number) {
         super();
     }
 
-    private async init() {
+    async init() {
         try {
 
             const logger = log.child({});
@@ -35,7 +36,6 @@ export class WhatsappService extends EventEmitter implements IWhatsappService {
             });
 
             this.setEventHandlers();
-
             // Simpan kredensial secara otomatis
             this.socket.ev.on("creds.update", saveState);
 
@@ -54,7 +54,7 @@ export class WhatsappService extends EventEmitter implements IWhatsappService {
         }
 
         this.messageHandler = new MessageHandler(props);
-        this.connectionHandler = new ConnectionHandler(props);
+        this.connectionHandler = new ConnectionHandler(props, this);
         this.profileHandler = new ProfileHandler(props);
 
         // Tangani event koneksi
@@ -62,6 +62,11 @@ export class WhatsappService extends EventEmitter implements IWhatsappService {
 
         // Tangani pesan
         this.messageHandler.listenForMessages();
+
+        this.socket.ws.on("connection", async (connection : ConnectionState) => {
+            console.log("Connection state: ", connection);
+            this.connectionState = connection;
+        });
 
         // reconnection
         this.socket.ws.on("reconnect", () => {
@@ -71,10 +76,6 @@ export class WhatsappService extends EventEmitter implements IWhatsappService {
     }
 
     async connect(): Promise<void> {
-        // check if service is ready
-        if (this.socket) {
-            await this.connectionHandler.checkStatus();
-        }
-        await this.init();
+        await this.connectionHandler.checkStatus();
     }
 }

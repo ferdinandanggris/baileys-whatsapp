@@ -33,7 +33,7 @@ const instanceManager : InstanceManager = require('../modules/whatsapp/instanceM
     const removeSession = async (req: Request, res: Response): Promise<void> => {
         try {
             const { imcenter_id } = req.params;
-            const socket : IWhatsappService = instanceManager.getInstance(parseInt(imcenter_id));
+            const socket : IWhatsappService = await instanceManager.getInstance(parseInt(imcenter_id));
             socket.connectionHandler.logout();
             res.status(200).json({ message: "Session removed." });
         } catch (error) {
@@ -44,7 +44,7 @@ const instanceManager : InstanceManager = require('../modules/whatsapp/instanceM
     const broadcastMessage = async (req: Request, res: Response): Promise<void> => {
         try {
             const { imcenter_id, message, nomor_penerima} = req.body as { imcenter_id : number, message: string, nomor_penerima: string[] };
-            const socket : IWhatsappService = instanceManager.getInstance(imcenter_id);
+            const socket : IWhatsappService =await instanceManager.getInstance(imcenter_id);
             const response = await socket.messageHandler.broadcastMessage(nomor_penerima, message);
             res.status(200).json({ message :"Send message" });
         } catch (error) {

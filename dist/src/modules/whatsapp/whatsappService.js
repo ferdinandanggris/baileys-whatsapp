@@ -56,12 +56,16 @@ class WhatsappService extends PlatformTools_1.EventEmitter {
             messageService: new messageService_1.MessageService(this, this.imcenter_id)
         };
         this.messageHandler = new messageHandler_1.MessageHandler(props);
-        this.connectionHandler = new connectionHandler_1.ConnectionHandler(props);
+        this.connectionHandler = new connectionHandler_1.ConnectionHandler(props, this);
         this.profileHandler = new profileHandler_1.ProfileHandler(props);
         // Tangani event koneksi
         this.connectionHandler.handleConnectionEvents();
         // Tangani pesan
         this.messageHandler.listenForMessages();
+        this.socket.ws.on("connection", (connection) => __awaiter(this, void 0, void 0, function* () {
+            console.log("Connection state: ", connection);
+            this.connectionState = connection;
+        }));
         // reconnection
         this.socket.ws.on("reconnect", () => {
             console.log("Reconnecting...");
@@ -70,11 +74,7 @@ class WhatsappService extends PlatformTools_1.EventEmitter {
     }
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
-            // check if service is ready
-            if (this.socket) {
-                yield this.connectionHandler.checkStatus();
-            }
-            yield this.init();
+            yield this.connectionHandler.checkStatus();
         });
     }
 }

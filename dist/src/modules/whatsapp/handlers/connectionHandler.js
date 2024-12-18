@@ -15,12 +15,15 @@ const whatsapp_1 = require("../../../utils/whatsapp");
 const types_1 = require("../../../entities/types");
 const imcenterConsumer_1 = require("../../../queues/consumers/imcenterConsumer");
 class ConnectionHandler {
-    constructor(props) {
+    constructor(props, whatsappService) {
         this.props = props;
+        this.whatsappService = whatsappService;
     }
     handleConnectionEvents() {
         this.props.socket.ev.on("connection.update", (update) => __awaiter(this, void 0, void 0, function* () {
             const { connection, lastDisconnect } = update;
+            if (connection)
+                this.props.socket.ws.emit("connection", { connection: connection });
             switch (connection) {
                 case "close":
                     this.handleConnectionClose(lastDisconnect);
@@ -29,8 +32,10 @@ class ConnectionHandler {
                     this.handleConnectionOpen();
                     break;
                 default:
-                    if (update.qr)
+                    if (update.qr) {
                         yield this.handleQRUpdate(update);
+                    }
+                    ;
                     break;
             }
         }));
@@ -38,7 +43,6 @@ class ConnectionHandler {
     handleQRUpdate(update) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                this.changeEventStatus("qr", yield (0, whatsapp_1.qrCodeToBase64)(update.qr));
                 console.log("QR Code tersedia. Silakan scan! ", this.props.imcenter_id);
                 this.props.imcenterService.updateStatus(this.props.imcenter_id, types_1.STATUS_LOGIN.PROSES_LOGIN);
                 this.props.imcenterService.updateQRCode(this.props.imcenter_id, update.qr);
@@ -56,19 +60,15 @@ class ConnectionHandler {
             if (!imcenter) {
                 throw new Error("Imcenter not found");
             }
-            switch (imcenter.status_login) {
-                case types_1.STATUS_LOGIN.SUDAH_LOGIN:
-                    return null;
-                case types_1.STATUS_LOGIN.PROSES_LOGIN:
-                    return yield (0, whatsapp_1.qrCodeToBase64)(imcenter.qr);
-                case types_1.STATUS_LOGIN.DISABLE_QR:
-                    this.props.socket.ws.emit("reconnect");
-                    // throw new Error("Please wait for a seconds and try again");
-                    break;
-                case types_1.STATUS_LOGIN.BELUM_LOGIN:
-                    this.props.socket.ws.emit("reconnect");
-                    // throw new Error("Please wait for a seconds and try again");
-                    break;
+            const connection = this.whatsappService.connectionState.connection;
+            if (connection == 'close') {
+                this.props.socket.ws.emit("reconnect");
+            }
+            else if (connection == 'connecting') {
+                // return await qrCodeToBase64(imcenter.qr);
+            }
+            else if (connection == 'open') {
+                return null;
             }
         });
     }
@@ -79,7 +79,7 @@ class ConnectionHandler {
                 const flagScannerValid = yield this.props.imcenterService.checkScannerIsValid(this.props.imcenter_id, (0, whatsapp_1.getSocketNumber)(this.props.socket));
                 if (!flagScannerValid) {
                     console.log("Scanner tidak valid, silakan logout");
-                    this.props.socket.logout();
+                    this.logout();
                     this.props.imcenterService.updateQRCode(this.props.imcenter_id, null);
                     this.props.messageService.saveLog("[GAGAL SCAN QR] Nomor Whatsapp tidak cocok dengan yang terdaftar", types_1.TIPE_LOG.LOG);
                     return;
@@ -108,7 +108,7 @@ class ConnectionHandler {
                 const shouldReconnect = ((_c = (_b = lastDisconnect.error) === null || _b === void 0 ? void 0 : _b.output) === null || _c === void 0 ? void 0 : _c.statusCode) !== baileys_1.DisconnectReason.loggedOut;
                 switch ((_e = (_d = lastDisconnect.error) === null || _d === void 0 ? void 0 : _d.output) === null || _e === void 0 ? void 0 : _e.statusCode) {
                     case baileys_1.DisconnectReason.loggedOut:
-                        this.logout();
+                        this.props.sessionService.removeSession((0, whatsapp_1.getSocketJid)(this.props.socket));
                         this.props.imcenterService.updateStatus(this.props.imcenter_id, types_1.STATUS_LOGIN.BELUM_LOGIN);
                         break;
                     case baileys_1.DisconnectReason.timedOut:
@@ -134,17 +134,13 @@ class ConnectionHandler {
             }
         });
     }
-    changeEventStatus(status, value) {
-        this.props.socket.ws.emit(status, value);
-    }
     logout() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (this.props.socket) {
                     const jid = (0, whatsapp_1.getSocketJid)(this.props.socket);
-                    yield this.props.socket.logout();
                     yield this.props.sessionService.removeSession(jid);
-                    this.props.socket = null;
+                    yield this.props.socket.logout();
                 }
             }
             catch (error) {

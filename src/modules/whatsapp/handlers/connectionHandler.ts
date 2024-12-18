@@ -1,4 +1,4 @@
-import { ConnectionState, DisconnectReason, WASocket } from "baileys";
+import { ConnectionState, DisconnectReason, WAConnectionState, WASocket } from "baileys";
 import { ImCenterService } from "../services/imcenterService";
 import { Boom } from '@hapi/boom'
 import { getSocketJid, getSocketNumber, qrCodeToBase64 } from "../../../utils/whatsapp";
@@ -6,15 +6,16 @@ import { MessageService } from "../services/messageService";
 import { STATUS_LOGIN, TIPE_LOG } from "../../../entities/types";
 import { consumeImcenterSendMessageQueue, stopConsumeImcenterSendMessageQueue } from "../../../queues/consumers/imcenterConsumer";
 import { WhatsappServiceProps } from "../../../interfaces/whatsapp";
+import { WhatsappService } from "../whatsappService";
 
 export class ConnectionHandler{
-    constructor(private props : WhatsappServiceProps) {
+    constructor(private props : WhatsappServiceProps, private whatsappService : WhatsappService) {
     }
 
     handleConnectionEvents() {
         this.props.socket.ev.on("connection.update", async (update : Partial<ConnectionState>) => {
             const { connection, lastDisconnect } = update;
-
+            if(connection)this.props.socket.ws.emit("connection", {connection: connection});
             switch (connection) {
                 case "close":
                     this.handleConnectionClose(lastDisconnect);
@@ -23,7 +24,9 @@ export class ConnectionHandler{
                     this.handleConnectionOpen();
                     break;
                 default:
-                    if(update.qr) await this.handleQRUpdate(update);
+                    if(update.qr) {
+                        await this.handleQRUpdate(update)
+                    };
                     break;
             }
         });
@@ -31,7 +34,6 @@ export class ConnectionHandler{
 
     private async handleQRUpdate(update : Partial<ConnectionState>) {
         try{
-            this.changeEventStatus("qr", await qrCodeToBase64(update.qr));
             console.log("QR Code tersedia. Silakan scan! ", this.props.imcenter_id);
             this.props.imcenterService.updateStatus(this.props.imcenter_id, STATUS_LOGIN.PROSES_LOGIN);
             this.props.imcenterService.updateQRCode(this.props.imcenter_id,update.qr);
@@ -47,21 +49,13 @@ export class ConnectionHandler{
         if (!imcenter) {
             throw new Error("Imcenter not found");
         }
-
-        switch(imcenter.status_login) {
-            case STATUS_LOGIN.SUDAH_LOGIN:
-                return null;
-            case STATUS_LOGIN.PROSES_LOGIN:
-                return await qrCodeToBase64(imcenter.qr);
-            case STATUS_LOGIN.DISABLE_QR:
-                this.props.socket.ws.emit("reconnect");
-                // throw new Error("Please wait for a seconds and try again");
-                break;
-            case STATUS_LOGIN.BELUM_LOGIN:
-                this.props.socket.ws.emit("reconnect");
-                // throw new Error("Please wait for a seconds and try again");
-                break;
-
+        const connection = this.whatsappService.connectionState.connection;
+        if(connection == 'close'){
+            this.props.socket.ws.emit("reconnect");
+        }else if(connection == 'connecting'){
+            // return await qrCodeToBase64(imcenter.qr);
+        }else if(connection == 'open'){
+            return null;
         }
     }
 
@@ -71,7 +65,7 @@ export class ConnectionHandler{
             const flagScannerValid = await this.props.imcenterService.checkScannerIsValid(this.props.imcenter_id,getSocketNumber(this.props.socket));
                 if (!flagScannerValid) {
                 console.log("Scanner tidak valid, silakan logout");
-                this.props.socket.logout();
+                this.logout();
                 this.props.imcenterService.updateQRCode(this.props.imcenter_id, null);
                 this.props.messageService.saveLog("[GAGAL SCAN QR] Nomor Whatsapp tidak cocok dengan yang terdaftar", TIPE_LOG.LOG);
                 return;
@@ -101,7 +95,7 @@ export class ConnectionHandler{
             const shouldReconnect = (lastDisconnect.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
             switch((lastDisconnect.error as Boom)?.output?.statusCode){
                 case DisconnectReason.loggedOut:
-                    this.logout();
+                    this.props.sessionService.removeSession(getSocketJid(this.props.socket));
                     this.props.imcenterService.updateStatus(this.props.imcenter_id, STATUS_LOGIN.BELUM_LOGIN);
                     break;
                 case DisconnectReason.timedOut:
@@ -126,17 +120,12 @@ export class ConnectionHandler{
 
     }
 
-    private changeEventStatus(status : "qr" , value?: string) {
-        this.props.socket.ws.emit(status, value);
-    }
-
     async logout() {
         try{
             if (this.props.socket) {
                 const jid = getSocketJid(this.props.socket);
-                await this.props.socket.logout();
                 await this.props.sessionService.removeSession(jid);
-                this.props.socket = null;
+                await this.props.socket.logout();
             }
         }catch(error) {
             console.error("Gagal logout", error);

@@ -121,5 +121,13 @@ export class ImCenterService implements IImcenterService{
         await this.repository.save(imcenter);
         return `Session "${imcenter_id}" status updated.`;
     }
+
+    async fetchImcenterHasLoginAndIsGriyabayar(griyabayar : boolean) : Promise<Imcenter[]> {
+        const imcenter = await this.repository.findBy({ griyabayar, status_login: STATUS_LOGIN.SUDAH_LOGIN });
+        if (!imcenter) {
+            throw new Error(`imcenter with key "${griyabayar}" not found.`);
+        }
+        return imcenter;
+    }
     
 }

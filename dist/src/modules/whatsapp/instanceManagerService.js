@@ -35,16 +35,19 @@ class InstanceManager {
      * Membuat atau mendapatkan instance berdasarkan imcenter_id
      */
     getInstance(imcenter_id) {
-        try {
-            if (!this.instances.has(imcenter_id)) {
-                const instance = new whatsappService_1.WhatsappService(imcenter_id);
-                this.instances.set(imcenter_id, instance);
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (!this.instances.has(imcenter_id)) {
+                    const instance = new whatsappService_1.WhatsappService(imcenter_id);
+                    yield instance.init();
+                    this.instances.set(imcenter_id, instance);
+                }
+                return this.instances.get(imcenter_id);
             }
-            return this.instances.get(imcenter_id);
-        }
-        catch (error) {
-            console.log(error);
-        }
+            catch (error) {
+                console.log(error);
+            }
+        });
     }
     /**
      * Hapus instance berdasarkan imcenter_id
@@ -59,7 +62,13 @@ class InstanceManager {
      * Mendapatkan semua imcenter_id yang sedang aktif
      */
     getActiveSessions() {
-        return Array.from(this.instances.keys());
+        const activeSessions = [];
+        for (const [imcenter_id, instance] of this.instances) {
+            if (instance.connectionState.connection === "open") {
+                activeSessions.push(imcenter_id);
+            }
+        }
+        return activeSessions;
     }
     /**
      * Logout semua instance
@@ -77,7 +86,7 @@ class InstanceManager {
         return __awaiter(this, void 0, void 0, function* () {
             const imcenters = yield this.imcenterService.getNotHaveLoginStatus(types_1.STATUS_LOGIN.SUDAH_LOGIN);
             for (const imcenter of imcenters) {
-                const socket = this.getInstance(imcenter.id);
+                const socket = yield this.getInstance(imcenter.id);
                 yield socket.connect();
             }
         });
@@ -95,7 +104,7 @@ class InstanceManager {
                 yield this.imcenterService.updateStatus(imcenter.id, types_1.STATUS_LOGIN.BELUM_LOGIN);
             }
             for (const session of sessions) {
-                const socket = this.getInstance(session.imcenter_id);
+                const socket = yield this.getInstance(session.imcenter_id);
                 socket.connect();
             }
         });

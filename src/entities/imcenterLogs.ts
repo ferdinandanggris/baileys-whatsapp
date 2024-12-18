@@ -4,7 +4,7 @@ import { TIPE_APLIKASI } from "./types";
 @Entity('imcenter_logs')
 export class ImcenterLogs{
     @PrimaryGeneratedColumn()
-    id!: number;
+    id?: number;
 
     @Column({})
     tgl_entri!: Date;
@@ -25,13 +25,13 @@ export class ImcenterLogs{
     keterangan!: string;
 
     @Column({type : 'varchar', nullable : true  })
-    kode_reseller!: string;
+    kode_reseller?: string;
 
     @Column({type : 'varchar', nullable : true})
     pengirim!: string;
 
     @Column({type : 'varchar',nullable : true})
-    status!: string;
+    status?: string;
 
     @Column({type : 'varchar', nullable : true})
     raw_message!: string;

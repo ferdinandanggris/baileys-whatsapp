@@ -26,10 +26,11 @@ export class InstanceManager {
     /**
      * Membuat atau mendapatkan instance berdasarkan imcenter_id
      */
-    public getInstance(imcenter_id: number): IWhatsappService {
+    public async getInstance(imcenter_id: number): Promise<IWhatsappService> {
         try {
             if (!this.instances.has(imcenter_id)) {
                 const instance = new WhatsappService(imcenter_id);
+                await instance.init();
                 this.instances.set(imcenter_id, instance);
             }
             return this.instances.get(imcenter_id)!;
@@ -53,7 +54,13 @@ export class InstanceManager {
      * Mendapatkan semua imcenter_id yang sedang aktif
      */
     public getActiveSessions(): number[] {
-        return Array.from(this.instances.keys());
+        const activeSessions: number[] = [];
+        for (const [imcenter_id, instance] of this.instances) {
+            if (instance.connectionState.connection === "open") {
+                activeSessions.push(imcenter_id);
+            }
+        }
+        return activeSessions;
     }
 
     /**
@@ -70,7 +77,7 @@ export class InstanceManager {
     public async loginAllSessions(): Promise<void> {
         const imcenters = await this.imcenterService.getNotHaveLoginStatus(STATUS_LOGIN.SUDAH_LOGIN);
         for (const imcenter of imcenters) {
-            const socket = this.getInstance(imcenter.id);
+            const socket = await this.getInstance(imcenter.id);
             await socket.connect();
         }
     }
@@ -89,7 +96,7 @@ export class InstanceManager {
         }
 
         for (const session of sessions) {
-            const socket = this.getInstance(session.imcenter_id);
+            const socket = await this.getInstance(session.imcenter_id);
             socket.connect();
         }
     }

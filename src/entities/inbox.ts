@@ -10,10 +10,10 @@ id?: number;
 tgl_entri: Date;
 
 @Column({ type: 'int', nullable: true })
-id_reseller: number | null;
+id_reseller?: number | null;
 
 @Column({ type: 'int', nullable: true })
-id_merchant: number | null;
+id_merchant?: number | null;
 
 @Column({ type: 'enum', enum: Object.values(TIPE_PENGIRIM), nullable: false }) // Replace with actual enum values
 tipe: TIPE_PENGIRIM; // Adjust based on your actual enum definition

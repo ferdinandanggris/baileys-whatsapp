@@ -13,12 +13,15 @@ export interface IWhatsappService {
     connectionHandler: ConnectionHandler;
     authHandler: AuthHandler;
     profileHandler: ProfileHandler;
+    connectionState: any;
 }
 
 export type SendWhatsappMessage = {
     receiver: string;
     message: string;
     raw_message: string;
+    kode_reseller? : string;
+    imcenter_id? : number;
 }
 
 export type Message = {
@@ -37,5 +40,12 @@ export type WhatsappServiceProps = {
     sessionService: ISessionService;
     imcenterService: IImcenterService;
     messageService: IMessageService;
+}
+
+export type OTP = {
+    otp : string;
+    expired_at : number;
+    nomorhp : string;
+    griyabayar : boolean;
 }
 

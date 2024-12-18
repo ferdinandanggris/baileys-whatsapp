@@ -17,7 +17,6 @@ const baileys_1 = require("baileys");
 const whatsapp_1 = require("../../../utils/whatsapp");
 const types_1 = require("../../../entities/types");
 const parameterService_1 = __importDefault(require("../../autoResponse/services/parameterService"));
-const date_1 = require("../../../utils/date");
 const resellerService_1 = __importDefault(require("../../reseller/resellerService"));
 const inboxService_1 = __importDefault(require("../../griyabayar/services/inboxService"));
 const inboxService_2 = __importDefault(require("../../onpay/services/inboxService"));
@@ -34,27 +33,10 @@ class MessageHandler {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const jid = (0, whatsapp_1.numberToJid)(message.receiver);
-                var messageSend;
-                if (message.raw_message != null) {
-                    var msg = JSON.parse(message.raw_message);
-                    messageSend = {
-                        text: message.message,
-                        contextInfo: {
-                            stanzaId: msg.key.id,
-                            participant: msg.key.remoteJid,
-                            quotedMessage: msg.message
-                        }
-                    };
-                }
-                else {
-                    messageSend = {
-                        text: message.message
-                    };
-                    message.raw_message = JSON.stringify(messageSend);
-                }
+                var messageSend = this.constructSendMessage(message);
                 if (yield this.checkNumberIsRegistered(jid)) {
                     const response = yield this.socket.sendMessage(jid, messageSend);
-                    yield this.props.messageService.saveMessage(response, types_1.TIPE_LOG.OUTBOX);
+                    yield this.props.messageService.processMessageSend(response, message);
                     console.log(`Pesan terkirim ke ${jid}: ${message.message}`);
                 }
                 else {
@@ -68,6 +50,38 @@ class MessageHandler {
             }
         });
     }
+    sendOTP(otp) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield this.props.messageService.processMessageOTPSend(otp);
+            }
+            catch (error) {
+                console.error(`Gagal mengirim OTP ke ${otp.nomorhp}:`, error);
+                this.props.messageService.saveLog(`Gagal mengirim OTP ke ${otp.nomorhp}`, types_1.TIPE_LOG.ERROR);
+            }
+        });
+    }
+    constructSendMessage(message) {
+        var messageSend;
+        if (message.raw_message != null) {
+            var msg = JSON.parse(message.raw_message);
+            messageSend = {
+                text: message.message,
+                contextInfo: {
+                    stanzaId: msg.key.id,
+                    participant: msg.key.remoteJid,
+                    quotedMessage: msg.message
+                }
+            };
+        }
+        else {
+            messageSend = {
+                text: message.message
+            };
+            message.raw_message = JSON.stringify(messageSend);
+        }
+        return messageSend;
+    }
     listenForMessages() {
         this.socket.ev.on("messages.upsert", (msg) => __awaiter(this, void 0, void 0, function* () {
             var _a;
@@ -76,12 +90,11 @@ class MessageHandler {
                 const content = ((_a = message.message) === null || _a === void 0 ? void 0 : _a.conversation) || "Pesan tidak memiliki teks";
                 console.log(`Pesan diterima dari ${jid}: ${content}`);
             }
-            const imcenterLogs = yield this.inboxValidation(msg.messages);
-            // if (imcenterLogs.length > 0) await this.props.messageService.saveMultipleMessage(imcenterLogs);
+            this.props.messageService.processMessagesFromUpsert(msg.messages);
         }));
         this.socket.ev.on("messaging-history.set", (msg) => __awaiter(this, void 0, void 0, function* () {
             if (msg.progress == 100 && msg.syncType == baileys_1.proto.HistorySync.HistorySyncType.RECENT) {
-                // await this.saveHistoryMessage(msg.messages);
+                yield this.props.messageService.processMessagesFromHistory(msg.messages);
             }
         }));
         this.socket.ev.on("message-receipt.update", (msg) => __awaiter(this, void 0, void 0, function* () {
@@ -90,57 +103,9 @@ class MessageHandler {
                 console.log(`Pesan dari ${jid} telah dibaca`);
                 console.log("Message Receipt", message);
             }
+            yield this.props.messageService.processMessageUpdateReceipt(msg);
         }));
     }
-    // private async saveHistoryMessage(messages: proto.IWebMessageInfo[]) {
-    //     // find latest imcenter_logs
-    //     const listMessage : ImcenterLogs[] = [];
-    //     const latestImcenterLogs = await this.props.messageService.getLatestMessageByImcenter();
-    //     const filterHasConversation = messages.filter(message => message.message?.conversation != null);
-    //     const imcenter = await this.props.imcenterService.getImcenterById(this.props.imcenter_id);
-    //     if(imcenter == null) throw new Error(`Imcenter with id ${this.props.imcenter_id} not found`);
-    //     for (const message of filterHasConversation) {
-    //         const messageTimestamp = Number(message.messageTimestamp);
-    //         const messageDate = timeToDate(messageTimestamp);
-    //         const dateNow = new Date();
-    //         if (latestImcenterLogs == null || latestImcenterLogs.sender_timestamp.getTime() < messageDate.getTime()) {
-    //             const flagImageMedia = message.message?.imageMessage?.url != null;
-    //             const flagValidationIsEditMessage = message.message?.editedMessage?.message?.protocolMessage != null && message.message?.editedMessage?.message?.protocolMessage?.editedMessage?.conversation != null && !message.key.fromMe;
-    //             // is image message
-    //             if((dateNow.getTime() - messageDate.getTime()) > 120000){
-    //                 switch (true) {
-    //                     // send message extended
-    //                     case (flagImageMedia):
-    //                         await this.validationImageMessage(message);
-    //                         continue;
-    //                     case (flagValidationIsEditMessage):
-    //                         await this.validationIsEditMessage(message);
-    //                         continue;
-    //                     case (isFromBroadcast(message.key.remoteJid) || isFromGroup(message.key.remoteJid) || isFromMe(message)):
-    //                         continue;
-    //                 }
-    //             }
-    //             const { kode_reseller, pengirim, messageText } = await this.fetchMessageAttributes(message, imcenter);
-    //             var imcenterLog : ImcenterLogs = new ImcenterLogs();
-    //             imcenterLog.tgl_entri= new Date();
-    //             imcenterLog.imcenter_id= this.props.imcenter_id;
-    //             imcenterLog.message_id= message.key.id;
-    //             imcenterLog.pengirim= pengirim;
-    //             imcenterLog.aplikasi= TIPE_APLIKASI.NODEJS;
-    //             imcenterLog.tipe= TIPE_LOG.INBOX;
-    //             imcenterLog.keterangan= messageText;
-    //             imcenterLog.kode_reseller= kode_reseller;
-    //             imcenterLog.sender_timestamp= timeToDate(Number(message.messageTimestamp));
-    //             if(message.key.fromMe){
-    //                 imcenterLog.status = STATUS_LOG.DIBACA;
-    //             }else{
-    //                 imcenterLog.raw_message = JSON.stringify(message);
-    //             } 
-    //             listMessage.push(imcenterLog);
-    //         }
-    //     }
-    //     if(listMessage.length > 0) await this.props.messageService.saveMultipleMessage(listMessage);
-    // }
     checkNumberIsRegistered(number) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -180,54 +145,16 @@ class MessageHandler {
             });
         });
     }
-    inboxValidation(messages) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
-            const messageFiltered = [];
-            for (const message of messages) {
-                const flagImageMedia = ((_b = (_a = message.message) === null || _a === void 0 ? void 0 : _a.imageMessage) === null || _b === void 0 ? void 0 : _b.url) != null;
-                const flagValidationIsEditMessage = ((_e = (_d = (_c = message.message) === null || _c === void 0 ? void 0 : _c.editedMessage) === null || _d === void 0 ? void 0 : _d.message) === null || _e === void 0 ? void 0 : _e.protocolMessage) != null && ((_k = (_j = (_h = (_g = (_f = message.message) === null || _f === void 0 ? void 0 : _f.editedMessage) === null || _g === void 0 ? void 0 : _g.message) === null || _h === void 0 ? void 0 : _h.protocolMessage) === null || _j === void 0 ? void 0 : _j.editedMessage) === null || _k === void 0 ? void 0 : _k.conversation) != null && !message.key.fromMe;
-                // compare date message with datenow + 120 seconds
-                const messageTimestamp = Number(message.messageTimestamp);
-                const dateNow = new Date();
-                const messageDate = (0, date_1.timeToDate)(messageTimestamp);
-                // date diff less than 120 seconds
-                if ((dateNow.getTime() - messageDate.getTime()) > 120000) {
-                    continue;
-                }
-                switch (true) {
-                    // send message extended
-                    case (flagImageMedia):
-                        yield this.validationImageMessage(message);
-                        continue;
-                        break;
-                    case (flagValidationIsEditMessage):
-                        yield this.validationIsEditMessage(message);
-                        continue;
-                        break;
-                    case ((0, whatsapp_1.isFromBroadcast)(message.key.remoteJid) || (0, whatsapp_1.isFromGroup)(message.key.remoteJid) || (0, whatsapp_1.isFromMe)(message)):
-                        continue;
-                        break;
-                }
-                ;
-                messageFiltered.push(message);
-            }
-            this.props.messageService.processMessagesFromUpsert(messageFiltered);
-        });
-    }
     markAsRead(messageId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const message = yield this.props.messageService.getMessageByMessageId(messageId.id);
-                if (message) {
-                    yield this.socket.readMessages([messageId]);
-                    yield this.props.messageService.updateStatus(messageId.id, types_1.STATUS_LOG.DIBACA);
-                    console.log(`Pesan dari ${messageId.remoteJid} telah dibaca`);
-                }
+                yield this.socket.readMessages([messageId]);
+                yield this.props.messageService.processMessageMarkAsRead(messageId.id);
+                console.log(`Pesan dari ${messageId.id} telah dibaca`);
             }
             catch (error) {
-                console.error(`Gagal membaca pesan dari ${messageId.remoteJid}:`, error);
-                this.props.messageService.saveLog(`Gagal membaca pesan dari ${messageId.remoteJid}`, types_1.TIPE_LOG.ERROR);
+                console.error(`Gagal membaca pesan dari ${messageId.id}:`, error);
+                this.props.messageService.saveLog(`Gagal membaca pesan dari ${messageId.id}`, types_1.TIPE_LOG.ERROR);
             }
         });
     }

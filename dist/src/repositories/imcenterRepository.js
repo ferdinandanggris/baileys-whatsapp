@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImcenterRepository = void 0;
+const typeorm_1 = require("typeorm");
 const db_1 = require("../configs/db");
 const imcenter_1 = __importDefault(require("../entities/imcenter"));
 class ImcenterRepository {
@@ -28,6 +29,11 @@ class ImcenterRepository {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.repository.update(id, { tgl_aktivitas: new Date() });
             return true;
+        });
+    }
+    fetchByStatusLogin(status_login) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.repository.find({ where: { status_login: (0, typeorm_1.In)(status_login) } });
         });
     }
 }

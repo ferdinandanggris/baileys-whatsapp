@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImcenterLogRepository = void 0;
+const typeorm_1 = require("typeorm");
 const db_1 = require("../configs/db");
 const imcenterLogs_1 = require("../entities/imcenterLogs");
 class ImcenterLogRepository {
@@ -19,6 +20,36 @@ class ImcenterLogRepository {
     create(imcenterLog) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.repository.save(imcenterLog);
+        });
+    }
+    fetchLatest(imcenter_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.repository.findOne({ where: { imcenter_id: imcenter_id, sender_timestamp: (0, typeorm_1.Not)((0, typeorm_1.IsNull)()) }, order: { sender_timestamp: 'DESC' } });
+        });
+    }
+    saveMultiple(messages) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.repository.save(messages);
+        });
+    }
+    updateStatus(messageId, status) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.repository.update({ message_id: messageId }, { status });
+        });
+    }
+    fetchByMessageId(messageId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.repository.findOne({ where: { message_id: messageId } });
+        });
+    }
+    fetchExpired(imcenter_id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.repository.find({ where: { raw_message: (0, typeorm_1.Not)((0, typeorm_1.IsNull)()), imcenter_id } });
+        });
+    }
+    removeRawMessage(messageId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.repository.update({ message_id: messageId }, { raw_message: null });
         });
     }
 }

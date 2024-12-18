@@ -145,6 +145,15 @@ class ImCenterService {
             return `Session "${imcenter_id}" status updated.`;
         });
     }
+    fetchImcenterHasLoginAndIsGriyabayar(griyabayar) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const imcenter = yield this.repository.findBy({ griyabayar, status_login: types_1.STATUS_LOGIN.SUDAH_LOGIN });
+            if (!imcenter) {
+                throw new Error(`imcenter with key "${griyabayar}" not found.`);
+            }
+            return imcenter;
+        });
+    }
 }
 exports.ImCenterService = ImCenterService;
 //# sourceMappingURL=imcenterService.js.map

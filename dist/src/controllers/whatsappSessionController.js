@@ -45,7 +45,7 @@ exports.getQrCode = getQrCode;
 const removeSession = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { imcenter_id } = req.params;
-        const socket = instanceManager.getInstance(parseInt(imcenter_id));
+        const socket = yield instanceManager.getInstance(parseInt(imcenter_id));
         socket.connectionHandler.logout();
         res.status(200).json({ message: "Session removed." });
     }
@@ -57,7 +57,7 @@ exports.removeSession = removeSession;
 const broadcastMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { imcenter_id, message, nomor_penerima } = req.body;
-        const socket = instanceManager.getInstance(imcenter_id);
+        const socket = yield instanceManager.getInstance(imcenter_id);
         const response = yield socket.messageHandler.broadcastMessage(nomor_penerima, message);
         res.status(200).json({ message: "Send message" });
     }
