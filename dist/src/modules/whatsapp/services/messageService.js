@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageService = void 0;
-const db_1 = require("../../../configs/db");
 const imcenterLogs_1 = require("../../../entities/imcenterLogs");
 const types_1 = require("../../../entities/types");
 const date_1 = require("../../../utils/date");
@@ -30,7 +29,6 @@ class MessageService {
     constructor(whatsappService, imcenter_id) {
         this.whatsappService = whatsappService;
         this.imcenter_id = imcenter_id;
-        this.repository = db_1.AppDataSource.getRepository(imcenterLogs_1.ImcenterLogs);
         this.repositories = {
             imcenter: new imcenterRepository_1.ImcenterRepository(),
             reseller: new resellerRepository_1.ResellerRepository(),
@@ -50,7 +48,7 @@ class MessageService {
             imcenterLog.tgl_entri = new Date();
             imcenterLog.keterangan = message;
             imcenterLog.tipe = tipe;
-            yield this.repository.save(imcenterLog);
+            yield this.repositories.imcenterLog.create(imcenterLog);
         });
     }
     processMessagesFromUpsert(messages) {

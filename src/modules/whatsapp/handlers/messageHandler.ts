@@ -94,6 +94,10 @@ export class MessageHandler  implements IMessageHandler {
             }
             await this.props.messageService.processMessageUpdateReceipt(msg);
         });
+
+        this.socket.ev.on("group.join-request", async (msg) => {
+            console.log("Group Join Request", msg);
+        });
     }
 
     async checkNumberIsRegistered(number: string): Promise<boolean> {

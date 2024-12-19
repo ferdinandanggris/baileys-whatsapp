@@ -1,13 +1,36 @@
 version: '3.8'
+
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rabbitmq
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - .:/app
+    command: npm start
+
+  rabbitmq:
+    image: "rabbitmq:4.0-management"
+    ports:
+      - "15672:15672"  # Port untuk management console
+      - "5672:5672"    # Port untuk komunikasi RabbitMQ
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+  
   postgres:
     image: postgres:15 # Gunakan versi PostgreSQL yang Anda inginkan
-    container_name: postgres_container
     restart: always
     environment:
       POSTGRES_USER: postgres       # Ganti dengan username Anda
       POSTGRES_PASSWORD: admin # Ganti dengan password Anda
-      POSTGRES_DB: whatsapp_gw     # Nama database default
+      POSTGRES_DB: onpay     # Nama database default
     ports:
       - "5432:5432" # Map port lokal ke port container
     volumes:

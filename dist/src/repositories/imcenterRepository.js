@@ -36,6 +36,16 @@ class ImcenterRepository {
             return this.repository.find({ where: { status_login: (0, typeorm_1.In)(status_login) } });
         });
     }
+    updateQRCode(imcenter_id, qrcode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.repository.update(imcenter_id, { qr: qrcode });
+        });
+    }
+    updateStatus(imcenter_id, status_login) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.repository.update(imcenter_id, { status_login });
+        });
+    }
 }
 exports.ImcenterRepository = ImcenterRepository;
 //# sourceMappingURL=imcenterRepository.js.map

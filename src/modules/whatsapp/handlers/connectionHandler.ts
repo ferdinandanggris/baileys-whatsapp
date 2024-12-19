@@ -6,14 +6,14 @@ import { consumeImcenterSendMessageQueue, stopConsumeImcenterSendMessageQueue } 
 import { WhatsappServiceProps } from "../../../interfaces/whatsapp";
 import { WhatsappService } from "../whatsappService";
 
-export class ConnectionHandler{
-    constructor(private props : WhatsappServiceProps, private whatsappService : WhatsappService) {
+export class ConnectionHandler {
+    constructor(private props: WhatsappServiceProps, private whatsappService: WhatsappService) {
     }
 
     handleConnectionEvents() {
-        this.props.socket.ev.on("connection.update", async (update : Partial<ConnectionState>) => {
+        this.props.socket.ev.on("connection.update", async (update: Partial<ConnectionState>) => {
             const { connection, lastDisconnect } = update;
-            if(connection)this.props.socket.ws.emit("connection", {connection: connection});
+            if (connection) this.props.socket.ws.emit("connection", { connection: connection });
             switch (connection) {
                 case "close":
                     this.handleConnectionClose(lastDisconnect);
@@ -22,7 +22,7 @@ export class ConnectionHandler{
                     this.handleConnectionOpen();
                     break;
                 default:
-                    if(update.qr) {
+                    if (update.qr) {
                         await this.handleQRUpdate(update)
                     };
                     break;
@@ -30,38 +30,26 @@ export class ConnectionHandler{
         });
     }
 
-    private async handleQRUpdate(update : Partial<ConnectionState>) {
-        try{
+    private async handleQRUpdate(update: Partial<ConnectionState>) {
+        try {
             console.log("QR Code tersedia. Silakan scan! ", this.props.imcenter_id);
-            this.props.imcenterService.updateStatus(this.props.imcenter_id, STATUS_LOGIN.PROSES_LOGIN);
-            this.props.imcenterService.updateQRCode(this.props.imcenter_id,update.qr);
-            this.props.messageService.saveLog("QR Code tersedia. Silakan scan!",TIPE_LOG.LOG);
-        }catch(error) {
+            await this.props.sessionService.processUpdateQR(this.props.imcenter_id, update.qr);
+            this.props.messageService.saveLog("QR Code tersedia. Silakan scan!", TIPE_LOG.LOG);
+        } catch (error) {
             console.error("Gagal update QR Code", error);
             this.props.messageService.saveLog("Gagal update QR Code", TIPE_LOG.ERROR);
         }
     }
 
     async checkStatus() {
-        const imcenter = await this.props.imcenterService.getImcenterById(this.props.imcenter_id);
-        if (!imcenter) {
-            throw new Error("Imcenter not found");
-        }
-        const connection = this.whatsappService.connectionState.connection;
-        if(connection == 'close'){
-            this.props.socket.ws.emit("reconnect");
-        }else if(connection == 'connecting'){
-            // return await qrCodeToBase64(imcenter.qr);
-        }else if(connection == 'open'){
-            return null;
-        }
+        this.whatsappService?.connectionState?.connection == 'close' ? this.props.socket.ws.emit("reconnect") : null;
     }
 
-    private async  handleConnectionOpen() {
-        try{
+    private async handleConnectionOpen() {
+        try {
             // check scanner
-            const flagScannerValid = await this.props.imcenterService.checkScannerIsValid(this.props.imcenter_id,getSocketNumber(this.props.socket));
-                if (!flagScannerValid) {
+            const flagScannerValid = await this.props.imcenterService.checkScannerIsValid(this.props.imcenter_id, getSocketNumber(this.props.socket));
+            if (!flagScannerValid) {
                 console.log("Scanner tidak valid, silakan logout");
                 this.logout();
                 this.props.imcenterService.updateQRCode(this.props.imcenter_id, null);
@@ -77,22 +65,22 @@ export class ConnectionHandler{
 
             // run consume imcenter consume
             await consumeImcenterSendMessageQueue(await this.props.imcenterService.getImcenterById(this.props.imcenter_id));
-        }catch (error) {
+        } catch (error) {
             console.error("Gagal memproses koneksi", error);
             this.props.messageService.saveLog("Gagal memproses koneksi", TIPE_LOG.ERROR);
         }
     }
 
     private async handleConnectionClose(lastDisconnect: { error: Error | undefined; date: Date; }) {
-        try{
+        try {
             const reason = lastDisconnect?.error?.toString() || "Unknown reason";
             console.log(`Koneksi tertutup: ${reason}`);
-    
+
             // stop consum imcenter
             await stopConsumeImcenterSendMessageQueue(await this.props.imcenterService.getImcenterById(this.props.imcenter_id));
 
             const shouldReconnect = (lastDisconnect.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
-            switch((lastDisconnect.error as Boom)?.output?.statusCode){
+            switch ((lastDisconnect.error as Boom)?.output?.statusCode) {
                 case DisconnectReason.loggedOut:
                     this.props.sessionService.removeSession(getSocketJid(this.props.socket));
                     this.props.imcenterService.updateStatus(this.props.imcenter_id, STATUS_LOGIN.BELUM_LOGIN);
@@ -106,13 +94,13 @@ export class ConnectionHandler{
                     this.props.socket.ws.emit("reconnect");
                     break;
                 default:
-                    if(shouldReconnect) {
+                    if (shouldReconnect) {
                         this.props.socket.ws.emit("reconnect")
                         this.props.imcenterService.updateStatus(this.props.imcenter_id, STATUS_LOGIN.BELUM_LOGIN);
                     };
                     break;
             }
-        }catch (error) {
+        } catch (error) {
             console.error("Gagal memproses koneksi", error);
             this.props.messageService.saveLog("Gagal memproses koneksi", TIPE_LOG.ERROR);
         }
@@ -120,15 +108,15 @@ export class ConnectionHandler{
     }
 
     async logout() {
-        try{
+        try {
             if (this.props.socket) {
                 const jid = getSocketJid(this.props.socket);
                 await this.props.sessionService.removeSession(jid);
                 await this.props.socket.logout();
             }
-        }catch(error) {
+        } catch (error) {
             console.error("Gagal logout", error);
             this.props.messageService.saveLog("Gagal Logout", TIPE_LOG.ERROR);
-        }  
+        }
     }
 }

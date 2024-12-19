@@ -12,9 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = require("../../../configs/db");
 const whatsappSession_1 = require("../../../entities/whatsappSession");
 const typeorm_1 = require("typeorm");
+const imcenterRepository_1 = require("../../../repositories/imcenterRepository");
+const types_1 = require("../../../entities/types");
+const imcenterLogRepository_1 = require("../../../repositories/imcenterLogRepository");
 class SessionService {
     constructor() {
         this.repository = db_1.AppDataSource.getRepository(whatsappSession_1.WhatsappSession);
+        this.repositories = {
+            imcenter: new imcenterRepository_1.ImcenterRepository(),
+            imcenterLog: new imcenterLogRepository_1.ImcenterLogRepository()
+        };
     }
     getSession(imcenter_id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -37,6 +44,18 @@ class SessionService {
     getAllSession() {
         return __awaiter(this, void 0, void 0, function* () {
             return this.repository.find();
+        });
+    }
+    processUpdateQR(imcenter_id, qrcode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield this.repositories.imcenter.updateStatus(imcenter_id, types_1.STATUS_LOGIN.PROSES_LOGIN);
+                yield this.repositories.imcenter.updateQRCode(imcenter_id, qrcode);
+            }
+            catch (error) {
+                console.error("Gagal update QR Code", error);
+                throw new Error(error);
+            }
         });
     }
 }

@@ -44,8 +44,7 @@ class ConnectionHandler {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 console.log("QR Code tersedia. Silakan scan! ", this.props.imcenter_id);
-                this.props.imcenterService.updateStatus(this.props.imcenter_id, types_1.STATUS_LOGIN.PROSES_LOGIN);
-                this.props.imcenterService.updateQRCode(this.props.imcenter_id, update.qr);
+                yield this.props.sessionService.processUpdateQR(this.props.imcenter_id, update.qr);
                 this.props.messageService.saveLog("QR Code tersedia. Silakan scan!", types_1.TIPE_LOG.LOG);
             }
             catch (error) {
@@ -56,20 +55,8 @@ class ConnectionHandler {
     }
     checkStatus() {
         return __awaiter(this, void 0, void 0, function* () {
-            const imcenter = yield this.props.imcenterService.getImcenterById(this.props.imcenter_id);
-            if (!imcenter) {
-                throw new Error("Imcenter not found");
-            }
-            const connection = this.whatsappService.connectionState.connection;
-            if (connection == 'close') {
-                this.props.socket.ws.emit("reconnect");
-            }
-            else if (connection == 'connecting') {
-                // return await qrCodeToBase64(imcenter.qr);
-            }
-            else if (connection == 'open') {
-                return null;
-            }
+            var _a, _b;
+            ((_b = (_a = this.whatsappService) === null || _a === void 0 ? void 0 : _a.connectionState) === null || _b === void 0 ? void 0 : _b.connection) == 'close' ? this.props.socket.ws.emit("reconnect") : null;
         });
     }
     handleConnectionOpen() {

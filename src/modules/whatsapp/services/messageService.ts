@@ -21,8 +21,6 @@ import { OTP, SendWhatsappMessage } from "../../../interfaces/whatsapp";
 import ParameterRepository from "../../../repositories/parameterRepository";
 
 export class MessageService implements IMessageService {
-
-    private repository = AppDataSource.getRepository(ImcenterLogs);
     private repositories = {
         imcenter: new ImcenterRepository(),
         reseller: new ResellerRepository(),
@@ -43,7 +41,7 @@ export class MessageService implements IMessageService {
         imcenterLog.tgl_entri = new Date();
         imcenterLog.keterangan = message;
         imcenterLog.tipe = tipe
-        await this.repository.save(imcenterLog);
+        await this.repositories.imcenterLog.create(imcenterLog);
     }
 
     async processMessagesFromUpsert(messages: proto.IWebMessageInfo[]): Promise<void> {

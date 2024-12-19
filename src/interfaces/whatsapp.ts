@@ -25,8 +25,8 @@ export type SendWhatsappMessage = {
 }
 
 export type Message = {
-    id_outbox: number;
-    id_smsgateway: number;
+    id_outbox?: number;
+    id_smsgateway?: number;
     message: string;
     receiver: string;
     sender: string;

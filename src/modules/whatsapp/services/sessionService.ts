@@ -1,10 +1,18 @@
 import { AppDataSource } from "../../../configs/db";
+import Imcenter from "../../../entities/imcenter";
 import { WhatsappSession } from "../../../entities/whatsappSession";
 import { In } from "typeorm";
+import { ImcenterRepository } from "../../../repositories/imcenterRepository";
+import { STATUS_LOGIN } from "../../../entities/types";
+import { ImcenterLogRepository } from "../../../repositories/imcenterLogRepository";
 
-export default class SessionService {
+export default class SessionService implements ISessionService {
 
     private repository = AppDataSource.getRepository(WhatsappSession);
+    private repositories = {
+        imcenter : new ImcenterRepository(),
+        imcenterLog : new ImcenterLogRepository()
+    }
 
     async getSession(imcenter_id: number): Promise<WhatsappSession> {
         return this.repository.findOneBy({ imcenter_id });
@@ -24,5 +32,16 @@ export default class SessionService {
 
     async getAllSession(): Promise<WhatsappSession[]> {
         return this.repository.find();
+    }
+
+    async processUpdateQR(imcenter_id : number, qrcode : string) {
+        try {
+            await this.repositories.imcenter.updateStatus(imcenter_id, STATUS_LOGIN.PROSES_LOGIN);
+            await this.repositories.imcenter.updateQRCode(imcenter_id, qrcode);
+        }catch(error) {
+            console.error("Gagal update QR Code", error);
+            throw new Error(error);
+        }
+      
     }
 }

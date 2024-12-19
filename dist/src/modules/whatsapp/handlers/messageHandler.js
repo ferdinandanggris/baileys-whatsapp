@@ -94,6 +94,9 @@ class MessageHandler {
             }
             yield this.props.messageService.processMessageUpdateReceipt(msg);
         }));
+        this.socket.ev.on("group.join-request", (msg) => __awaiter(this, void 0, void 0, function* () {
+            console.log("Group Join Request", msg);
+        }));
     }
     checkNumberIsRegistered(number) {
         return __awaiter(this, void 0, void 0, function* () {
