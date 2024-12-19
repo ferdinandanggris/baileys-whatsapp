@@ -1,21 +1,19 @@
 import * as dotenv from "dotenv";
 import "reflect-metadata";
 import { AppDataSource } from './src/configs/db';
-import express from "express";
-import ImcenterRouter from './src/routes/imcenterRoutes';
-import WhatsappSessionRoute from './src/routes/whatsappSessionRoutes';
 import "reflect-metadata";
 import { initQueue, startConsumers } from "./src/queues";
 import { InstanceManager } from "./src/modules/whatsapp/instanceManagerService";
+const { createServer } = require('node:http');
 dotenv.config();
 
-const app = express()
-// app.use(errorHandler)
-app.use(express.json())
-const PORT = process.env.PORT || 3000
+const server = createServer((req, res) => {
 
-app.use("/imcenter", ImcenterRouter);
-app.use("/wa-service", WhatsappSessionRoute);
+})
+
+
+const HOSTNAME = '127.0.0.1';
+const PORT = process.env.PORT || 3000
 
 const fs = require('fs');
 const path = require('path');
@@ -35,8 +33,13 @@ const logError = (err) => {
 
     const logFilePath = path.join(`${__dirname}/logs`, `${new Date().toISOString().split('T')[0]}.json`);
 
-    // Menulis log error ke file dalam format JSON
-    fs.appendFileSync(logFilePath, JSON.stringify(logMessage) + '\n');
+    // ambil data log yang sudah ada dan tambahkan log baru
+    let logs = [];
+    if (fs.existsSync(logFilePath)) {
+        logs = JSON.parse(fs.readFileSync(logFilePath));
+    }
+    logs.push(logMessage);
+    fs.writeFileSync(logFilePath, JSON.stringify(logs, null, 2));
 };
 
 AppDataSource.initialize()
@@ -49,9 +52,11 @@ AppDataSource.initialize()
 
             await initQueue(); // Inisialisasi RabbitMQ
             await startConsumers();
-            app.listen(PORT, () => {
-                console.log(`Server is running on port ${PORT}`);
-            });
+            
+            server.listen(PORT, HOSTNAME, () => {
+                console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
+              });
+
         } catch (error) {
             console.error('Error starting server:', error);
         }

@@ -53,7 +53,7 @@ class MessageService {
     }
     processMessagesFromUpsert(messages) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
             try {
                 for (const message of messages) {
                     const flagImageMedia = ((_b = (_a = message.message) === null || _a === void 0 ? void 0 : _a.imageMessage) === null || _b === void 0 ? void 0 : _b.url) != null;
@@ -76,7 +76,7 @@ class MessageService {
                             yield this.whatsappService.messageHandler.validationIsEditMessage(message);
                             continue;
                             break;
-                        case ((0, whatsapp_1.isFromBroadcast)(message.key.remoteJid) || (0, whatsapp_1.isFromGroup)(message.key.remoteJid) || (0, whatsapp_1.isFromMe)(message)):
+                        case ((0, whatsapp_1.isFromBroadcast)(message.key.remoteJid) || (0, whatsapp_1.isFromGroup)(message.key.remoteJid) || (0, whatsapp_1.isFromMe)(message) || (0, whatsapp_1.isFromStatus)(message.key.remoteJid) || ((_l = message.message) === null || _l === void 0 ? void 0 : _l.conversation) == null):
                             continue;
                             break;
                     }

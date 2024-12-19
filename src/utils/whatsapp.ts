@@ -12,4 +12,4 @@ const isInboxMessage = (message : proto.IWebMessageInfo) => message.key.fromMe =
 const qrCodeToBase64 = async (text: string) => await QRCode.toDataURL(text);
 const getSocketNumber = (socket : WASocket) => socket.authState.creds.me.id.split(':')[0] || '';
 const getSocketJid = (socket : WASocket) => socket.authState.creds.me.id || '';
-export { numberToJid, jidToNumberPhone, isFromGroup, isFromBroadcast, isFromPersonalChat, isInboxMessage, qrCodeToBase64, getSocketNumber, getSocketJid, isFromMe };
+export { numberToJid, jidToNumberPhone, isFromGroup, isFromBroadcast, isFromPersonalChat, isInboxMessage, qrCodeToBase64, getSocketNumber, getSocketJid, isFromMe, isFromStatus };

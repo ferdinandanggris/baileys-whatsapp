@@ -41,25 +41,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = __importStar(require("dotenv"));
 require("reflect-metadata");
 const db_1 = require("./src/configs/db");
-const express_1 = __importDefault(require("express"));
-const imcenterRoutes_1 = __importDefault(require("./src/routes/imcenterRoutes"));
-const whatsappSessionRoutes_1 = __importDefault(require("./src/routes/whatsappSessionRoutes"));
 require("reflect-metadata");
 const queues_1 = require("./src/queues");
+const { createServer } = require('node:http');
 dotenv.config();
-const app = (0, express_1.default)();
-// app.use(errorHandler)
-app.use(express_1.default.json());
+const server = createServer((req, res) => {
+});
+const HOSTNAME = '127.0.0.1';
 const PORT = process.env.PORT || 3000;
-app.use("/imcenter", imcenterRoutes_1.default);
-app.use("/wa-service", whatsappSessionRoutes_1.default);
 const fs = require('fs');
 const path = require('path');
 // Fungsi untuk mencatat error
@@ -74,8 +67,13 @@ const logError = (err) => {
         fs.mkdirSync(`${__dirname}/logs`);
     }
     const logFilePath = path.join(`${__dirname}/logs`, `${new Date().toISOString().split('T')[0]}.json`);
-    // Menulis log error ke file dalam format JSON
-    fs.appendFileSync(logFilePath, JSON.stringify(logMessage) + '\n');
+    // ambil data log yang sudah ada dan tambahkan log baru
+    let logs = [];
+    if (fs.existsSync(logFilePath)) {
+        logs = JSON.parse(fs.readFileSync(logFilePath));
+    }
+    logs.push(logMessage);
+    fs.writeFileSync(logFilePath, JSON.stringify(logs, null, 2));
 };
 db_1.AppDataSource.initialize()
     .then(() => __awaiter(void 0, void 0, void 0, function* () {
@@ -86,8 +84,8 @@ db_1.AppDataSource.initialize()
         instanceManager.autoActiveSession();
         yield (0, queues_1.initQueue)(); // Inisialisasi RabbitMQ
         yield (0, queues_1.startConsumers)();
-        app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
+        server.listen(PORT, HOSTNAME, () => {
+            console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
         });
     }
     catch (error) {

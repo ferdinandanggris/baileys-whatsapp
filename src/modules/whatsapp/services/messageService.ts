@@ -6,7 +6,7 @@ import { timeToDate } from "../../../utils/date";
 import { IMessageService } from "../../../interfaces/message";
 import Imcenter from "../../../entities/imcenter";
 import { ImcenterRepository } from "../../../repositories/imcenterRepository";
-import { isFromBroadcast, isFromGroup, isFromMe, jidToNumberPhone, numberToJid } from "../../../utils/whatsapp";
+import { isFromBroadcast, isFromGroup, isFromMe, isFromStatus, jidToNumberPhone, numberToJid } from "../../../utils/whatsapp";
 import { ResellerModel } from "../../../interfaces/reseller";
 import { ResellerRepository } from "../../../repositories/resellerRepository";
 import ParameterGriyabayarService from "../../../repositories/parameterGriyabayarRepository";
@@ -69,7 +69,7 @@ export class MessageService implements IMessageService {
                         await this.whatsappService.messageHandler.validationIsEditMessage(message);
                         continue;
                         break;
-                    case (isFromBroadcast(message.key.remoteJid) || isFromGroup(message.key.remoteJid) || isFromMe(message)):
+                    case (isFromBroadcast(message.key.remoteJid) || isFromGroup(message.key.remoteJid) || isFromMe(message) || isFromStatus(message.key.remoteJid) || message.message?.conversation == null):
                         continue;
                         break;
                 };
