@@ -2,40 +2,24 @@ version: '3.8'
 
 services:
   app:
+    image: wa-service-nodejs
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    depends_on:
-      - rabbitmq
     environment:
       - NODE_ENV=production
+      - RABBITMQ_HOSTNAME=b-deaaac2e-2065-49e9-94a2-fe209bd7b9aa.mq.ap-southeast-3.amazonaws.com
+      - RABBITMQ_PORT=5671
+      - RABBITMQ_USER=onpay-broker
+      - RABBITMQ_PASSWORD=!0np4YbrOk3R;
+      - DB_HOSTNAME=onpaydb.cr6wwc6xwxel.ap-southeast-3.rds.amazonaws.com
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=Asdfgvcxz
+      - DB_NAME=onpaydev
     volumes:
       - .:/app
     command: npm start
 
-  rabbitmq:
-    image: "rabbitmq:4.0-management"
-    ports:
-      - "15672:15672"  # Port untuk management console
-      - "5672:5672"    # Port untuk komunikasi RabbitMQ
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-  
-  postgres:
-    image: postgres:15 # Gunakan versi PostgreSQL yang Anda inginkan
-    restart: always
-    environment:
-      POSTGRES_USER: postgres       # Ganti dengan username Anda
-      POSTGRES_PASSWORD: admin # Ganti dengan password Anda
-      POSTGRES_DB: onpay     # Nama database default
-    ports:
-      - "5432:5432" # Map port lokal ke port container
-    volumes:
-      - postgres_data:/var/lib/postgresql/data # Volume untuk menyimpan data
-
-volumes:
-  postgres_data:
-    driver: local

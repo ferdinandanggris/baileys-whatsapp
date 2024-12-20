@@ -31,6 +31,6 @@ __decorate([
     __metadata("design:type", String)
 ], WhatsappSession.prototype, "auth", void 0);
 exports.WhatsappSession = WhatsappSession = __decorate([
-    (0, typeorm_1.Entity)('whatsapp_nodejs_sessions')
+    (0, typeorm_1.Entity)({ name: 'whatsapp_nodejs_sessions', schema: 'whatsapp' })
 ], WhatsappSession);
 //# sourceMappingURL=whatsappSession.js.map

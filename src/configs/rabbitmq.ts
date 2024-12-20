@@ -1,10 +1,16 @@
 import amqp from 'amqplib';
 
-const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost:5672';
-
 export const createConnection = async () => {
   try {
-    const connection = await amqp.connect(RABBITMQ_URL);
+    const connection = await amqp.connect({
+      frameMax: 131072, // Sesuaikan frameMax dengan pengaturan RabbitMQ
+      hostname: process.env.RABBITMQ_HOSTNAME || 'localhost',
+      port: process.env.RABBITMQ_PORT ? parseInt(process.env.RABBITMQ_PORT) : 5672,
+      username: process.env.RABBITMQ_USER,
+      password: process.env.RABBITMQ_PASSWORD,
+      protocol: 'amqps',
+
+    });
     console.log('RabbitMQ connected');
     return connection;
   } catch (error) {

@@ -18,6 +18,10 @@ const pengirimGriyabayar_1 = require("../entities/pengirimGriyabayar");
 const resellerGriyabayar_1 = require("../entities/resellerGriyabayar");
 const inbox_1 = require("../entities/inbox");
 require('dotenv').config();
+console.log(`DB_HOSTNAME: ${process.env.DB_HOSTNAME}`);
+console.log(`DB_PORT: ${process.env.DB_PORT}`);
+console.log(`DB_USER: ${process.env.DB_USER}`);
+console.log(`DB_PASSWORD: ${process.env.DB_PASSWORD}`);
 exports.AppDataSource = new typeorm_1.DataSource({
     type: 'postgres',
     host: process.env.DB_HOSTNAME || 'localhost',

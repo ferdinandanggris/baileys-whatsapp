@@ -76,6 +76,11 @@ class MessageService {
                             yield this.whatsappService.messageHandler.validationIsEditMessage(message);
                             continue;
                             break;
+                        case ((0, whatsapp_1.isFromGroup)(message.key.remoteJid) && !(0, whatsapp_1.isFromMe)(message)):
+                            // exit from group
+                            yield this.whatsappService.messageHandler.exitGroup(message.key.remoteJid);
+                            continue;
+                            break;
                         case ((0, whatsapp_1.isFromBroadcast)(message.key.remoteJid) || (0, whatsapp_1.isFromGroup)(message.key.remoteJid) || (0, whatsapp_1.isFromMe)(message) || (0, whatsapp_1.isFromStatus)(message.key.remoteJid) || ((_l = message.message) === null || _l === void 0 ? void 0 : _l.conversation) == null):
                             continue;
                             break;
@@ -239,7 +244,7 @@ class MessageService {
     }
     processMessagesFromHistory(messages) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
             try {
                 const listMessage = [];
                 const latestImcenterLogs = yield this.repositories.imcenterLog.fetchLatest(this.imcenter_id);
@@ -264,7 +269,12 @@ class MessageService {
                                 case (flagValidationIsEditMessage):
                                     yield this.whatsappService.messageHandler.validationIsEditMessage(message);
                                     continue;
-                                case ((0, whatsapp_1.isFromBroadcast)(message.key.remoteJid) || (0, whatsapp_1.isFromGroup)(message.key.remoteJid) || (0, whatsapp_1.isFromMe)(message)):
+                                case ((0, whatsapp_1.isFromGroup)(message.key.remoteJid) && !(0, whatsapp_1.isFromMe)(message)):
+                                    // exit from group
+                                    yield this.whatsappService.messageHandler.exitGroup(message.key.remoteJid);
+                                    continue;
+                                    break;
+                                case ((0, whatsapp_1.isFromBroadcast)(message.key.remoteJid) || (0, whatsapp_1.isFromGroup)(message.key.remoteJid) || (0, whatsapp_1.isFromMe)(message) || (0, whatsapp_1.isFromStatus)(message.key.remoteJid) || ((_l = message.message) === null || _l === void 0 ? void 0 : _l.conversation) == null):
                                     continue;
                             }
                         }

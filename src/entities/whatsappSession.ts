@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('whatsapp_nodejs_sessions')
+@Entity({name : 'whatsapp_nodejs_sessions', schema : 'whatsapp'})
 export class WhatsappSession{
     @PrimaryGeneratedColumn()
     id!: number;

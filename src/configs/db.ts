@@ -13,6 +13,11 @@ import { ResellerGriyabayar } from "../entities/resellerGriyabayar";
 import { Inbox } from "../entities/inbox";
 require('dotenv').config()
 
+console.log(`DB_HOSTNAME: ${process.env.DB_HOSTNAME}`);
+console.log(`DB_PORT: ${process.env.DB_PORT}`);
+console.log(`DB_USER: ${process.env.DB_USER}`);
+console.log(`DB_PASSWORD: ${process.env.DB_PASSWORD}`);
+
 export const AppDataSource = new DataSource({
     type: 'postgres',
     host: process.env.DB_HOSTNAME || 'localhost',

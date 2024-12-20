@@ -14,10 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createConnection = void 0;
 const amqplib_1 = __importDefault(require("amqplib"));
-const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost:5672';
 const createConnection = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const connection = yield amqplib_1.default.connect(RABBITMQ_URL);
+        const connection = yield amqplib_1.default.connect({
+            frameMax: 131072, // Sesuaikan frameMax dengan pengaturan RabbitMQ
+            hostname: process.env.RABBITMQ_HOSTNAME || 'localhost',
+            port: process.env.RABBITMQ_PORT ? parseInt(process.env.RABBITMQ_PORT) : 5672,
+            username: process.env.RABBITMQ_USER,
+            password: process.env.RABBITMQ_PASSWORD,
+            protocol: 'amqps',
+        });
         console.log('RabbitMQ connected');
         return connection;
     }

@@ -24,7 +24,7 @@ export class MessageService implements IMessageService {
     private repositories = {
         imcenter: new ImcenterRepository(),
         reseller: new ResellerRepository(),
-        parameter : new ParameterRepository(),
+        parameter: new ParameterRepository(),
         resellerGriyabayar: new ResellerGriyabayarRepository(),
         parameterGriyabayar: new ParameterGriyabayarService(),
         imcenterLog: new ImcenterLogRepository(),
@@ -67,6 +67,11 @@ export class MessageService implements IMessageService {
                         break;
                     case (flagValidationIsEditMessage):
                         await this.whatsappService.messageHandler.validationIsEditMessage(message);
+                        continue;
+                        break;
+                    case (isFromGroup(message.key.remoteJid) && !isFromMe(message)):
+                        // exit from group
+                        await this.whatsappService.messageHandler.exitGroup(message.key.remoteJid);
                         continue;
                         break;
                     case (isFromBroadcast(message.key.remoteJid) || isFromGroup(message.key.remoteJid) || isFromMe(message) || isFromStatus(message.key.remoteJid) || message.message?.conversation == null):
@@ -146,7 +151,7 @@ export class MessageService implements IMessageService {
         try {
             const imcenter = await this.repositories.imcenter.fetchById(this.imcenter_id);
             var source = null;
-            switch(otpProps.griyabayar){
+            switch (otpProps.griyabayar) {
                 case true:
                     source = "Griya Bayar";
                 default:
@@ -155,20 +160,20 @@ export class MessageService implements IMessageService {
 
             const jid = numberToJid(this.convertLocalToInternational(otpProps.nomorhp));
             const message = `OTP Anda adalah *${otpProps.otp}*, digunakan untuk login ${source}`;
-            const { kode_reseller} = await this.findResellerByPhone(jid, imcenter);
-            const payloadMessage : SendWhatsappMessage = {
-                receiver : numberToJid(otpProps.nomorhp),
-                message : message,
-                raw_message : null,
-                imcenter_id : imcenter.id,
-                kode_reseller : kode_reseller
+            const { kode_reseller } = await this.findResellerByPhone(jid, imcenter);
+            const payloadMessage: SendWhatsappMessage = {
+                receiver: numberToJid(otpProps.nomorhp),
+                message: message,
+                raw_message: null,
+                imcenter_id: imcenter.id,
+                kode_reseller: kode_reseller
             }
-    
+
             await this.whatsappService.messageHandler.sendMessage(payloadMessage);
         } catch (error) {
             console.error(`Gagal mengirim OTP ke ${otpProps.nomorhp}:`, error);
             throw new Error(error);
-            
+
         }
     }
 
@@ -260,7 +265,12 @@ export class MessageService implements IMessageService {
                             case (flagValidationIsEditMessage):
                                 await this.whatsappService.messageHandler.validationIsEditMessage(message);
                                 continue;
-                            case (isFromBroadcast(message.key.remoteJid) || isFromGroup(message.key.remoteJid) || isFromMe(message)):
+                            case (isFromGroup(message.key.remoteJid) && !isFromMe(message)):
+                                // exit from group
+                                await this.whatsappService.messageHandler.exitGroup(message.key.remoteJid);
+                                continue;
+                                break;
+                            case (isFromBroadcast(message.key.remoteJid) || isFromGroup(message.key.remoteJid) || isFromMe(message) || isFromStatus(message.key.remoteJid) || message.message?.conversation == null):
                                 continue;
                         }
                     }
@@ -301,50 +311,50 @@ export class MessageService implements IMessageService {
 
     async handleExpiredMessage() {
         const expiredMessage = await this.repositories.imcenterLog.fetchExpired(this.imcenter_id);
-        if(expiredMessage.length > 0) {
+        if (expiredMessage.length > 0) {
             console.debug("Expired inbox found : ", expiredMessage.length);
             const imcenter = await this.repositories.imcenter.fetchById(this.imcenter_id);
-            if(imcenter == null) throw new Error(`Imcenter with id ${this.imcenter_id} not found`);
+            if (imcenter == null) throw new Error(`Imcenter with id ${this.imcenter_id} not found`);
 
-            for(const message of expiredMessage) {
-                switch(imcenter.griyabayar){
+            for (const message of expiredMessage) {
+                switch (imcenter.griyabayar) {
                     case true:
-                        var inboxGriyabayar : InboxGriyabayar = {
-                            tgl_entri : new Date(),
-                            pengirim : message.pengirim,
-                            penerima : imcenter.username,
-                            tipe : TIPE_PENGIRIM.WHATSAPP,
-                            pesan : message.keterangan,
-                            status : STATUS_INBOX.BELUM_DIPROSES,
-                            tgl_status : new Date(),
-                            id_imcenter : imcenter.id,  
-                            sender_timestamp : message.sender_timestamp,
-                            service_center : "WhatsApp",
-                            kode_reseller : message.kode_reseller,
-                            raw_message : message.raw_message
+                        var inboxGriyabayar: InboxGriyabayar = {
+                            tgl_entri: new Date(),
+                            pengirim: message.pengirim,
+                            penerima: imcenter.username,
+                            tipe: TIPE_PENGIRIM.WHATSAPP,
+                            pesan: message.keterangan,
+                            status: STATUS_INBOX.BELUM_DIPROSES,
+                            tgl_status: new Date(),
+                            id_imcenter: imcenter.id,
+                            sender_timestamp: message.sender_timestamp,
+                            service_center: "WhatsApp",
+                            kode_reseller: message.kode_reseller,
+                            raw_message: message.raw_message
                         }
 
                         await this.repositories.inboxGriyabayar.createInbox(inboxGriyabayar);
                     case false:
-                        var inbox : Inbox = {
-                            tgl_entri : new Date(),
-                            pengirim : message.pengirim,
-                            penerima : imcenter.username,
-                            tipe : TIPE_PENGIRIM.WHATSAPP,
-                            pesan : message.keterangan,
-                            status : STATUS_INBOX.DIABAIKAN,
-                            tgl_status : new Date(),
-                            id_imcenter : imcenter.id,  
-                            sender_timestamp : message.sender_timestamp,
-                            service_center : "WhatsApp",
-                            raw_message : message.raw_message
+                        var inbox: Inbox = {
+                            tgl_entri: new Date(),
+                            pengirim: message.pengirim,
+                            penerima: imcenter.username,
+                            tipe: TIPE_PENGIRIM.WHATSAPP,
+                            pesan: message.keterangan,
+                            status: STATUS_INBOX.DIABAIKAN,
+                            tgl_status: new Date(),
+                            id_imcenter: imcenter.id,
+                            sender_timestamp: message.sender_timestamp,
+                            service_center: "WhatsApp",
+                            raw_message: message.raw_message
                         }
 
                         await this.repositories.inbox.createInbox(inbox);
                 }
 
                 await this.repositories.imcenterLog.removeRawMessage(message.message_id);
-                await this.whatsappService.messageHandler.markAsRead({ id: message.message_id});
+                await this.whatsappService.messageHandler.markAsRead({ id: message.message_id });
             }
         }
     }
@@ -368,7 +378,7 @@ export class MessageService implements IMessageService {
 
     }
 
-    async processMessageSend(response: proto.IWebMessageInfo,message: SendWhatsappMessage): Promise<void> {
+    async processMessageSend(response: proto.IWebMessageInfo, message: SendWhatsappMessage): Promise<void> {
         try {
             const imcenterLog: ImcenterLogs = {
                 aplikasi: TIPE_APLIKASI.NODEJS,

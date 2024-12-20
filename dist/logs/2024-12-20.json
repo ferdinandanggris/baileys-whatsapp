@@ -1,0 +1,37 @@
+[
+  {
+    "timestamp": "2024-12-20T03:35:32.058Z",
+    "message": "relation \"whatsapp_nodejs_sessions\" does not exist",
+    "stack": "QueryFailedError: relation \"whatsapp_nodejs_sessions\" does not exist\n    at PostgresQueryRunner.query (/app/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async SelectQueryBuilder.loadRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2192:25)\n    at async SelectQueryBuilder.executeEntitiesAndRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2040:26)\n    at async SelectQueryBuilder.getRawAndEntities (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:684:29)\n    at async SelectQueryBuilder.getMany (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:750:25)"
+  },
+  {
+    "timestamp": "2024-12-20T03:52:35.923Z",
+    "message": "relation \"whatsapp_nodejs_sessions\" does not exist",
+    "stack": "QueryFailedError: relation \"whatsapp_nodejs_sessions\" does not exist\n    at PostgresQueryRunner.query (/app/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async SelectQueryBuilder.loadRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2192:25)\n    at async SelectQueryBuilder.executeEntitiesAndRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2040:26)\n    at async SelectQueryBuilder.getRawAndEntities (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:684:29)\n    at async SelectQueryBuilder.getMany (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:750:25)"
+  },
+  {
+    "timestamp": "2024-12-20T03:54:59.650Z",
+    "message": "relation \"whatsapp.whatsapp_nodejs_session\" does not exist",
+    "stack": "QueryFailedError: relation \"whatsapp.whatsapp_nodejs_session\" does not exist\n    at PostgresQueryRunner.query (/app/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async SelectQueryBuilder.loadRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2192:25)\n    at async SelectQueryBuilder.executeEntitiesAndRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2040:26)\n    at async SelectQueryBuilder.getRawAndEntities (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:684:29)\n    at async SelectQueryBuilder.getMany (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:750:25)"
+  },
+  {
+    "timestamp": "2024-12-20T03:57:32.269Z",
+    "message": "relation \"whatsapp.whatsapp_nodejs_session\" does not exist",
+    "stack": "QueryFailedError: relation \"whatsapp.whatsapp_nodejs_session\" does not exist\n    at PostgresQueryRunner.query (/app/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async SelectQueryBuilder.loadRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2192:25)\n    at async SelectQueryBuilder.executeEntitiesAndRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2040:26)\n    at async SelectQueryBuilder.getRawAndEntities (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:684:29)\n    at async SelectQueryBuilder.getMany (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:750:25)"
+  },
+  {
+    "timestamp": "2024-12-20T03:59:05.690Z",
+    "message": "relation \"whatsapp.whatsapp_nodejs_session\" does not exist",
+    "stack": "QueryFailedError: relation \"whatsapp.whatsapp_nodejs_session\" does not exist\n    at PostgresQueryRunner.query (/app/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async SelectQueryBuilder.loadRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2192:25)\n    at async SelectQueryBuilder.executeEntitiesAndRawResults (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:2040:26)\n    at async SelectQueryBuilder.getRawAndEntities (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:684:29)\n    at async SelectQueryBuilder.getMany (/app/node_modules/typeorm/query-builder/SelectQueryBuilder.js:750:25)"
+  },
+  {
+    "timestamp": "2024-12-20T06:10:11.841Z",
+    "message": "there is no unique or exclusion constraint matching the ON CONFLICT specification",
+    "stack": "QueryFailedError: there is no unique or exclusion constraint matching the ON CONFLICT specification\n    at PostgresQueryRunner.query (/app/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (/app/node_modules/typeorm/query-builder/InsertQueryBuilder.js:106:33)"
+  },
+  {
+    "timestamp": "2024-12-20T08:09:11.915Z",
+    "message": "Unexpected close",
+    "stack": "Error: Unexpected close\n    at succeed (/app/node_modules/amqplib/lib/connection.js:226:15)\n    at onOpenOk (/app/node_modules/amqplib/lib/connection.js:208:7)\n    at /app/node_modules/amqplib/lib/connection.js:111:11\n    at /app/node_modules/amqplib/lib/connection.js:104:11\n    at TLSSocket.recv (/app/node_modules/amqplib/lib/connection.js:453:9)\n    at Object.onceWrapper (node:events:631:28)\n    at TLSSocket.emit (node:events:517:28)\n    at emitReadable_ (node:internal/streams/readable:633:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:81:21)"
+  }
+]

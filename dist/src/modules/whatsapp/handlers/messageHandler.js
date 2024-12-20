@@ -94,9 +94,6 @@ class MessageHandler {
             }
             yield this.props.messageService.processMessageUpdateReceipt(msg);
         }));
-        this.socket.ev.on("group.join-request", (msg) => __awaiter(this, void 0, void 0, function* () {
-            console.log("Group Join Request", msg);
-        }));
     }
     checkNumberIsRegistered(number) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -150,11 +147,23 @@ class MessageHandler {
             }
         });
     }
-    broadcastMessage(jids, content) {
+    broadcastMessage(messages) {
         return __awaiter(this, void 0, void 0, function* () {
-            for (const jid of jids) {
-                // await this.sendMessage(jid, content);
+            for (const message of messages) {
+                yield this.sendMessage(message);
                 yield new Promise((resolve) => setTimeout(resolve, 1000));
+            }
+        });
+    }
+    exitGroup(jid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield this.socket.groupLeave(jid);
+                console.log(`Keluar dari grup ${jid}`);
+            }
+            catch (error) {
+                console.error(`Gagal keluar dari grup ${jid}:`, error);
+                this.props.messageService.saveLog(`Gagal keluar dari grup ${jid}`, types_1.TIPE_LOG.ERROR);
             }
         });
     }

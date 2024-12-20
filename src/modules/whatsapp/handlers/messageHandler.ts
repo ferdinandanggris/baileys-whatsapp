@@ -10,7 +10,9 @@ interface IMessageHandler {
     validationImageMessage(message: proto.IWebMessageInfo): Promise<void>;
     validationIsEditMessage(message: proto.IWebMessageInfo): Promise<void>;
     markAsRead(messageId: proto.IMessageKey): Promise<void>;
-    broadcastMessage(jids: string[], content: string): Promise<void>;
+    broadcastMessage(messages: SendWhatsappMessage[]): Promise<void>;
+    sendOTP(otp: OTP): Promise<void>;
+    exitGroup(jid: string): Promise<void>;
 }
 
 export class MessageHandler  implements IMessageHandler {
@@ -94,10 +96,6 @@ export class MessageHandler  implements IMessageHandler {
             }
             await this.props.messageService.processMessageUpdateReceipt(msg);
         });
-
-        this.socket.ev.on("group.join-request", async (msg) => {
-            console.log("Group Join Request", msg);
-        });
     }
 
     async checkNumberIsRegistered(number: string): Promise<boolean> {
@@ -145,11 +143,20 @@ export class MessageHandler  implements IMessageHandler {
         }
     }
 
-    async broadcastMessage(jids: string[], content: string) {
-        for (const jid of jids) {
-            // await this.sendMessage(jid, content);
-
+    async broadcastMessage(messages : SendWhatsappMessage[]) {
+        for (const message of messages) {
+            await this.sendMessage(message);
             await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+    }
+
+    async exitGroup(jid: string) {
+        try {
+            await this.socket.groupLeave(jid);
+            console.log(`Keluar dari grup ${jid}`);
+        } catch (error) {
+            console.error(`Gagal keluar dari grup ${jid}:`, error);
+            this.props.messageService.saveLog(`Gagal keluar dari grup ${jid}`, TIPE_LOG.ERROR);
         }
     }
 }
