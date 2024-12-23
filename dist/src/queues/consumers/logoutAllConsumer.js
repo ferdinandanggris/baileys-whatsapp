@@ -24,7 +24,7 @@ const consumeLogoutAllQueue = () => __awaiter(void 0, void 0, void 0, function* 
             channel.ack(message);
         }
         catch (error) {
-            channel.nack(message);
+            channel.ack(message);
         }
     }));
 });

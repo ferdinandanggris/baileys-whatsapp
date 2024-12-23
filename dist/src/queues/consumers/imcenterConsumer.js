@@ -27,7 +27,7 @@ const consumeImcenterSendMessageQueue = (imcenter) => __awaiter(void 0, void 0, 
             channel.ack(message);
         }
         catch (error) {
-            channel.nack(message);
+            channel.ack(message);
             console.error("Error consuming message", error);
         }
     }));

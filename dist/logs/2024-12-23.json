@@ -1,0 +1,127 @@
+[
+  {
+    "timestamp": "2024-12-23T07:15:59.232Z",
+    "message": "there is no unique or exclusion constraint matching the ON CONFLICT specification",
+    "stack": "QueryFailedError: there is no unique or exclusion constraint matching the ON CONFLICT specification\n    at PostgresQueryRunner.query (/app/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (/app/node_modules/typeorm/query-builder/InsertQueryBuilder.js:106:33)"
+  },
+  {
+    "timestamp": "2024-12-23T07:17:10.902Z",
+    "message": "there is no unique or exclusion constraint matching the ON CONFLICT specification",
+    "stack": "QueryFailedError: there is no unique or exclusion constraint matching the ON CONFLICT specification\n    at PostgresQueryRunner.query (/app/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (/app/node_modules/typeorm/query-builder/InsertQueryBuilder.js:106:33)"
+  },
+  {
+    "timestamp": "2024-12-23T07:18:39.804Z",
+    "message": "there is no unique or exclusion constraint matching the ON CONFLICT specification",
+    "stack": "QueryFailedError: there is no unique or exclusion constraint matching the ON CONFLICT specification\n    at PostgresQueryRunner.query (/app/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (/app/node_modules/typeorm/query-builder/InsertQueryBuilder.js:106:33)"
+  },
+  {
+    "timestamp": "2024-12-23T07:20:19.177Z",
+    "message": "there is no unique or exclusion constraint matching the ON CONFLICT specification",
+    "stack": "QueryFailedError: there is no unique or exclusion constraint matching the ON CONFLICT specification\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)"
+  },
+  {
+    "timestamp": "2024-12-23T07:27:32.827Z",
+    "message": "QueryFailedError: column reseller.bonus does not exist",
+    "stack": "Error: QueryFailedError: column reseller.bonus does not exist\n    at MessageService.<anonymous> (D:\\VS PROJECT\\wa-service-nodejs\\dist\\src\\modules\\whatsapp\\services\\messageService.js:309:23)\n    at Generator.throw (<anonymous>)\n    at rejected (D:\\VS PROJECT\\wa-service-nodejs\\dist\\src\\modules\\whatsapp\\services\\messageService.js:6:65)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)"
+  },
+  {
+    "timestamp": "2024-12-23T08:27:35.210Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:28:07.455Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:30:17.152Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:30:17.199Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:34:59.414Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:36:29.252Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:36:49.783Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:39:27.342Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:40:04.766Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:42:55.233Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:43:01.766Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:43:09.331Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:44:52.618Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:45:19.713Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:45:56.568Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:53:44.206Z",
+    "message": "listen EADDRINUSE: address already in use 127.0.0.1:3000",
+    "stack": "Error: listen EADDRINUSE: address already in use 127.0.0.1:3000\n    at Server.setupListenHandle [as _listen2] (node:net:1817:16)\n    at listenInCluster (node:net:1865:12)\n    at doListen (node:net:2014:7)\n    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)"
+  },
+  {
+    "timestamp": "2024-12-23T08:55:05.136Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T09:03:09.965Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T09:03:34.508Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  },
+  {
+    "timestamp": "2024-12-23T09:06:10.137Z",
+    "message": "duplicate key value violates unique constraint \"imcenter_logs_pk\"",
+    "stack": "QueryFailedError: duplicate key value violates unique constraint \"imcenter_logs_pk\"\n    at PostgresQueryRunner.query (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\driver\\postgres\\PostgresQueryRunner.js:219:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async InsertQueryBuilder.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\query-builder\\InsertQueryBuilder.js:106:33)\n    at async SubjectExecutor.executeInsertOperations (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:260:42)\n    at async SubjectExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\SubjectExecutor.js:92:9)\n    at async EntityPersistExecutor.execute (D:\\VS PROJECT\\wa-service-nodejs\\node_modules\\typeorm\\persistence\\EntityPersistExecutor.js:140:21)"
+  }
+]

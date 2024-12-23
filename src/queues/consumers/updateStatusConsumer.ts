@@ -21,7 +21,7 @@ export const consumeUpdateStatusQueue = async () => {
       await handleUpdateStatusMessage(content);
       channel.ack(message);
     } catch (error) {
-      channel.nack(message);
+      channel.ack(message);
       console.error("Error consuming message", error);
     }
 

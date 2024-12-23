@@ -386,7 +386,7 @@ class MessageService {
                     aplikasi: types_1.TIPE_APLIKASI.NODEJS,
                     imcenter_id: this.imcenter_id,
                     tgl_entri: new Date(),
-                    keterangan: response.message.conversation,
+                    keterangan: message.message,
                     tipe: types_1.TIPE_LOG.OUTBOX,
                     pengirim: response.key.remoteJid,
                     message_id: response.key.id,

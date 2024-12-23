@@ -30,7 +30,7 @@ const consumeLogoutQueue = () => __awaiter(void 0, void 0, void 0, function* () 
             channel.ack(message);
         }
         catch (error) {
-            channel.nack(message);
+            channel.ack(message);
             console.error("Error consuming message", error);
         }
     }));

@@ -23,7 +23,7 @@ export const consumeLoginQueue = async () => {
         channel.ack(message);
       }
     } catch (error) {
-      channel.nack(message);
+      channel.ack(message);
       console.error("Error consuming message", error);
     }
 

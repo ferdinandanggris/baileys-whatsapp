@@ -8,7 +8,7 @@ export const createConnection = async () => {
       port: process.env.RABBITMQ_PORT ? parseInt(process.env.RABBITMQ_PORT) : 5672,
       username: process.env.RABBITMQ_USER,
       password: process.env.RABBITMQ_PASSWORD,
-      protocol: 'amqps',
+      protocol: 'amqp',
 
     });
     console.log('RabbitMQ connected');

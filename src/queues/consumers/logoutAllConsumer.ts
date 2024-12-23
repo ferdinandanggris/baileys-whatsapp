@@ -13,7 +13,7 @@ export const consumeLogoutAllQueue = async () => {
         await handleLogoutAllMessage();
         channel.ack(message);
       } catch (error) {
-        channel.nack(message);
+        channel.ack(message);
       }
       
     });

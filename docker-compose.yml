@@ -10,16 +10,26 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - RABBITMQ_HOSTNAME=b-deaaac2e-2065-49e9-94a2-fe209bd7b9aa.mq.ap-southeast-3.amazonaws.com
-      - RABBITMQ_PORT=5671
-      - RABBITMQ_USER=onpay-broker
-      - RABBITMQ_PASSWORD=!0np4YbrOk3R;
-      - DB_HOSTNAME=onpaydb.cr6wwc6xwxel.ap-southeast-3.rds.amazonaws.com
+      - RABBITMQ_HOSTNAME=192.168.1.21
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASSWORD=guest
+      - DB_HOSTNAME=192.168.1.21
       - DB_PORT=5432
       - DB_USER=postgres
-      - DB_PASSWORD=Asdfgvcxz
-      - DB_NAME=onpaydev
+      - DB_PASSWORD=admin
+      - DB_NAME=onpay
+      # - RABBITMQ_HOSTNAME=b-deaaac2e-2065-49e9-94a2-fe209bd7b9aa.mq.ap-southeast-3.amazonaws.com
+      # - RABBITMQ_PORT=5671
+      # - RABBITMQ_USER=onpay-broker
+      # - RABBITMQ_PASSWORD=!0np4YbrOk3R;
+      # - DB_HOSTNAME=onpaydb.cr6wwc6xwxel.ap-southeast-3.rds.amazonaws.com
+      # - DB_PORT=5432
+      # - DB_USER=postgres
+      # - DB_PASSWORD=Asdfgvcxz
+      # - DB_NAME=onpaydev
     volumes:
       - .:/app
     command: npm start
+    
 

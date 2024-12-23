@@ -19,7 +19,7 @@ export const consumeImcenterSendMessageQueue = async (imcenter :Imcenter) => {
             await handleImcenterSendMessage(imcenter,content);
             channel.ack(message);
         }catch(error){
-            channel.nack(message);
+            channel.ack(message);
             console.error("Error consuming message", error);
         }
     });

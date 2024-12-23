@@ -40,10 +40,6 @@ __decorate([
     __metadata("design:type", Number)
 ], Reseller.prototype, "markup", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'int', default: 0 }),
-    __metadata("design:type", Number)
-], Reseller.prototype, "bonus", void 0);
-__decorate([
     (0, typeorm_1.Column)({ type: 'varchar', nullable: true }),
     __metadata("design:type", String)
 ], Reseller.prototype, "keterangan", void 0);

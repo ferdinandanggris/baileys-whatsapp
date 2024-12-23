@@ -14,7 +14,7 @@ export const consumeLoginAllQueue = async () => {
                 channel.ack(message);
             }
         } catch (error) {
-            channel.nack(message);
+            channel.ack(message);
             console.log(`Error in consumeLoginAllQueue: ${queueName}`, error);
 
         }

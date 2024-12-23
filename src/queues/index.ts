@@ -25,10 +25,10 @@ export const getChannel = () => {
 
 export const startConsumers = async () => {
   await consumeLoginQueue();
-  // await consumeLoginAllQueue();
-  // await consumeLogoutQueue();
-  // await consumeLogoutAllQueue();
-  // await consumeUpdateStatusQueue();
-  // await consumeSendMessageQueue();
-  // await consumeSendOTPQueue();
+  await consumeLoginAllQueue();
+  await consumeLogoutQueue();
+  await consumeLogoutAllQueue();
+  await consumeUpdateStatusQueue();
+  await consumeSendMessageQueue();
+  await consumeSendOTPQueue();
 }

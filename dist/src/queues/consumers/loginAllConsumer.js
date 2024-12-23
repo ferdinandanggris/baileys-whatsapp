@@ -26,7 +26,7 @@ const consumeLoginAllQueue = () => __awaiter(void 0, void 0, void 0, function* (
             }
         }
         catch (error) {
-            channel.nack(message);
+            channel.ack(message);
             console.log(`Error in consumeLoginAllQueue: ${queueName}`, error);
         }
     }));
